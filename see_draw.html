@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SEE DRAW</title>
+    <link href="css/see_draw.css" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/see_draw.js"></script>
+    <script src="js/snap.svg-min.js"></script>
+</head>
+<body>
+
+<header>SEE DRAW</header>
+
+<nav></nav>
+<section id="mainArea">
+    <div id="component" style="width:150px;">
+        <svg width="80" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect()">
+            <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect"/>
+            <text x="15" y="25">NEW</text>
+        </svg>
+        <svg width="80" height="40" style="margin: 10px 10px 10px 10px" onclick="addPath()">
+            <path d="M0 20 L80 20" class="myConnector"/>
+            <path d="M80 20 L75 17 L75 23 Z" class="myConnector"/>
+        </svg>
+    </div>
+    <div id="drawArea" style="width:800px;"><input type="text" id="rectText" style="display:none;"/></div>
+</section>
+
+<footer></footer>
+
+</body>
+</html>
