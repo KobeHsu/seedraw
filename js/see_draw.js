@@ -23,6 +23,7 @@ var g_draw_aera;
 var g_svg;
 var g_start_x;
 var g_start_y;
+var g_curr_grp;
 
 function addPath() {
 
@@ -174,15 +175,8 @@ function addRect() {
     newRect.addClass("myRect");
     newRect.attr("id", rectId);
 
-    newRect.mouseover(function () {
-        var grp = getGroupPrefix(this.attr("id"));
-        g_svg.select("#" + grp + "close").removeClass("hide");
-    });
-
-    newRect.mouseout(function () {
-        var grp = getGroupPrefix(this.attr("id"));
-        g_svg.select("#" + grp + "close").addClass("hide");
-    });
+    newRect.mouseover(rectMouseOver);
+    newRect.mouseout(rectMouseOut);
 
     var bBoxRect = newRect.getBBox();
 
@@ -192,11 +186,15 @@ function addRect() {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    close.click(function () {
-        var grp = getGroupPrefix(this.attr("id"));
-        g_svg.selectAll("[id^=" + grp).remove();
-        //this.parentNode.parentNode.removeChild(this.parentNode);
-    });
+    close.mouseover(rectMouseOver);
+    close.mouseout(rectMouseOut);
+    close.click(closeClick);
+
+    var textId = grp + "text";
+    var text = g_svg.text(bBoxRect.x + 10, bBoxRect.y + bBoxRect.height / 2 + 5, "TEXT HERE");
+    text.attr("id", textId);
+
+    text.dblclick(textDblClick);
 
     //var svgId = "svg_" + g_rect_serial;
     //var rectId = "rect_" + g_rect_serial;
@@ -204,23 +202,7 @@ function addRect() {
     //var closeId = "close_" + g_rect_serial;
     //var endpointId = "endpoint_" + g_rect_serial;
 
-    //
-    //// text on rect
-    //var text = document.createElementNS(SVG_NAME_SPACE, "text");
-    //text.setAttribute("x", 0);
-    //text.setAttribute("y", (RECT_HEIGHT / 2 + 11));
-    //text.setAttribute("id", textId);
-    ////text.setAttribute("text-anchor", "middle");
-    ////text.setAttribute("alignment-baseline", "middle");
-    //text.innerHTML = "TEXT HERE";
-    //
-    //svg.appendChild(text);
-    //
-    //// events begin
-    //close.onclick = function () {
-    //    this.parentNode.parentNode.removeChild(this.parentNode);
-    //};
-    //
+
     //text.ondblclick = function (event) {
     //    textDblClick.call(this, event, textId);
     //}
@@ -255,6 +237,31 @@ function addRect() {
 
 }
 
+function rectMouseOver() {
+    var grp = getGroupPrefix(this.attr("id"));
+    g_svg.select("#" + grp + "close").removeClass("hide");
+}
+
+function rectMouseOut() {
+    var grp = getGroupPrefix(this.attr("id"));
+    g_svg.select("#" + grp + "close").addClass("hide");
+}
+
+//function closeMouseOver() {
+//    var grp = getGroupPrefix(this.attr("id"));
+//    g_svg.select("#" + grp + "rect").unmouseover(rectMouseOver).unmouseout(rectMouseOut);
+//}
+//
+//function closeMouseOut() {
+//
+//}
+
+function closeClick() {
+    var grp = getGroupPrefix(this.attr("id"));
+    g_svg.selectAll("[id^=" + grp).remove();
+    //this.parentNode.parentNode.removeChild(this.parentNode);
+}
+
 function getTargetSvg(id) {
 
     var ary = id.split(SEPARATOR);
@@ -266,38 +273,41 @@ function getTargetSvg(id) {
     return target;
 }
 
-function textDblClick(event, textId) {
+function textDblClick() {
 
-    g_text_id = textId;
-    var textEl = document.getElementById(textId);
+    var grp = getGroupPrefix(this.attr("id"));
+    g_curr_grp = grp;
+    var text = g_svg.select("#" + grp + "text");
 
-    textEl.style["display"] = "none";
+    var textBBox = text.getBBox();
+    text.addClass("hide");
 
     var input = document.getElementById("rectText");
-    input.value = textEl.innerHTML;
-    input.style["left"] = event.clientX + "px";
-    input.style["top"] = event.clientY - 9 + "px";
+    input.value = text.innerSVG();
+    input.style["left"] = (g_start_x + textBBox.x) + "px";
+    input.style["top"] = (g_start_y + textBBox.y) + "px";
     input.style["display"] = "";
     input.focus();
 
     input.addEventListener("blur", inputBlur);
 }
 
-function inputBlur(event) {
+function inputBlur() {
 
-    var textId = g_text_id;
+    var grp = g_curr_grp;
+    var text = g_svg.select("#" + grp + "text");
 
-    var textEl = document.getElementById(textId);
     if (this.value != "") {
-        textEl.innerHTML = this.value;
+        text.attr("text", this.value);
     } else {
-        textEl.innerHTML = "Not Entered";
+        text.attr("text", "Not Entered");
     }
-    textEl.style["display"] = "";
+    text.removeClass("hide");
     this.style["display"] = "none";
 
-    g_text_id = "";
+    g_curr_grp = "";
     this.removeEventListener("blur", inputBlur);
+
 }
 
 function endpointMouseMove(event) {
@@ -502,5 +512,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     g_draw_aera = document.getElementById("drawArea");
     g_svg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
     g_svg.appendTo(g_draw_aera);
+
+    var svgBBox = g_svg.getBBox();
+    g_start_x = $(g_svg.node).position().left;
+    g_start_y = $(g_svg.node).position().top;
 
 });

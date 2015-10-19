@@ -68,6 +68,8 @@ input[type="text"].focus {
 
 .myClose {
     fill: #70717C;
+    z-index: 99;
+
 }
 
 .myConnector {
