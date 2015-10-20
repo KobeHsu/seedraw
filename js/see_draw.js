@@ -177,6 +177,7 @@ function addRect() {
 
     newRect.mouseover(rectMouseOver);
     newRect.mouseout(rectMouseOut);
+    newRect.mousedown(rectMouseDown);
 
     var bBoxRect = newRect.getBBox();
 
@@ -245,6 +246,13 @@ function rectMouseOver() {
 function rectMouseOut() {
     var grp = getGroupPrefix(this.attr("id"));
     g_svg.select("#" + grp + "close").addClass("hide");
+
+    var rect = g_svg.select("#" + grp + "rect");
+
+    rect.unmousemove(rectMouseMove);
+    rect.unmouseup(rectMouseUp);
+
+    g_curr_grp = "";
 }
 
 //function closeMouseOver() {
@@ -310,6 +318,94 @@ function inputBlur() {
 
 }
 
+function rectMouseDown(event) {
+
+    var grp = getGroupPrefix(this.attr("id"));
+    g_curr_grp = grp;
+
+    var rect = g_svg.select("#" + grp + "rect");
+
+    rect.data("mousedown-x", event.clientX);
+    rect.data("mousedown-y", event.clientY);
+
+    rect.mousemove(rectMouseMove);
+    rect.mouseup(rectMouseUp);
+
+}
+
+function rectMouseMove(event) {
+
+    var grp;
+    if ("" != g_curr_grp) {
+        grp = g_curr_grp;
+    } else {
+        grp = getGroupPrefix(this.attr("id"));
+    }
+
+    var rect = g_svg.select("#" + grp + "rect");
+
+    x = (parseInt(rect.data('mousedown-x')) || 0);
+    y = (parseInt(rect.data('mousedown-y')) || 0);
+
+    var dx = event.clientX - x;
+    var dy = event.clientY - y;
+
+    var myMatrix = new Snap.Matrix();
+    myMatrix.translate(dx, dy);
+
+    g_svg.selectAll("[id^=" + grp).forEach(function (element) {
+        element.transform(myMatrix);
+    });
+
+}
+
+function rectMouseUp(event) {
+
+    var grp;
+    if ("" != g_curr_grp) {
+        grp = g_curr_grp;
+    } else {
+        grp = getGroupPrefix(this.attr("id"));
+    }
+
+    var rect = g_svg.select("#" + grp + "rect");
+
+    var transform = rect.transform();
+    var matrix = transform.localMatrix;
+    var splitMatrix = matrix.split();
+    var dx = splitMatrix.dx;
+    var dy = splitMatrix.dy;
+
+    var x = (parseInt(rect.attr("x")) || 0);
+    var y = (parseInt(rect.attr("y")) || 0);
+
+    rect.attr("transform", "");
+    rect.attr("x", x + dx);
+    rect.attr("y", y + dy);
+
+    var close = g_svg.select("#" + grp + "close");
+    x = (parseInt(close.attr("cx")) || 0);
+    y = (parseInt(close.attr("cy")) || 0);
+
+    close.attr("transform", "");
+    close.attr("cx", x + dx);
+    close.attr("cy", y + dy);
+
+    var text = g_svg.select("#" + grp + "text");
+
+    x = (parseInt(text.attr("x")) || 0);
+    y = (parseInt(text.attr("y")) || 0);
+
+    text.attr("transform", "");
+    text.attr("x", x + dx);
+    text.attr("y", y + dy);
+
+    rect.unmousemove(rectMouseMove);
+    rect.unmouseup(rectMouseUp);
+
+    g_curr_grp = "";
+}
+
 function endpointMouseMove(event) {
 
     g_line_mode = true;
@@ -348,8 +444,8 @@ function dragMove(event) {
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
-    //console.log(event.clientX +":"+event.clientY + ", " + target.style["left"] +":" +target.style["top"] +" & " +dx+":"+dy);
-    target.style["transform"] = "translate(" + dx + "px, " + dy + "px)";
+
+    //rect.transform("translate(" + dx + "px, " + dy + "px)");
 
 }
 
