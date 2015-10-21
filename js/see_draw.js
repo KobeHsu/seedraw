@@ -167,6 +167,23 @@ function addPath() {
 
 }
 
+
+function getElementXYofRect(rectX, rectY, elName) {
+
+    var xy = [];
+
+    if ("close" == elName) {
+        xy.push(rectX + RECT_WIDTH - CIRCLE_R_HALF);
+        xy.push(rectY + CIRCLE_R_HALF);
+    } else if ("text" == elName) {
+        xy.push(rectX + 10);
+        xy.push(rectY + RECT_HEIGHT_HALF + 5);
+    }
+
+    return xy;
+
+}
+
 function addRect() {
 
     var grp = getGroupPrefix(g_serial);
@@ -182,7 +199,8 @@ function addRect() {
     var bBoxRect = newRect.getBBox();
 
     var closeId = grp + "close";
-    var close = g_svg.circle(bBoxRect.x2 - CIRCLE_R_HALF, bBoxRect.y + CIRCLE_R_HALF, CIRCLE_R);
+    var closeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "close");
+    var close = g_svg.circle(closeXY[0], closeXY[1], CIRCLE_R);
     close.addClass("myClose");
     close.addClass("hide");
     close.attr("id", closeId);
@@ -192,22 +210,15 @@ function addRect() {
     close.click(closeClick);
 
     var textId = grp + "text";
-    var text = g_svg.text(bBoxRect.x + 10, bBoxRect.y + bBoxRect.height / 2 + 5, "TEXT HERE");
+    var textXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "text");
+    var text = g_svg.text(textXY[0], textXY[1], "TEXT HERE");
     text.attr("id", textId);
 
     text.dblclick(textDblClick);
 
-    //var svgId = "svg_" + g_rect_serial;
-    //var rectId = "rect_" + g_rect_serial;
-    //var textId = "text_" + g_rect_serial;
-    //var closeId = "close_" + g_rect_serial;
     //var endpointId = "endpoint_" + g_rect_serial;
 
 
-    //text.ondblclick = function (event) {
-    //    textDblClick.call(this, event, textId);
-    //}
-    //
     ///*    epBottom.onmousedown = function (event) {
     //
     // var id = event.target.id;
@@ -229,12 +240,7 @@ function addRect() {
     // }*/
     //
 
-    //svg.onmousedown = svgMouseDown;
-    //// events end
-    //
     g_serial++;
-    //
-    //g_draw_aera.appendChild(svg);
 
 }
 
@@ -254,15 +260,6 @@ function rectMouseOut() {
 
     g_curr_grp = "";
 }
-
-//function closeMouseOver() {
-//    var grp = getGroupPrefix(this.attr("id"));
-//    g_svg.select("#" + grp + "rect").unmouseover(rectMouseOver).unmouseout(rectMouseOut);
-//}
-//
-//function closeMouseOut() {
-//
-//}
 
 function closeClick() {
     var grp = getGroupPrefix(this.attr("id"));
@@ -376,29 +373,26 @@ function rectMouseUp(event) {
     var dx = splitMatrix.dx;
     var dy = splitMatrix.dy;
 
-    var x = (parseInt(rect.attr("x")) || 0);
-    var y = (parseInt(rect.attr("y")) || 0);
+    var x = (parseInt(rect.attr("x")) || 0) + dx;
+    var y = (parseInt(rect.attr("y")) || 0) + dy;
 
     rect.attr("transform", "");
-    rect.attr("x", x + dx);
-    rect.attr("y", y + dy);
+    rect.attr("x", x);
+    rect.attr("y", y);
 
     var close = g_svg.select("#" + grp + "close");
-    x = (parseInt(close.attr("cx")) || 0);
-    y = (parseInt(close.attr("cy")) || 0);
+    var closeXY = getElementXYofRect(x, y, "close");
 
     close.attr("transform", "");
-    close.attr("cx", x + dx);
-    close.attr("cy", y + dy);
+    close.attr("cx", closeXY[0]);
+    close.attr("cy", closeXY[1]);
 
     var text = g_svg.select("#" + grp + "text");
-
-    x = (parseInt(text.attr("x")) || 0);
-    y = (parseInt(text.attr("y")) || 0);
+    var textXY = getElementXYofRect(x, y, "text");
 
     text.attr("transform", "");
-    text.attr("x", x + dx);
-    text.attr("y", y + dy);
+    text.attr("x", textXY[0]);
+    text.attr("y", textXY[1]);
 
     rect.unmousemove(rectMouseMove);
     rect.unmouseup(rectMouseUp);
@@ -406,83 +400,8 @@ function rectMouseUp(event) {
     g_curr_grp = "";
 }
 
-function endpointMouseMove(event) {
 
-    g_line_mode = true;
-    //console.log(event.clientX + ", mode=" + g_line_mode);
-
-}
-
-
-function svgMouseDown(event) {
-
-    var id = event.target.id;
-    if (id.indexOf("svg") < 0 && id.indexOf("rect") < 0) {
-        return;
-    }
-
-    var target = getTargetSvg(id);
-
-    target.setAttribute('data-x', event.clientX);
-    target.setAttribute('data-y', event.clientY);
-
-    target.addEventListener("mousemove", dragMove);
-    target.addEventListener("mouseup", svgMouseUp);
-}
-
-function dragMove(event) {
-
-    var id = event.target.id;
-    if (id.indexOf("svg") < 0 && id.indexOf("rect") < 0) {
-        return;
-    }
-
-    var target = getTargetSvg(event.target.id);
-
-    x = (parseFloat(target.getAttribute('data-x')) || 0);
-    y = (parseFloat(target.getAttribute('data-y')) || 0);
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    //rect.transform("translate(" + dx + "px, " + dy + "px)");
-
-}
-
-function svgMouseUp(event) {
-
-    var target = getTargetSvg(event.target.id);
-
-    var translate = target.style["transform"];
-    translate = translate.replace(/(translate|px|\(|\))/g, "");
-    var coordinates = translate.split(",");
-    var x = parseInt(coordinates[0]);
-    var y = parseInt(coordinates[1]);
-
-    target.style["transform"] = "";
-
-    var targetX = parseInt(target.style["left"]) + x;
-    if (targetX < 0) {
-        targetX = 0;
-    } else if (targetX > CANVAS_WIDTH - RECT_WIDTH) {
-        targetX = CANVAS_WIDTH - RECT_WIDTH;
-    }
-
-    var targetY = parseInt(target.style["top"]) + y;
-    if (targetY < 0) {
-        targetY = 0;
-    }
-    else if (targetY > CANVAS_HEIGHT - RECT_HEIGHT) {
-        targetY = CANVAS_HEIGHT - RECT_HEIGHT;
-    }
-
-    target.style["left"] = targetX + "px";
-    target.style["top"] = targetY + "px";
-
-    target.removeEventListener("mousemove", dragMove);
-    target.removeEventListener("mouseup", svgMouseUp);
-}
-
+/*
 function circleMouseDown(event) {
 
     var id = event.target.id;
@@ -601,7 +520,7 @@ function getGroupPrefix(id) {
     var newSn = (pad + id).slice(-pad.length);
     return "group_" + newSn + SEPARATOR;
 
-}
+}*/
 
 document.addEventListener("DOMContentLoaded", function (event) {
     // do things after dom ready
