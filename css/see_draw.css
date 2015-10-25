@@ -23,7 +23,7 @@ input[type="text"] {
     width: 100px;
     height: 18px;
     opacity: .7;
-    z-index: 10;
+    /*z-index: 10;*/
     position: absolute;
 }
 
@@ -44,7 +44,7 @@ input[type="text"].focus {
     opacity: 0.8;
     filter: alpha(opacity=80);
     text-align: center;
-    z-index: 20;
+    z-index: 10;
     position: absolute;
     background: #eeeeef linear-gradient(#eeeeef 50%, #cdcdd6 50%);
     color: black;
@@ -68,8 +68,14 @@ input[type="text"].focus {
 
 .myClose {
     fill: #70717C;
-    z-index: 99;
+    /*z-index: 99;*/
+}
 
+.myPort {
+    fill: #FFFFFF;
+    stroke: black;
+    stroke-width: 1;
+    /*z-index: 99;*/
 }
 
 .myConnector {
@@ -93,4 +99,12 @@ input[type="text"].focus {
 
 .hide {
     display: none;
+}
+
+.toFront {
+    z-index: 99;
+}
+
+.toBack {
+    z-index: 0;
 }
