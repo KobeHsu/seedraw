@@ -95,6 +95,7 @@ input[type="text"].focus {
     opacity: 0.8;
     filter: alpha(opacity=80);
     cursor: pointer;
+    position: absolute;
 }
 
 .hide {
