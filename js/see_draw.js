@@ -1,6 +1,8 @@
 var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
 
+var __DEBUG = true;
+
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
 
@@ -268,21 +270,27 @@ function rectMouseOver() {
 
     g_svg.select("#" + grp + "close").removeClass("hide");
     g_svg.select("#" + grp + "port").removeClass("hide");
+
+    var rect = g_svg.select("#" + grp + "rect");
+    rect.unmousemove(rectMouseMove);
+    rect.unmouseup(rectMouseUp);
+
     console.log(grp + ":move in, z=" + this.node.style["z-index"]);
 }
 
 function rectMouseOut() {
 
+    var grp = getGroupPrefix(this.attr("id"));
+
     if (g_curr_grp!=grp) {
         return;
     }
 
-    var grp = getGroupPrefix(this.attr("id"));
     g_svg.select("#" + grp + "close").addClass("hide");
     g_svg.select("#" + grp + "port").addClass("hide");
 
-    var rect = g_svg.select("#" + grp + "rect");
     console.log(grp + ":move out, z=" + this.node.style["z-index"]);
+    //var rect = g_svg.select("#" + grp + "rect");
     //rect.unmousemove(rectMouseMove);
     //rect.unmouseup(rectMouseUp);
 
@@ -343,9 +351,16 @@ function rectMouseDown(event) {
     //rect.addClass("toFront");
     rect.node.style["z-index"] = 99;
 
+    var bBoxRect = rect.getBBox();
+    correctRectXY(grp, rect, bBoxRect.x, bBoxRect.y);
+
     rect.mousemove(rectMouseMove);
     rect.mouseup(rectMouseUp);
-    console.log(grp + ":mouse down, z=" + rect.node.style["z-index"]);
+
+    if (__DEBUG) {
+        var bBoxRect = rect.getBBox();
+        console.log(grp + ":mouse down, x=" + bBoxRect.x + ", y=" + bBoxRect.y + ", z=" + rect.node.style["z-index"]);
+    }
 
 }
 
@@ -375,25 +390,15 @@ function rectMouseMove(event) {
 
 }
 
-function rectMouseUp() {
+function correctRectXY(grp, rect, x, y) {
 
-    var grp;
-    if ("" != g_curr_grp) {
-        grp = g_curr_grp;
-    } else {
-        grp = getGroupPrefix(this.attr("id"));
+    var nowX = rect.attr("x");
+    var nowY = rect.attr("y");
+
+    if(nowX==x && nowY==y) {
+        return;
     }
 
-    var rect = g_svg.select("#" + grp + "rect");
-
-    var transform = rect.transform();
-    var matrix = transform.localMatrix;
-    var splitMatrix = matrix.split();
-    var dx = splitMatrix.dx;
-    var dy = splitMatrix.dy;
-
-    var x = (parseInt(rect.attr("x")) || 0) + dx;
-    var y = (parseInt(rect.attr("y")) || 0) + dy;
 
     rect.attr("transform", "");
     rect.attr("x", x);
@@ -423,11 +428,65 @@ function rectMouseUp() {
     port.attr("cx", portXY[0]);
     port.attr("cy", portXY[1]);
 
+}
+
+function rectMouseUp() {
+
+    var grp;
+    if ("" != g_curr_grp) {
+        grp = g_curr_grp;
+    } else {
+        grp = getGroupPrefix(this.attr("id"));
+    }
+
+    var rect = g_svg.select("#" + grp + "rect");
+    //
+    //var transform = rect.transform();
+    //var matrix = transform.localMatrix;
+    //var splitMatrix = matrix.split();
+    //var dx = splitMatrix.dx;
+    //var dy = splitMatrix.dy;
+    //
+    //var x = (parseInt(rect.attr("x")) || 0) + dx;
+    //var y = (parseInt(rect.attr("y")) || 0) + dy;
+    //
+    //rect.attr("transform", "");
+    //rect.attr("x", x);
+    //rect.attr("y", y);
+    //
+    ////rect.removeClass("toFront");
+    //rect.node.style["z-index"] = 10;
+    //
+    //var close = g_svg.select("#" + grp + "close");
+    //var closeXY = getElementXYofRect(x, y, "close");
+    //
+    //close.attr("transform", "");
+    //close.attr("cx", closeXY[0]);
+    //close.attr("cy", closeXY[1]);
+    //
+    //var text = g_svg.select("#" + grp + "text");
+    //var textXY = getElementXYofRect(x, y, "text");
+    //
+    //text.attr("transform", "");
+    //text.attr("x", textXY[0]);
+    //text.attr("y", textXY[1]);
+    //
+    //var port = g_svg.select("#" + grp + "port");
+    //var portXY = getElementXYofRect(x, y, "port");
+    //
+    //port.attr("transform", "");
+    //port.attr("cx", portXY[0]);
+    //port.attr("cy", portXY[1]);
+
     rect.unmousemove(rectMouseMove);
     rect.unmouseup(rectMouseUp);
 
     g_curr_grp = "";
-    console.log(grp + ":mouse up, z=" + rect.node.style["z-index"]);
+
+    if (__DEBUG) {
+        var bBoxRect = rect.getBBox();
+        console.log(grp + ":mouse up, x=" + bBoxRect.x + ", y=" + bBoxRect.y + ", z=" + rect.node.style["z-index"]);
+    }
 }
 
 
