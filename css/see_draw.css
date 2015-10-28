@@ -69,15 +69,21 @@ input[type="text"].focus {
 
 .myClose {
     fill: #70717C;
-    /*z-index: 99;*/
     cursor: no-drop;
 }
 
-.myPort {
+.myMidPoint {
+    fill: #FFFFFF;
+    stroke: grey;
+    opacity: 0.3;
+    stroke-width: 1;
+}
+
+.myEndPoint {
     fill: #FFFFFF;
     stroke: black;
+    opacity: 0.5;
     stroke-width: 1;
-    /*z-index: 99;*/
 }
 
 .myConnector {
