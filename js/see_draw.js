@@ -7,7 +7,7 @@ var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
 
 var SEPARATOR = "_";
-var GROUP_PREFIX = "group_";
+var GROUP_PREFIX = "group";
 
 var RECT_WIDTH = 120;
 var RECT_WIDTH_HALF = RECT_WIDTH / 2;
@@ -170,7 +170,6 @@ function addPath() {
 
 }
 
-
 function getElementXYofRect(rectX, rectY, elName) {
 
     var xy = [];
@@ -193,6 +192,7 @@ function getElementXYofRect(rectX, rectY, elName) {
 function addRect() {
 
     var grp = getGroupPrefix(g_serial);
+    var grpId = grp + "g"
     var rectId = grp + "rect";
     var newRect = g_svg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
     newRect.addClass("myRect");
@@ -222,39 +222,18 @@ function addRect() {
 
     text.dblclick(textDblClick);
 
-    var portId = grp + "port";
-    var portXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "port");
-    var port = g_svg.circle(portXY[0], portXY[1], CIRCLE_R);
-    port.addClass("myPort");
-    port.addClass("hide");
-    port.attr("id", portId);
-
-    port.mouseover(rectMouseOver);
-    port.mouseout(rectMouseOut);
-
-    //var endpointId = "endpoint_" + g_rect_serial;
-
-
-    ///*    epBottom.onmousedown = function (event) {
+    //var portId = grp + "port";
+    //var portXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "port");
+    //var port = g_svg.circle(portXY[0], portXY[1], CIRCLE_R);
+    //port.addClass("myPort");
+    //port.addClass("hide");
+    //port.attr("id", portId);
     //
-    // var id = event.target.id;
-    // g_endpoint_id = id;
-    //
-    // event.target.addEventListener("mousemove", endpointMouseMove);
-    // //document.getElementById("drawArea").addEventListener("mousemove", function(event) {
-    // //    console.log(event.clientX);
-    // //});
-    // document.getElementById("drawArea").addEventListener("mouseup", function (event) {
-    // g_line_mode = false;
-    // console.log("MOUSEUP mode=" + g_line_mode);
-    // if (g_endpoint_id != "") {
-    // document.getElementById(g_endpoint_id).removeEventListener("mousemove", endpointMouseMove);
-    // g_endpoint_id = "";
-    // }
-    // });
-    //
-    // }*/
-    //
+    //port.mouseover(rectMouseOver);
+    //port.mouseout(rectMouseOut);
+
+    var g = g_svg.g(newRect, close, text);
+    g.attr("id", grpId);
 
     g_serial++;
 
@@ -264,12 +243,12 @@ function rectMouseOver() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    if (g_curr_grp!=grp) {
-        return;
-    }
+    //if (g_curr_grp!=grp) {
+    //    return;
+    //}
 
     g_svg.select("#" + grp + "close").removeClass("hide");
-    g_svg.select("#" + grp + "port").removeClass("hide");
+    //g_svg.select("#" + grp + "port").removeClass("hide");
 
     var rect = g_svg.select("#" + grp + "rect");
     rect.unmousemove(rectMouseMove);
@@ -282,12 +261,12 @@ function rectMouseOut() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    if (g_curr_grp!=grp) {
-        return;
-    }
+    //if (g_curr_grp!=grp) {
+    //    return;
+    //}
 
     g_svg.select("#" + grp + "close").addClass("hide");
-    g_svg.select("#" + grp + "port").addClass("hide");
+    //g_svg.select("#" + grp + "port").addClass("hide");
 
     console.log(grp + ":move out, z=" + this.node.style["z-index"]);
     //var rect = g_svg.select("#" + grp + "rect");
@@ -298,7 +277,9 @@ function rectMouseOut() {
 
 function closeClick() {
     var grp = getGroupPrefix(this.attr("id"));
-    g_svg.selectAll("[id^=" + grp).remove();
+    var grpId = grp + "g";
+    g_svg.select("#" + grpId).remove();
+    //g_svg.selectAll("[id^=" + grp).remove();
 }
 
 function textDblClick() {
@@ -384,21 +365,37 @@ function rectMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    g_svg.selectAll("[id^=" + grp).forEach(function (element) {
-        element.transform(myMatrix);
-    });
+    var grpId = grp + "g";
+    g_svg.select("#" + grpId).transform(myMatrix);
+    //g_svg.selectAll("[id^=" + grp).forEach(function (element) {
+    //    element.transform(myMatrix);
+    //});
 
 }
 
 function correctRectXY(grp, rect, x, y) {
 
-    var nowX = rect.attr("x");
-    var nowY = rect.attr("y");
+    var g = g_svg.select("#" + grp + "g");
 
-    if(nowX==x && nowY==y) {
+    var tStrAry = Snap.parseTransformString(g.attr("transform"));
+
+    if (tStrAry.length==0) {
         return;
     }
 
+    x = parseInt(tStrAry[0][1],10);
+    y =  parseInt(tStrAry[0][2],10);
+
+    var nowX = parseInt(rect.attr("x"),10);
+    var nowY = parseInt(rect.attr("y"),10);
+
+    x += nowX;
+    y += nowY;
+    //if (nowX == x && nowY == y) {
+    //    return;
+    //}
+
+    g.attr("transform", "");
 
     rect.attr("transform", "");
     rect.attr("x", x);
@@ -421,12 +418,12 @@ function correctRectXY(grp, rect, x, y) {
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
 
-    var port = g_svg.select("#" + grp + "port");
-    var portXY = getElementXYofRect(x, y, "port");
-
-    port.attr("transform", "");
-    port.attr("cx", portXY[0]);
-    port.attr("cy", portXY[1]);
+    //var port = g_svg.select("#" + grp + "port");
+    //var portXY = getElementXYofRect(x, y, "port");
+    //
+    //port.attr("transform", "");
+    //port.attr("cx", portXY[0]);
+    //port.attr("cy", portXY[1]);
 
 }
 
@@ -607,7 +604,7 @@ function getGroupPrefix(id) {
 
     var pad = "0000";
     var newSn = (pad + id).slice(-pad.length);
-    return "group_" + newSn + SEPARATOR;
+    return GROUP_PREFIX + SEPARATOR + newSn + SEPARATOR;
 
 }
 
