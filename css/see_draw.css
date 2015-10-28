@@ -77,6 +77,7 @@ input[type="text"].focus {
     stroke: grey;
     opacity: 0.3;
     stroke-width: 1;
+    cursor: crosshair;
 }
 
 .myEndPoint {
@@ -84,6 +85,7 @@ input[type="text"].focus {
     stroke: black;
     opacity: 0.5;
     stroke-width: 1;
+    cursor: pointer;
 }
 
 .myConnector {
