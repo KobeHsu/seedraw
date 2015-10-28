@@ -55,6 +55,7 @@ input[type="text"].focus {
     min-height: 60px;
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
 }
 
 .myRect:hover {
@@ -69,6 +70,7 @@ input[type="text"].focus {
 .myClose {
     fill: #70717C;
     /*z-index: 99;*/
+    cursor: no-drop;
 }
 
 .myPort {
@@ -83,6 +85,7 @@ input[type="text"].focus {
     stroke: #61B7CF;
     stroke-width: 2;
     fill: #61B7CF;
+    cursor: move;
 }
 
 .myLabel {
