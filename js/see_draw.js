@@ -28,147 +28,6 @@ var g_start_x;
 var g_start_y;
 var g_curr_grp;
 
-function addPath() {
-
-    var svg = document.createElementNS(SVG_NAME_SPACE, "svg");
-
-    var svgId = "svg_" + g_rect_serial;
-    var pathId = "path_" + g_rect_serial;
-    var arrowId = "arrow_" + g_rect_serial;
-    var closeId = "close_" + g_rect_serial;
-    var circleId = "circle_" + g_rect_serial;
-
-    svg.style.position = "absolute";
-    svg.style.left = g_start_x + "px";
-    svg.style.top = g_start_y + "px";
-    svg.setAttribute("id", svgId);
-    svg.setAttribute("width", (RECT_WIDTH + CIRCLE_R));
-    svg.setAttribute("height", (RECT_HEIGHT + 2 * CIRCLE_R));
-    svg.setAttribute("position", "absolute");
-    svg.setAttribute("version", "1.1");
-    svg.setAttribute("xmlns", XML_NAME_SPACE);
-
-    var close = document.createElementNS(SVG_NAME_SPACE, "circle");
-    close.setAttribute("cx", CIRCLE_R);
-    close.setAttribute("cy", CIRCLE_R);
-    close.setAttribute("r", CIRCLE_R);
-    close.setAttribute("id", closeId);
-    close.setAttribute("fill", "black");
-    close.style["z-index"] = "99";
-    close.style.display = "none";
-
-    svg.appendChild(close);
-
-    var path = document.createElementNS(SVG_NAME_SPACE, "path");
-
-    path.setAttribute("d", composePathString(0, RECT_HEIGHT_HALF, RECT_WIDTH, RECT_HEIGHT_HALF));
-    path.setAttribute("id", pathId);
-    path.style["fill"] = "none";
-    path.setAttribute("class", "myConnector");
-
-    svg.appendChild(path);
-
-    // TODO handle arrow transform
-    //var arrow = document.createElementNS(SVG_NAME_SPACE, "path");
-    //arrow.setAttribute("d", composePathString(RECT_WIDTH, RECT_HEIGHT_HALF, RECT_WIDTH - 5, RECT_HEIGHT_HALF - 3, RECT_WIDTH - 5, RECT_HEIGHT_HALF + 3, true));
-    //arrow.setAttribute("id", arrowId);
-    //arrow.setAttribute("class", "myConnector");
-    //
-    //svg.appendChild(arrow);
-
-    var circleGap = RECT_WIDTH / 3;
-    var pathStrAry = [];
-    for (var i = 0; i < 4; i++) {
-
-        var circle = document.createElementNS(SVG_NAME_SPACE, "circle");
-
-        var cx = CIRCLE_R;
-        if (i > 0) {
-            cx = (circleGap * i - CIRCLE_R_HALF);
-        }
-
-        circle.setAttribute("cx", cx);
-        circle.setAttribute("cy", RECT_HEIGHT_HALF);
-
-        pathStrAry.push(cx);
-        pathStrAry.push(RECT_HEIGHT_HALF);
-
-        circle.setAttribute("r", CIRCLE_R);
-        circle.setAttribute("id", circleId + SEPARATOR + i);
-        circle.setAttribute("fill", "white");
-        circle.setAttribute("stroke", "black");
-        circle.style["z-index"] = "99";
-        circle.style.display = "none";
-
-        circle.onmousedown = circleMouseDown;
-
-        svg.appendChild(circle);
-    }
-    path.setAttribute("d", composePathString(pathStrAry[0], pathStrAry[1], pathStrAry[2], pathStrAry[3], pathStrAry[4], pathStrAry[5], pathStrAry[6], pathStrAry[7]));
-
-    // events begin
-    close.onclick = function () {
-        this.parentNode.parentNode.removeChild(this.parentNode);
-    };
-
-    svg.onmouseover = function (event) {
-
-        var id = event.target.id;
-        var idAry = id.split(SEPARATOR);
-        var closeId = "close_" + idAry[1];
-        var circleId = "circle_" + idAry[1];
-
-        var x = document.getElementById(closeId);
-        if (x) {
-            x.style.display = "";
-        }
-
-        // refresh circles
-        var pathEl = document.getElementById("path_" + idAry[1]);
-        var pathStr = pathEl.getAttribute("d");
-        var pathStrAry = pathStr.split(" ");
-        for (var i = 0; i < 4; i++) {
-
-            var circleEl = document.getElementById(circleId + SEPARATOR + i);
-            var cx = circleEl.getAttribute("cx");
-            var cy = circleEl.getAttribute("cy");
-            var pathX = pathStrAry[3 * i + 1];
-            var pathY = pathStrAry[3 * i + 2];
-            if (cx != pathX) {
-                circleEl.setAttribute("cx", pathX);
-            }
-            if (cy != pathY) {
-                circleEl.setAttribute("cy", pathY);
-            }
-
-        }
-
-        $("circle[id^=" + circleId + "]").show();
-
-    };
-    svg.onmouseout = function (event) {
-
-        var id = event.target.id;
-        var idAry = id.split(SEPARATOR);
-        var closeId = "close_" + idAry[1];
-        var circleId = "circle_" + idAry[1];
-
-        var x = document.getElementById(closeId);
-        if (x) {
-            x.style.display = "none";
-        }
-
-        $("circle[id^=" + circleId + "]").hide();
-    };
-
-    svg.onmousedown = svgMouseDown;
-    // events end
-
-    g_rect_serial++;
-
-    g_draw_area.appendChild(svg);
-
-}
 
 function getElementXYofRect(rectX, rectY, elName) {
 
@@ -192,7 +51,7 @@ function getElementXYofRect(rectX, rectY, elName) {
 function addRect() {
 
     var grp = getGroupPrefix(g_serial);
-    var grpId = grp + "g"
+    var grpId = grp + "g";
     var rectId = grp + "rect";
     var newRect = g_svg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
     newRect.addClass("myRect");
@@ -222,16 +81,6 @@ function addRect() {
 
     text.dblclick(textDblClick);
 
-    //var portId = grp + "port";
-    //var portXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "port");
-    //var port = g_svg.circle(portXY[0], portXY[1], CIRCLE_R);
-    //port.addClass("myPort");
-    //port.addClass("hide");
-    //port.attr("id", portId);
-    //
-    //port.mouseover(rectMouseOver);
-    //port.mouseout(rectMouseOut);
-
     var g = g_svg.g(newRect, close, text);
     g.attr("id", grpId);
 
@@ -242,10 +91,6 @@ function addRect() {
 function rectMouseOver() {
 
     var grp = getGroupPrefix(this.attr("id"));
-
-    //if (g_curr_grp!=grp) {
-    //    return;
-    //}
 
     g_svg.select("#" + grp + "close").removeClass("hide");
     //g_svg.select("#" + grp + "port").removeClass("hide");
@@ -261,17 +106,10 @@ function rectMouseOut() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    //if (g_curr_grp!=grp) {
-    //    return;
-    //}
-
     g_svg.select("#" + grp + "close").addClass("hide");
     //g_svg.select("#" + grp + "port").addClass("hide");
 
     console.log(grp + ":move out, z=" + this.node.style["z-index"]);
-    //var rect = g_svg.select("#" + grp + "rect");
-    //rect.unmousemove(rectMouseMove);
-    //rect.unmouseup(rectMouseUp);
 
 }
 
@@ -332,8 +170,7 @@ function rectMouseDown(event) {
     //rect.addClass("toFront");
     rect.node.style["z-index"] = 99;
 
-    var bBoxRect = rect.getBBox();
-    correctRectXY(grp, rect, bBoxRect.x, bBoxRect.y);
+    correctRectXY(grp, rect);
 
     rect.mousemove(rectMouseMove);
     rect.mouseup(rectMouseUp);
@@ -373,7 +210,7 @@ function rectMouseMove(event) {
 
 }
 
-function correctRectXY(grp, rect, x, y) {
+function correctRectXY(grp, rect) {
 
     var g = g_svg.select("#" + grp + "g");
 
@@ -383,17 +220,14 @@ function correctRectXY(grp, rect, x, y) {
         return;
     }
 
-    x = parseInt(tStrAry[0][1],10);
-    y =  parseInt(tStrAry[0][2],10);
+    var x = parseInt(tStrAry[0][1],10);
+    var y =  parseInt(tStrAry[0][2],10);
 
     var nowX = parseInt(rect.attr("x"),10);
     var nowY = parseInt(rect.attr("y"),10);
 
     x += nowX;
     y += nowY;
-    //if (nowX == x && nowY == y) {
-    //    return;
-    //}
 
     g.attr("transform", "");
 
@@ -418,13 +252,6 @@ function correctRectXY(grp, rect, x, y) {
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
 
-    //var port = g_svg.select("#" + grp + "port");
-    //var portXY = getElementXYofRect(x, y, "port");
-    //
-    //port.attr("transform", "");
-    //port.attr("cx", portXY[0]);
-    //port.attr("cy", portXY[1]);
-
 }
 
 function rectMouseUp() {
@@ -437,43 +264,6 @@ function rectMouseUp() {
     }
 
     var rect = g_svg.select("#" + grp + "rect");
-    //
-    //var transform = rect.transform();
-    //var matrix = transform.localMatrix;
-    //var splitMatrix = matrix.split();
-    //var dx = splitMatrix.dx;
-    //var dy = splitMatrix.dy;
-    //
-    //var x = (parseInt(rect.attr("x")) || 0) + dx;
-    //var y = (parseInt(rect.attr("y")) || 0) + dy;
-    //
-    //rect.attr("transform", "");
-    //rect.attr("x", x);
-    //rect.attr("y", y);
-    //
-    ////rect.removeClass("toFront");
-    //rect.node.style["z-index"] = 10;
-    //
-    //var close = g_svg.select("#" + grp + "close");
-    //var closeXY = getElementXYofRect(x, y, "close");
-    //
-    //close.attr("transform", "");
-    //close.attr("cx", closeXY[0]);
-    //close.attr("cy", closeXY[1]);
-    //
-    //var text = g_svg.select("#" + grp + "text");
-    //var textXY = getElementXYofRect(x, y, "text");
-    //
-    //text.attr("transform", "");
-    //text.attr("x", textXY[0]);
-    //text.attr("y", textXY[1]);
-    //
-    //var port = g_svg.select("#" + grp + "port");
-    //var portXY = getElementXYofRect(x, y, "port");
-    //
-    //port.attr("transform", "");
-    //port.attr("cx", portXY[0]);
-    //port.attr("cy", portXY[1]);
 
     rect.unmousemove(rectMouseMove);
     rect.unmouseup(rectMouseUp);
