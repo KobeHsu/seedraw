@@ -96,6 +96,11 @@ input[type="text"].focus {
     cursor: move;
 }
 
+.myConnector:hover {
+    stroke-width: 4;
+    stroke: #5555FF;
+}
+
 .myLabel {
     background-color: white;
     padding: 0.4em;

@@ -95,11 +95,11 @@ function rectMouseOver() {
     g_svg.select("#" + grp + "close").removeClass("hide");
     //g_svg.select("#" + grp + "port").removeClass("hide");
 
-    var rect = g_svg.select("#" + grp + "rect");
-    rect.unmousemove(rectMouseMove);
-    rect.unmouseup(rectMouseUp);
-
-    console.log(grp + ":move in, z=" + this.node.style["z-index"]);
+    //var rect = g_svg.select("#" + grp + "rect");
+    //rect.unmousemove(rectMouseMove);
+    //rect.unmouseup(rectMouseUp);
+    //
+    //console.log(grp + ":move in, z=" + this.node.style["z-index"]);
 }
 
 function rectMouseOut() {
@@ -172,13 +172,8 @@ function rectMouseDown(event) {
 
     correctRectXY(grp, rect);
 
-    rect.mousemove(rectMouseMove);
-    rect.mouseup(rectMouseUp);
-
-    if (__DEBUG) {
-        var bBoxRect = rect.getBBox();
-        console.log(grp + ":mouse down, x=" + bBoxRect.x + ", y=" + bBoxRect.y + ", z=" + rect.node.style["z-index"]);
-    }
+    g_draw_area.onmousemove = rectMouseMove;
+    g_draw_area.onmouseup = rectMouseUp;
 
 }
 
@@ -216,15 +211,15 @@ function correctRectXY(grp, rect) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
-    if (tStrAry.length==0) {
+    if (tStrAry.length == 0) {
         return;
     }
 
-    var x = parseInt(tStrAry[0][1],10);
-    var y =  parseInt(tStrAry[0][2],10);
+    var x = parseInt(tStrAry[0][1], 10);
+    var y = parseInt(tStrAry[0][2], 10);
 
-    var nowX = parseInt(rect.attr("x"),10);
-    var nowY = parseInt(rect.attr("y"),10);
+    var nowX = parseInt(rect.attr("x"), 10);
+    var nowY = parseInt(rect.attr("y"), 10);
 
     x += nowX;
     y += nowY;
@@ -265,126 +260,12 @@ function rectMouseUp() {
 
     var rect = g_svg.select("#" + grp + "rect");
 
-    rect.unmousemove(rectMouseMove);
-    rect.unmouseup(rectMouseUp);
+    g_draw_area.onmousemove = null;
+    g_draw_area.onmouseup = null;
 
     g_curr_grp = "";
-
-    if (__DEBUG) {
-        var bBoxRect = rect.getBBox();
-        console.log(grp + ":mouse up, x=" + bBoxRect.x + ", y=" + bBoxRect.y + ", z=" + rect.node.style["z-index"]);
-    }
 }
 
-
-/*
- function circleMouseDown(event) {
-
- var id = event.target.id;
- if (id.indexOf("circle") < 0) {
- return;
- }
-
- var target = event.target;
-
- target.setAttribute('data-x', event.clientX);
- target.setAttribute('data-y', event.clientY);
-
- target.addEventListener("mousemove", circleDragMove);
- target.addEventListener("mouseup", circleMouseUp);
- }
-
- function circleDragMove(event) {
-
- var id = event.target.id;
- if (id.indexOf("circle") < 0) {
- return;
- }
-
- var target = event.target;
-
- x = (parseFloat(target.getAttribute('data-x')) || 0);
- y = (parseFloat(target.getAttribute('data-y')) || 0);
-
- var dx = event.clientX - x;
- var dy = event.clientY - y;
-
- var tmpX = parseInt(target.getAttribute("cx")) + dx;
- var tmpY = parseInt(target.getAttribute("cy")) + dy;
-
- var svg = getTargetSvg(id);
- var currentWidth = svg.getAttribute("width");
- var currentHeight = svg.getAttribute("height");
- if (tmpX > currentWidth - CIRCLE_R * 2) {
- svg.setAttribute("width", tmpX + CIRCLE_R * 2);
- }
- if (tmpY > currentHeight - CIRCLE_R * 2) {
- svg.setAttribute("height", tmpY + CIRCLE_R * 2);
- }
-
- target.style["transform"] = "translate(" + dx + "px, " + dy + "px)";
-
- }
-
- function circleMouseUp(event) {
-
- var id = event.target.id;
- if (id.indexOf("circle") < 0) {
- return;
- }
-
- var idAry = id.split(SEPARATOR);
- var idx = idAry[2];
-
- var target = event.target;
-
- var translate = target.style["transform"];
- if (translate == "") {
- return;
- }
- translate = translate.replace(/(translate|px|\(|\))/g, "");
- var coordinates = translate.split(",");
- var x = parseInt(coordinates[0]);
- var y = parseInt(coordinates[1]);
-
- target.style["transform"] = "";
-
- var targetX = parseInt(target.getAttribute("cx")) + x;
- //if (targetX < 0) {
- //    targetX = 0;
- //} else if (targetX > RECT_WIDTH) {
- //    var svg = getTargetSvg(id);
- //    svg.setAttribute("width", targetX + CIRCLE_R);
- //}
- //
- var targetY = parseInt(target.getAttribute("cy")) + y;
- //if (targetY < 0) {
- //    targetY = 0;
- //} else if (targetY > CANVAS_HEIGHT - RECT_HEIGHT) {
- //    targetY = CANVAS_HEIGHT - RECT_HEIGHT;
- //}
-
- target.setAttribute("cx", targetX);
- target.setAttribute("cy", targetY);
-
- // also move path
- var pathId = "path_" + idAry[1];
- var pathEl = document.getElementById(pathId);
-
- var pathStr = pathEl.getAttribute("d");
- var pathStrAry = pathStr.split(" ");
- var xIdx = 3 * idx + 1;
- var yIdx = 3 * idx + 2;
- pathStrAry[xIdx] = targetX;
- pathStrAry[yIdx] = targetY;
-
- pathStr = pathStrAry.join(" ");
- pathEl.setAttribute("d", pathStr);
-
- target.removeEventListener("mousemove", circleDragMove);
- target.removeEventListener("mouseup", circleMouseUp);
- }
- */
 function getGroupPrefix(id) {
 
     if (isNaN(id) && id.indexOf(SEPARATOR) > 0) {

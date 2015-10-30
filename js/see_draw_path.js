@@ -58,8 +58,8 @@ function connectorMouseOver() {
     });
 
     var conn = g_svg.select("#" + grp + "connector");
-    conn.unmousemove(connectorMouseMove);
-    conn.unmouseup(connectorMouseUp);
+    //conn.unmousemove(connectorMouseMove);
+    //conn.unmouseup(connectorMouseUp);
 
 }
 
@@ -87,8 +87,8 @@ function connectorMouseDown(event) {
 
     correctConnectorXY(grp, conn);
 
-    conn.mousemove(connectorMouseMove);
-    conn.mouseup(connectorMouseUp);
+    g_draw_area.onmousemove = connectorMouseMove;
+    g_draw_area.onmouseup = connectorMouseUp;
 
 }
 
@@ -149,17 +149,9 @@ function connectorMouseMove() {
 
 function connectorMouseUp() {
 
-    var grp;
-    if ("" != g_curr_grp) {
-        grp = g_curr_grp;
-    } else {
-        grp = getGroupPrefix(this.attr("id"));
-    }
+    g_draw_area.onmousemove = null;
+    g_draw_area.onmouseup = null;
 
-    var conn = g_svg.select("#" + grp + "connector");
-
-    conn.unmousemove(connectorMouseMove);
-    conn.unmouseup(connectorMouseUp);
-
+    g_curr_grp = "";
 
 }
