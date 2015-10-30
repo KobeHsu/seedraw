@@ -1,9 +1,22 @@
+function getElementXYofConn(bBox, elName) {
+
+    var xy = [];
+
+    if ("close" == elName) {
+        xy.push(bBox.x2);
+        xy.push(bBox.y2 - 3*CIRCLE_R);
+    }
+
+    return xy;
+
+}
+
 function addConnector() {
 
-    var grp = getGroupPrefix(g_serial);
+    var grp = getGroupPrefix(gSerialNo);
     var connectorId = grp + "connector";
 
-    var newConn = g_svg.path("M 10 60 L 90 60");
+    var newConn = gSvg.path("M 10 60 L 90 60");
     newConn.addClass("myConnector");
     newConn.attr("id", connectorId);
 
@@ -15,7 +28,7 @@ function addConnector() {
 
     var pointId = grp + "point_1";
     var mid = Snap.path.getPointAtLength(newConn, len / 2);
-    var midPoint = g_svg.circle(mid.x, mid.y, CIRCLE_R);
+    var midPoint = gSvg.circle(mid.x, mid.y, CIRCLE_R);
     midPoint.attr("id", pointId);
     midPoint.addClass("myMidPoint");
     midPoint.addClass("hide");
@@ -25,7 +38,7 @@ function addConnector() {
 
     pointId = grp + "point_0";
     var start = Snap.path.getPointAtLength(newConn, 0);
-    var startPoint = g_svg.circle(start.x, start.y, CIRCLE_R);
+    var startPoint = gSvg.circle(start.x, start.y, CIRCLE_R);
     startPoint.attr("id", pointId);
     startPoint.addClass("myEndPoint");
     startPoint.addClass("hide");
@@ -35,7 +48,7 @@ function addConnector() {
 
     pointId = grp + "point_2";
     var end = Snap.path.getPointAtLength(newConn, len);
-    var endPoint = g_svg.circle(end.x, end.y, CIRCLE_R);
+    var endPoint = gSvg.circle(end.x, end.y, CIRCLE_R);
     endPoint.attr("id", pointId);
     endPoint.addClass("myEndPoint");
     endPoint.addClass("hide");
@@ -43,8 +56,16 @@ function addConnector() {
     endPoint.mouseover(connectorMouseOver);
     endPoint.mouseout(connectorMouseOut);
 
+    var bBox = newConn.getBBox();
+    var closeId = grp + "close";
+    var closeXY = getElementXYofConn(bBox, "close");
+    var close = gSvg.circle(closeXY[0], closeXY[1], CIRCLE_R);
+    close.addClass("myClose");
+    close.addClass("hide");
+    close.attr("id", closeId);
+
     //var grpId = grp + "g";
-    //var g = g_svg.g(newConn, midPoint, startPoint, endPoint);
+    //var g = gSvg.g(newConn, midPoint, startPoint, endPoint);
     //g.attr("id", grpId);
 
 }
@@ -53,13 +74,11 @@ function connectorMouseOver() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    g_svg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
         element.removeClass("hide");
     });
 
-    var conn = g_svg.select("#" + grp + "connector");
-    //conn.unmousemove(connectorMouseMove);
-    //conn.unmouseup(connectorMouseUp);
+    //gSvg.select("[id^='" + grp + "close']").removeClass("hide");
 
 }
 
@@ -67,32 +86,34 @@ function connectorMouseOut() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    g_svg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
         element.addClass("hide");
     });
+
+    //gSvg.select("[id^='" + grp + "close']").addClass("hide");
 
 }
 
 function connectorMouseDown(event) {
 
     var grp = getGroupPrefix(this.attr("id"));
-    g_curr_grp = grp;
+    gCurrGrp = grp;
 
-    var conn = g_svg.select("#" + grp + "connector");
+    var conn = gSvg.select("#" + grp + "connector");
 
     conn.data("mousedown-x", event.clientX);
     conn.data("mousedown-y", event.clientY);
 
-    conn.node.style["z-index"] = 99;
+    conn.addClass("toFront");
 
-    correctConnectorXY(grp, conn);
+    correctConnectorXY(conn);
 
-    g_draw_area.onmousemove = connectorMouseMove;
-    g_draw_area.onmouseup = connectorMouseUp;
+    gDrawArea.onmousemove = connectorMouseMove;
+    gDrawArea.onmouseup = connectorMouseUp;
 
 }
 
-function correctConnectorXY(grp, conn) {
+function correctConnectorXY(conn) {
 
     var tStrAry = Snap.parseTransformString(conn.attr("transform"));
 
@@ -126,13 +147,13 @@ function correctConnectorXY(grp, conn) {
 function connectorMouseMove() {
 
     var grp;
-    if ("" != g_curr_grp) {
-        grp = g_curr_grp;
+    if ("" != gCurrGrp) {
+        grp = gCurrGrp;
     } else {
-        grp = getGroupPrefix(this.attr("id"));
+        return;
     }
 
-    var conn = g_svg.select("#" + grp + "connector");
+    var conn = gSvg.select("#" + grp + "connector");
 
     x = (parseInt(conn.data('mousedown-x')) || 0);
     y = (parseInt(conn.data('mousedown-y')) || 0);
@@ -149,9 +170,14 @@ function connectorMouseMove() {
 
 function connectorMouseUp() {
 
-    g_draw_area.onmousemove = null;
-    g_draw_area.onmouseup = null;
+    if ("" != gCurrGrp) {
+        var conn = gSvg.select("#" + gCurrGrp + "connector");
+        conn.removeClass("toFront");
+    }
 
-    g_curr_grp = "";
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gCurrGrp = "";
 
 }
