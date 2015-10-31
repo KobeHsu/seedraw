@@ -75,7 +75,7 @@ input[type="text"].focus {
 .myMidPoint {
     fill: #FFFFFF;
     stroke: grey;
-    opacity: 0.3;
+    opacity: 0.5;
     stroke-width: 1;
     cursor: crosshair;
 }
@@ -92,7 +92,7 @@ input[type="text"].focus {
     #z-index: 4;
     stroke: #61B7CF;
     stroke-width: 2;
-    fill: #61B7CF;
+    fill: none;
     cursor: move;
 }
 
