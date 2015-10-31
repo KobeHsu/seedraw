@@ -179,7 +179,7 @@ function rectMouseMove(event) {
     if ("" != gCurrGrp) {
         grp = gCurrGrp;
     } else {
-        grp = getGroupPrefix(this.attr("id"));
+       return;
     }
 
     var rect = gSvg.select("#" + grp + "rect");
