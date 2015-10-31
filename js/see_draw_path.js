@@ -139,8 +139,8 @@ function connectorMouseMove() {
 
     var conn = gSvg.select("#" + grp + "connector");
 
-    x = (parseInt(conn.data('mousedown-x')) || 0);
-    y = (parseInt(conn.data('mousedown-y')) || 0);
+    var x = (parseInt(conn.data('mousedown-x')) || 0);
+    var y = (parseInt(conn.data('mousedown-y')) || 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;

@@ -96,9 +96,6 @@ function rectMouseOut() {
     var grp = getGroupPrefix(this.attr("id"));
 
     gSvg.select("#" + grp + "close").addClass("hide");
-    //gSvg.select("#" + grp + "port").addClass("hide");
-
-    console.log(grp + ":move out, z=" + this.node.style["z-index"]);
 
 }
 
