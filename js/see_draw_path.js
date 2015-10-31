@@ -172,16 +172,16 @@ function connectorMouseUp() {
 
 }
 
-function midPointMouseDown(event) {
+function endPointMouseDown(event) {
 
     gCurrent = this.attr("id");
 
-    var midPoint = gSvg.select("#" + gCurrGrp);
+    var midPoint = gSvg.select("#" + gCurrent);
 
     midPoint.data("mousedown-x", event.clientX);
     midPoint.data("mousedown-y", event.clientY);
 
-    var grp = getGroupPrefix(gCurrGrp);
+    var grp = getGroupPrefix(gCurrent);
     var conn = gSvg.select("#" + grp + "connector");
     conn.unmouseout(connectorMouseOut);
     midPoint.unmouseout(connectorMouseOut);
@@ -191,12 +191,12 @@ function midPointMouseDown(event) {
         element.remove();
     });
 
-    gDrawArea.onmousemove = midPointMouseMove;
-    gDrawArea.onmouseup = midPointMouseUp;
+    gDrawArea.onmousemove = endPointMouseMove;
+    gDrawArea.onmouseup = endPointMouseUp;
 
 }
 
-function midPointMouseMove() {
+function endPointMouseMove() {
 
     if ("" == gCurrent) {
         return;
@@ -231,7 +231,7 @@ function midPointMouseMove() {
 
 }
 
-function midPointMouseUp() {
+function endPointMouseUp() {
 
     if ("" != gCurrent) {
 
@@ -277,7 +277,7 @@ function reDrawPointByPath(g, grp, conn) {
 
         endPoint.mouseover(connectorMouseOver);
         endPoint.mouseout(connectorMouseOut);
-        endPoint.mousedown(midPointMouseDown);
+        endPoint.mousedown(endPointMouseDown);
 
         g.append(endPoint);
 

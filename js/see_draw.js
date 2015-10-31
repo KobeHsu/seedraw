@@ -89,13 +89,6 @@ function rectMouseOver() {
     var grp = getGroupPrefix(this.attr("id"));
 
     gSvg.select("#" + grp + "close").removeClass("hide");
-    //gSvg.select("#" + grp + "port").removeClass("hide");
-
-    //var rect = gSvg.select("#" + grp + "rect");
-    //rect.unmousemove(rectMouseMove);
-    //rect.unmouseup(rectMouseUp);
-    //
-    //console.log(grp + ":move in, z=" + this.node.style["z-index"]);
 }
 
 function rectMouseOut() {
@@ -274,8 +267,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
     gSvg.appendTo(gDrawArea);
 
-    //var svgBBox = gSvg.getBBox();
-    gStartX = $(gSvg.node).position().left;
-    gStartY = $(gSvg.node).position().top;
+    gStartX = gSvg.node.offsetLeft;//gSvg.node).position().left;
+    gStartY = gSvg.node.offsetTop;//$(gSvg.node).position().top;
 
 });
