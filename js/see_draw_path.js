@@ -16,7 +16,7 @@ function addConnector() {
     var grp = getGroupPrefix(gSerialNo);
     var connectorId = grp + "connector";
 
-    var newConn = gSvg.path("M 10 60 L 90 60");
+    var newConn = gSvg.path("M 10 60 L 90 60 L 170 60");
     newConn.addClass("myConnector");
     newConn.attr("id", connectorId);
 
@@ -25,50 +25,11 @@ function addConnector() {
     newConn.mousedown(connectorMouseDown);
     newConn.node.addEventListener("contextmenu", connectorContextMenu);
 
-    var len = newConn.getTotalLength();
-
-    var pointId = grp + "point_1";
-    var mid = Snap.path.getPointAtLength(newConn, len / 2);
-    var midPoint = gSvg.circle(mid.x, mid.y, CIRCLE_R);
-    midPoint.attr("id", pointId);
-    midPoint.addClass("myMidPoint");
-    midPoint.addClass("hide");
-
-    midPoint.mouseover(connectorMouseOver);
-    midPoint.mouseout(connectorMouseOut);
-
-    pointId = grp + "point_0";
-    var start = Snap.path.getPointAtLength(newConn, 0);
-    var startPoint = gSvg.circle(start.x, start.y, CIRCLE_R);
-    startPoint.attr("id", pointId);
-    startPoint.addClass("myEndPoint");
-    startPoint.addClass("hide");
-
-    startPoint.mouseover(connectorMouseOver);
-    startPoint.mouseout(connectorMouseOut);
-    startPoint.mousedown(midPointMouseDown);
-
-    pointId = grp + "point_2";
-    var end = Snap.path.getPointAtLength(newConn, len);
-    var endPoint = gSvg.circle(end.x, end.y, CIRCLE_R);
-    endPoint.attr("id", pointId);
-    endPoint.addClass("myEndPoint");
-    endPoint.addClass("hide");
-
-    endPoint.mouseover(connectorMouseOver);
-    endPoint.mouseout(connectorMouseOut);
-
-    var bBox = newConn.getBBox();
-    var closeId = grp + "close";
-    var closeXY = getElementXYofConn(bBox, "close");
-    var close = gSvg.circle(closeXY[0], closeXY[1], CIRCLE_R);
-    close.addClass("myClose");
-    close.addClass("hide");
-    close.attr("id", closeId);
-
+    var g = gSvg.g(newConn);
     var grpId = grp + "g";
-    var g = gSvg.g(newConn, midPoint, startPoint, endPoint);
     g.attr("id", grpId);
+
+    reDrawPointByPath(g, grp, newConn);
 
     gSerialNo++;
 }
@@ -82,6 +43,7 @@ function connectorContextMenu(e) {
     gSvg.select("#" + grpId).remove();
 
     return false;
+
 }
 
 function connectorMouseOver() {
@@ -92,8 +54,6 @@ function connectorMouseOver() {
         element.removeClass("hide");
     });
 
-    //gSvg.select("[id^='" + grp + "close']").removeClass("hide");
-
 }
 
 function connectorMouseOut() {
@@ -103,8 +63,6 @@ function connectorMouseOut() {
     gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
         element.addClass("hide");
     });
-
-    //gSvg.select("[id^='" + grp + "close']").addClass("hide");
 
 }
 
@@ -192,7 +150,6 @@ function connectorMouseMove() {
 
     var grpId = grp + "g";
     gSvg.select("#" + grpId).transform(myMatrix);
-    //conn.transform(myMatrix);
 
 }
 
@@ -230,6 +187,10 @@ function midPointMouseDown(event) {
     midPoint.unmouseout(connectorMouseOut);
     midPoint.addClass("toFront");
 
+    gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
+        element.remove();
+    });
+
     gDrawArea.onmousemove = midPointMouseMove;
     gDrawArea.onmouseup = midPointMouseUp;
 
@@ -249,26 +210,13 @@ function midPointMouseMove() {
     midPoint.attr("cx", x);
     midPoint.attr("cy", y);
 
-    //x = (parseInt(midPoint.data('mousedown-x')) || 0);
-    //y = (parseInt(midPoint.data('mousedown-y')) || 0);
-    //
-    //var dx = event.clientX - x;
-    //var dy = event.clientY - y;
-    //
     var idx = parseInt(gCurrGrp.substr(gCurrGrp.lastIndexOf(SEPARATOR) + 1), 10);
-    //
-    //var myMatrix = new Snap.Matrix();
-    //myMatrix.translate(dx, dy);
-    //
-    //midPoint.transform(myMatrix);
-    //
+
     var grp = getGroupPrefix(gCurrGrp);
     var conn = gSvg.select("#" + grp + "connector");
     var pathStr = conn.attr("d");
     var pathAry = Snap.parsePathString(pathStr);
 
-    //var cx = parseInt(midPoint.attr("cx"), 10);
-    //var cy = parseInt(midPoint.attr("cy"), 10);
     pathAry[idx][1] = x;
     pathAry[idx][2] = y;
 
@@ -280,16 +228,6 @@ function midPointMouseMove() {
     });
 
     conn.attr("d", newPath);
-    //
-    //var virtualPointId = gCurrGrp.substr(0, gCurrGrp.lastIndexOf(SEPARATOR) + 1) + "" + (idx + 1);
-    //var virtualPoint = gSvg.select("#" + virtualPointId);
-    //
-    //var totalPaths = (gSvg.selectAll("[id^='" + grp + "point'").length - 1) / 2;
-    //
-    //
-    //var mid = Snap.path.getPointAtLength(conn, conn.getTotalLength() / totalPaths / 2);
-    //virtualPoint.attr("cx", mid.x);
-    //virtualPoint.attr("cy", mid.y);
 
 }
 
@@ -305,26 +243,67 @@ function midPointMouseUp() {
         conn.mouseout(connectorMouseOut);
         midPoint.mouseout(connectorMouseOut);
 
-        //var tStrAry = Snap.parseTransformString(midPoint.attr("transform"));
-        //
-        //if (tStrAry.length != 0) {
-        //
-        //    var x = parseInt(tStrAry[0][1], 10);
-        //    var y = parseInt(tStrAry[0][2], 10);
-        //
-        //    var cx = parseInt(midPoint.attr("cx"), 10);
-        //    var cy = parseInt(midPoint.attr("cy"), 10);
-        //    midPoint.attr("transform", "");
-        //    midPoint.attr("cx", cx + x);
-        //    midPoint.attr("cy", cy + y);
-        //
-        //}
-
     }
+
+    var gId = grp + "g";
+    var g = gSvg.select("#" + gId);
+    reDrawPointByPath(g, grp, conn);
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
     gCurrGrp = "";
+
+}
+
+function reDrawPointByPath(g, grp, conn) {
+
+    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+        element.remove();
+    });
+
+    var pathStr = conn.attr("d");
+    var pathAry = Snap.parsePathString(pathStr);
+
+    var totalLen = 0;
+
+    for (var i = 0; i < pathAry.length; i++) {
+
+        var endPointId = grp + "point_end_" + i;
+        var endPoint = gSvg.circle(pathAry[i][1], pathAry[i][2], CIRCLE_R);
+        endPoint.attr("id", endPointId);
+        endPoint.addClass("myEndPoint");
+        endPoint.addClass("hide");
+
+        endPoint.mouseover(connectorMouseOver);
+        endPoint.mouseout(connectorMouseOut);
+        endPoint.mousedown(midPointMouseDown);
+
+        g.append(endPoint);
+
+        var len = 0;
+
+        if (i > 0) {
+
+            var dx = pathAry[i][1] - pathAry[i - 1][1];
+            var dy = pathAry[i][2] - pathAry[i - 1][2];
+            len = Math.sqrt(dx * dx + dy * dy);
+
+            var midPointId = grp + "point_mid_" + (i - 1);
+            var mid = Snap.path.getPointAtLength(conn, totalLen + (len / 2));
+            var midPoint = gSvg.circle(mid.x, mid.y, CIRCLE_R);
+            midPoint.attr("id", midPointId);
+            midPoint.addClass("myMidPoint");
+            midPoint.addClass("hide");
+
+            midPoint.mouseover(connectorMouseOver);
+            midPoint.mouseout(connectorMouseOut);
+
+            g.append(midPoint);
+
+        }
+
+        totalLen += len;
+    }
 
 }
