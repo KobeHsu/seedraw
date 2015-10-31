@@ -22,7 +22,7 @@ var gDrawArea;
 var gSvg;
 var gStartX;
 var gStartY;
-var gCurrGrp;
+var gCurrent;
 
 function getElementXYofRect(bboxX, bboxY, elName) {
 
@@ -119,7 +119,7 @@ function closeClick() {
 function textDblClick() {
 
     var grp = getGroupPrefix(this.attr("id"));
-    gCurrGrp = grp;
+    gCurrent = grp;
     var text = gSvg.select("#" + grp + "text");
 
     var textBBox = text.getBBox();
@@ -137,7 +137,7 @@ function textDblClick() {
 
 function inputBlur() {
 
-    var grp = gCurrGrp;
+    var grp = gCurrent;
     var text = gSvg.select("#" + grp + "text");
 
     if (this.value != "") {
@@ -148,7 +148,7 @@ function inputBlur() {
     text.removeClass("hide");
     this.style["display"] = "none";
 
-    gCurrGrp = "";
+    gCurrent = "";
     this.removeEventListener("blur", inputBlur);
 
 }
@@ -156,7 +156,7 @@ function inputBlur() {
 function rectMouseDown(event) {
 
     var grp = getGroupPrefix(this.attr("id"));
-    gCurrGrp = grp;
+    gCurrent = grp;
 
     var rect = gSvg.select("#" + grp + "rect");
 
@@ -176,8 +176,8 @@ function rectMouseDown(event) {
 function rectMouseMove(event) {
 
     var grp;
-    if ("" != gCurrGrp) {
-        grp = gCurrGrp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
     } else {
        return;
     }
@@ -244,15 +244,15 @@ function correctRectXY(grp, rect) {
 
 function rectMouseUp() {
 
-    if ("" != gCurrGrp) {
-        var rect = gSvg.select("#" + gCurrGrp + "rect");
+    if ("" != gCurrent) {
+        var rect = gSvg.select("#" + gCurrent + "rect");
         rect.removeClass("toFront");
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrGrp = "";
+    gCurrent = "";
 }
 
 function getGroupPrefix(id) {

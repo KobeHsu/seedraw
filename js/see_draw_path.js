@@ -16,7 +16,7 @@ function addConnector() {
     var grp = getGroupPrefix(gSerialNo);
     var connectorId = grp + "connector";
 
-    var newConn = gSvg.path("M 10 60 L 90 60 L 170 60");
+    var newConn = gSvg.path("M 10 60 L 110 60");
     newConn.addClass("myConnector");
     newConn.attr("id", connectorId);
 
@@ -69,7 +69,7 @@ function connectorMouseOut() {
 function connectorMouseDown(event) {
 
     var grp = getGroupPrefix(this.attr("id"));
-    gCurrGrp = grp;
+    gCurrent = grp;
 
     var conn = gSvg.select("#" + grp + "connector");
 
@@ -131,8 +131,8 @@ function correctConnectorXY(grp, conn) {
 function connectorMouseMove() {
 
     var grp;
-    if ("" != gCurrGrp) {
-        grp = gCurrGrp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
     } else {
         return;
     }
@@ -155,10 +155,10 @@ function connectorMouseMove() {
 
 function connectorMouseUp() {
 
-    if ("" != gCurrGrp) {
+    if ("" != gCurrent) {
 
-        var grp = getGroupPrefix(gCurrGrp);
-        var conn = gSvg.select("#" + gCurrGrp + "connector");
+        var grp = getGroupPrefix(gCurrent);
+        var conn = gSvg.select("#" + gCurrent + "connector");
 
         correctConnectorXY(grp, conn);
         conn.removeClass("toFront");
@@ -168,13 +168,13 @@ function connectorMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrGrp = "";
+    gCurrent = "";
 
 }
 
 function midPointMouseDown(event) {
 
-    gCurrGrp = this.attr("id");
+    gCurrent = this.attr("id");
 
     var midPoint = gSvg.select("#" + gCurrGrp);
 
@@ -198,11 +198,11 @@ function midPointMouseDown(event) {
 
 function midPointMouseMove() {
 
-    if ("" == gCurrGrp) {
+    if ("" == gCurrent) {
         return;
     }
 
-    var midPoint = gSvg.select("#" + gCurrGrp);
+    var midPoint = gSvg.select("#" + gCurrent);
 
     var x = event.clientX - gStartX;
     var y = event.clientY - gStartY;
@@ -210,9 +210,9 @@ function midPointMouseMove() {
     midPoint.attr("cx", x);
     midPoint.attr("cy", y);
 
-    var idx = parseInt(gCurrGrp.substr(gCurrGrp.lastIndexOf(SEPARATOR) + 1), 10);
+    var idx = parseInt(gCurrent.substr(gCurrent.lastIndexOf(SEPARATOR) + 1), 10);
 
-    var grp = getGroupPrefix(gCurrGrp);
+    var grp = getGroupPrefix(gCurrent);
     var conn = gSvg.select("#" + grp + "connector");
     var pathStr = conn.attr("d");
     var pathAry = Snap.parsePathString(pathStr);
@@ -233,12 +233,12 @@ function midPointMouseMove() {
 
 function midPointMouseUp() {
 
-    if ("" != gCurrGrp) {
+    if ("" != gCurrent) {
 
-        var midPoint = gSvg.select("#" + gCurrGrp);
+        var midPoint = gSvg.select("#" + gCurrent);
         midPoint.removeClass("toFront");
 
-        var grp = getGroupPrefix(gCurrGrp);
+        var grp = getGroupPrefix(gCurrent);
         var conn = gSvg.select("#" + grp + "connector");
         conn.mouseout(connectorMouseOut);
         midPoint.mouseout(connectorMouseOut);
@@ -252,7 +252,7 @@ function midPointMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrGrp = "";
+    gCurrent = "";
 
 }
 
