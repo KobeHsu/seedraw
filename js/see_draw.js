@@ -16,6 +16,9 @@ var RECT_HEIGHT_HALF = RECT_HEIGHT / 2;
 var CIRCLE_R = 5;
 var CIRCLE_R_HALF = CIRCLE_R / 2;
 
+var REMOVE_CONNECTOR_MSG = "Remove this connection ?";
+var REMOVE_ENDOPOINT_MSG = "Remove this node ?";
+
 var gSerialNo = 0;
 
 var gDrawArea;

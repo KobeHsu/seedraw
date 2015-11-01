@@ -1,15 +1,15 @@
-function getElementXYofConn(bBox, elName) {
-
-    var xy = [];
-
-    if ("close" == elName) {
-        xy.push(bBox.x2);
-        xy.push(bBox.y2 - 3 * CIRCLE_R);
-    }
-
-    return xy;
-
-}
+//function getElementXYofConn(bBox, elName) {
+//
+//    var xy = [];
+//
+//    if ("close" == elName) {
+//        xy.push(bBox.x2);
+//        xy.push(bBox.y2 - 3 * CIRCLE_R);
+//    }
+//
+//    return xy;
+//
+//}
 
 function addConnector() {
 
@@ -29,7 +29,7 @@ function addConnector() {
     var grpId = grp + "g";
     g.attr("id", grpId);
 
-    reDrawPointByPath(g, grp, newConn);
+    reDrawPointByPath(grp, newConn, g);
 
     gSerialNo++;
 }
@@ -37,6 +37,11 @@ function addConnector() {
 function connectorContextMenu(e) {
 
     e.preventDefault();
+
+    var r = confirm(REMOVE_CONNECTOR_MSG);
+    if (!r) {
+        return;
+    }
 
     var grp = getGroupPrefix(this.id);
     var grpId = grp + "g";
@@ -65,71 +70,6 @@ function connectorMouseOut() {
     });
 
 }
-
-/*
-function connectorMouseDown(event) {
-
-    var grp = getGroupPrefix(this.attr("id"));
-    gCurrent = grp;
-
-    var conn = gSvg.select("#" + grp + "connector");
-
-    conn.data("mousedown-x", event.clientX);
-    conn.data("mousedown-y", event.clientY);
-
-    conn.addClass("toFront");
-
-    //correctConnectorXY(grp, conn);
-
-    gDrawArea.onmousemove = connectorMouseMove;
-    gDrawArea.onmouseup = connectorMouseUp;
-
-}
-
-function connectorMouseMove() {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var conn = gSvg.select("#" + grp + "connector");
-
-    var x = (parseInt(conn.data('mousedown-x')) || 0);
-    var y = (parseInt(conn.data('mousedown-y')) || 0);
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    var grpId = grp + "g";
-    gSvg.select("#" + grpId).transform(myMatrix);
-
-}
-
-function connectorMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-        var conn = gSvg.select("#" + gCurrent + "connector");
-
-        correctConnectorXY(grp, conn);
-        conn.removeClass("toFront");
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gCurrent = "";
-
-}
-*/
 
 function correctConnectorXY(grp, conn) {
 
@@ -233,11 +173,18 @@ function endPointMouseMove() {
 
 }
 
-function endPointMouseUp() {
+function endPointMouseUp(event) {
 
     if ("" != gCurrent) {
 
         var midPoint = gSvg.select("#" + gCurrent);
+
+        var x = midPoint.data("mousedown-x");
+        var y = midPoint.data("mousedown-y");
+        if (x == event.clientX && y == event.clientY) {
+            endPointRemove(midPoint.attr("id"));
+        }
+
         midPoint.removeClass("toFront");
 
         var grp = getGroupPrefix(gCurrent);
@@ -247,9 +194,7 @@ function endPointMouseUp() {
 
     }
 
-    var gId = grp + "g";
-    var g = gSvg.select("#" + gId);
-    reDrawPointByPath(g, grp, conn);
+    reDrawPointByPath(grp, conn);
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
@@ -258,7 +203,49 @@ function endPointMouseUp() {
 
 }
 
-function reDrawPointByPath(g, grp, conn) {
+function endPointRemove(id) {
+
+    if (id.indexOf("point") < 0) {
+        return;
+    }
+
+    var r = confirm(REMOVE_ENDOPOINT_MSG);
+    if (!r) {
+        return;
+    }
+
+    var idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
+
+    var grp = getGroupPrefix(id);
+    var conn = gSvg.select("#" + grp + "connector");
+
+    var pathStr = conn.attr("d");
+    var pathAry = Snap.parsePathString(pathStr);
+    var newPath = "";
+
+    for (var i = 0; i < pathAry.length; i++) {
+
+        if (idx != i) {
+
+            newPath += pathAry[i][0] + " ";
+            newPath += pathAry[i][1] + " ";
+            newPath += pathAry[i][2] + " ";
+        }
+
+    }
+
+    conn.attr("d", newPath);
+
+    reDrawPointByPath(grp, conn);
+
+}
+
+function reDrawPointByPath(grp, conn, g) {
+
+    if (!g) {
+        var gId = grp + "g";
+        g = gSvg.select("#" + gId);
+    }
 
     gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
         element.remove();
@@ -300,6 +287,7 @@ function reDrawPointByPath(g, grp, conn) {
 
             midPoint.mouseover(connectorMouseOver);
             midPoint.mouseout(connectorMouseOut);
+            midPoint.mousedown(midPointMouseDown);
 
             g.append(midPoint);
 
@@ -307,5 +295,38 @@ function reDrawPointByPath(g, grp, conn) {
 
         totalLen += len;
     }
+
+}
+
+function midPointMouseDown() {
+
+    var id = this.attr("id");
+    var midPoint = gSvg.select("#" + id);
+    var idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
+
+    var grp = getGroupPrefix(id);
+    var conn = gSvg.select("#" + grp + "connector");
+
+    var pathStr = conn.attr("d");
+    var pathAry = Snap.parsePathString(pathStr);
+    var newPath = "";
+
+    for (var i = 0; i < pathAry.length; i++) {
+
+        newPath += pathAry[i][0] + " ";
+        newPath += pathAry[i][1] + " ";
+        newPath += pathAry[i][2] + " ";
+
+        if (idx == i) {
+            newPath += "L ";
+            newPath += midPoint.attr("cx") + " ";
+            newPath += midPoint.attr("cy") + " ";
+        }
+
+    }
+
+    conn.attr("d", newPath);
+
+    reDrawPointByPath(grp, conn);
 
 }
