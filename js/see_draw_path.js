@@ -217,17 +217,30 @@ function endPointRemove(id) {
     var idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
 
     var grp = getGroupPrefix(id);
+
+    var totalEndPoints = gSvg.selectAll("[id^='" + grp + "point_end']").length;
+    if (totalEndPoints == 2) {
+        alert("At lease 2 points");
+        return;
+    }
+
     var conn = gSvg.select("#" + grp + "connector");
 
     var pathStr = conn.attr("d");
     var pathAry = Snap.parsePathString(pathStr);
     var newPath = "";
 
+    var first = true;
     for (var i = 0; i < pathAry.length; i++) {
 
         if (idx != i) {
 
-            newPath += pathAry[i][0] + " ";
+            if (idx == 0 && first) {
+                newPath += "M ";
+                first = false;
+            } else {
+                newPath += pathAry[i][0] + " ";
+            }
             newPath += pathAry[i][1] + " ";
             newPath += pathAry[i][2] + " ";
         }
