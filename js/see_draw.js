@@ -23,6 +23,7 @@ var gSvg;
 var gStartX;
 var gStartY;
 var gCurrent;
+var gDragType;
 
 function getElementXYofRect(bboxX, bboxY, elName) {
 
@@ -55,7 +56,7 @@ function addRect() {
 
     newRect.mouseover(rectMouseOver);
     newRect.mouseout(rectMouseOut);
-    newRect.mousedown(rectMouseDown);
+    newRect.mousedown(svgElMouseDown);
 
     var bBoxRect = newRect.getBBox();
 
@@ -143,27 +144,34 @@ function inputBlur() {
 
 }
 
-function rectMouseDown(event) {
+function svgElMouseDown(event) {
 
-    var grp = getGroupPrefix(this.attr("id"));
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    var rect = gSvg.select("#" + grp + "rect");
+    if (id.indexOf("rect")>0) {
+        gDragType = "rect";
+    } else if (id.indexOf("connector")>0) {
+        gDragType = "connector";
+    } else {
+        gDragType = "unknown";
+    }
 
-    rect.data("mousedown-x", event.clientX);
-    rect.data("mousedown-y", event.clientY);
+    var svgEl = gSvg.select("#" + grp + gDragType);
 
-    rect.addClass("toFront");
-    //rect.node.style["z-index"] = 99;
+    svgEl.data("mousedown-x", event.clientX);
+    svgEl.data("mousedown-y", event.clientY);
 
-    correctRectXY(grp, rect);
+    svgEl.addClass("toFront");
+    //correctRectXY(grp, rect);
 
-    gDrawArea.onmousemove = rectMouseMove;
-    gDrawArea.onmouseup = rectMouseUp;
+    gDrawArea.onmousemove = svgElMouseMove;
+    gDrawArea.onmouseup = svgElMouseUp;
 
 }
 
-function rectMouseMove(event) {
+function svgElMouseMove(event) {
 
     var grp;
     if ("" != gCurrent) {
@@ -172,10 +180,10 @@ function rectMouseMove(event) {
        return;
     }
 
-    var rect = gSvg.select("#" + grp + "rect");
+    var svgEl = gSvg.select("#" + grp + gDragType);
 
-    x = (parseInt(rect.data('mousedown-x')) || 0);
-    y = (parseInt(rect.data('mousedown-y')) || 0);
+    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
+    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
@@ -189,6 +197,33 @@ function rectMouseMove(event) {
     //    element.transform(myMatrix);
     //});
 
+}
+
+function svgElMouseUp() {
+
+    if ("" != gCurrent) {
+
+        var grp = getGroupPrefix(gCurrent);
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        svgEl.removeClass("toFront");
+
+        correctXY(grp, svgEl, gDragType);
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gCurrent = "";
+    gDragType = "";
+}
+
+function correctXY(grp, svgEl, dragType) {
+    if ("rect"==dragType) {
+        correctRectXY(grp, svgEl);
+    } else if ("connector"==dragType) {
+        correctConnectorXY(grp,svgEl);
+    }
 }
 
 function correctRectXY(grp, rect) {
@@ -230,19 +265,6 @@ function correctRectXY(grp, rect) {
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
 
-}
-
-function rectMouseUp() {
-
-    if ("" != gCurrent) {
-        var rect = gSvg.select("#" + gCurrent + "rect");
-        rect.removeClass("toFront");
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gCurrent = "";
 }
 
 function getGroupPrefix(id) {

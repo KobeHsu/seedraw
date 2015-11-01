@@ -22,7 +22,7 @@ function addConnector() {
 
     newConn.mouseover(connectorMouseOver);
     newConn.mouseout(connectorMouseOut);
-    newConn.mousedown(connectorMouseDown);
+    newConn.mousedown(svgElMouseDown);
     newConn.node.addEventListener("contextmenu", connectorContextMenu);
 
     var g = gSvg.g(newConn);
@@ -66,6 +66,7 @@ function connectorMouseOut() {
 
 }
 
+/*
 function connectorMouseDown(event) {
 
     var grp = getGroupPrefix(this.attr("id"));
@@ -82,49 +83,6 @@ function connectorMouseDown(event) {
 
     gDrawArea.onmousemove = connectorMouseMove;
     gDrawArea.onmouseup = connectorMouseUp;
-
-}
-
-function correctConnectorXY(grp, conn) {
-
-    var g = gSvg.select("#" + grp + "g");
-
-    var tStrAry = Snap.parseTransformString(g.attr("transform"));
-
-    if (tStrAry.length == 0) {
-        return;
-    }
-
-    var x = parseInt(tStrAry[0][1], 10);
-    var y = parseInt(tStrAry[0][2], 10);
-
-    g.attr("transform", "");
-
-    var pathStr = conn.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-
-    pathAry.forEach(function (p) {
-        p[1] = parseInt(p[1]) + x;
-        p[2] = parseInt(p[2]) + y;
-    });
-
-    var newPath = "";
-    pathAry.forEach(function (p) {
-        newPath += p[0] + " ";
-        newPath += p[1] + " ";
-        newPath += p[2] + " ";
-    });
-
-    conn.attr("transform", "");
-    conn.attr("d", newPath);
-
-    gSvg.selectAll("[id^='" + grp + "point'").forEach(function (element) {
-        var cx = parseInt(element.attr("cx"), 10);
-        var cy = parseInt(element.attr("cy"), 10);
-        element.attr("transform", "");
-        element.attr("cx", cx + x);
-        element.attr("cy", cy + y);
-    });
 
 }
 
@@ -169,6 +127,50 @@ function connectorMouseUp() {
     gDrawArea.onmouseup = null;
 
     gCurrent = "";
+
+}
+*/
+
+function correctConnectorXY(grp, conn) {
+
+    var g = gSvg.select("#" + grp + "g");
+
+    var tStrAry = Snap.parseTransformString(g.attr("transform"));
+
+    if (tStrAry.length == 0) {
+        return;
+    }
+
+    var x = parseInt(tStrAry[0][1], 10);
+    var y = parseInt(tStrAry[0][2], 10);
+
+    g.attr("transform", "");
+
+    var pathStr = conn.attr("d");
+    var pathAry = Snap.parsePathString(pathStr);
+
+    pathAry.forEach(function (p) {
+        p[1] = parseInt(p[1]) + x;
+        p[2] = parseInt(p[2]) + y;
+    });
+
+    var newPath = "";
+    pathAry.forEach(function (p) {
+        newPath += p[0] + " ";
+        newPath += p[1] + " ";
+        newPath += p[2] + " ";
+    });
+
+    conn.attr("transform", "");
+    conn.attr("d", newPath);
+
+    gSvg.selectAll("[id^='" + grp + "point'").forEach(function (element) {
+        var cx = parseInt(element.attr("cx"), 10);
+        var cy = parseInt(element.attr("cy"), 10);
+        element.attr("transform", "");
+        element.attr("cx", cx + x);
+        element.attr("cy", cy + y);
+    });
 
 }
 
