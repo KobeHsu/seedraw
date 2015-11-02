@@ -59,6 +59,10 @@ function connectorMouseOver() {
         element.removeClass("hide");
     });
 
+    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+        element.addClass("hide");
+    });
+
 }
 
 function connectorMouseOut() {
@@ -67,6 +71,10 @@ function connectorMouseOut() {
 
     gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
         element.addClass("hide");
+    });
+
+    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+        element.removeClass("hide");
     });
 
 }
@@ -264,15 +272,25 @@ function reDrawPointByPath(grp, conn, g) {
         element.remove();
     });
 
+    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+        element.remove();
+    });
+
+
     var pathStr = conn.attr("d");
     var pathAry = Snap.parsePathString(pathStr);
-
+    var pathLen = pathAry.length;
     var totalLen = 0;
 
-    for (var i = 0; i < pathAry.length; i++) {
+    var lastSubPath = [];
+
+    for (var i = 0; i < pathLen; i++) {
+
+        var cx = pathAry[i][1];
+        var cy = pathAry[i][2];
 
         var endPointId = grp + "point_end_" + i;
-        var endPoint = gSvg.circle(pathAry[i][1], pathAry[i][2], CIRCLE_R);
+        var endPoint = gSvg.circle(cx, cy, CIRCLE_R);
         endPoint.attr("id", endPointId);
         endPoint.addClass("myEndPoint");
         endPoint.addClass("hide");
@@ -307,6 +325,36 @@ function reDrawPointByPath(grp, conn, g) {
         }
 
         totalLen += len;
+
+        if (i >= pathLen - 2) {
+            lastSubPath.push(cx);
+            lastSubPath.push(cy);
+        }
+    }
+
+    // draw arrow
+    if (lastSubPath.length == 4) {
+
+        var arrowId = grp + "arrow";
+
+        var fx = parseInt(lastSubPath[2], 10);
+        var fy = parseInt(lastSubPath[3], 10);
+
+        //<path d="M75 20 L75 17 L80 20 L80 21 L75 23 Z" class="myConnector" transform="rotate(-45 80 20)"/>
+        var arrowPath = "M " + (fx - 5) + " " + fy;
+        arrowPath += " L " + (fx - 5) + " " + (fy - 3);
+        arrowPath += " L " + fx + " " + fy;
+        arrowPath += " L " + fx + " " + (fy + 1);
+        arrowPath += " L " + (fx - 5) + " " + (fy + 3);
+        arrowPath += " Z";
+
+        var arrow = gSvg.path(arrowPath);
+        arrow.addClass("myConnector");
+        arrow.attr("id", arrowId);
+        //arrow.node.style["zIndex"] = -10;
+
+        g.append(arrow);
+
     }
 
 }
