@@ -92,10 +92,12 @@ function correctConnectorXY(grp, conn) {
     var x = parseInt(tStrAry[0][1], 10);
     var y = parseInt(tStrAry[0][2], 10);
 
-    g.attr("transform", "");
+    //g.attr("transform", "");
+    g.transform("translate(0 0)");
 
     var pathStr = conn.attr("d");
     var pathAry = Snap.parsePathString(pathStr);
+    var pathLen = pathAry.length;
 
     pathAry.forEach(function (p) {
         p[1] = parseInt(p[1]) + x;
@@ -103,19 +105,64 @@ function correctConnectorXY(grp, conn) {
     });
 
     var newPath = "";
-    pathAry.forEach(function (p) {
-        newPath += p[0] + " ";
-        newPath += p[1] + " ";
-        newPath += p[2] + " ";
+    var lastSubPath = [];
+    for (var i = 0; i < pathLen; i++) {
+
+        var act = pathAry[i][0];
+        var cx = pathAry[i][1];
+        var cy = pathAry[i][2];
+
+        newPath += act + " ";
+            newPath += cx + " ";
+            newPath += cy + " ";
+
+        if (i >= pathLen - 2) {
+            lastSubPath.push(cx);
+            lastSubPath.push(cy);
+        }
+    }
+    //pathAry.forEach(function (p) {
+    //    newPath += p[0] + " ";
+    //    newPath += p[1] + " ";
+    //    newPath += p[2] + " ";
+    //});
+
+    var deg = Snap.angle(lastSubPath[2], lastSubPath[3], lastSubPath[0], lastSubPath[1]);
+    var m = Snap.matrix();
+    m.rotate(deg, lastSubPath[2], lastSubPath[3]);
+
+    //conn.attr("transform", "");
+    conn.transform("translate(0 0)");
+    conn.attr("d", newPath);
+
+    var arrow = gSvg.select("[id^='" + grp + "arrow']");
+
+    var _pathStr = arrow.attr("d");
+    var _pathAry = Snap.parsePathString(_pathStr);
+
+    _pathAry.forEach(function (p) {
+        p[1] = parseInt(p[1]) + x;
+        p[2] = parseInt(p[2]) + y;
     });
 
-    conn.attr("transform", "");
-    conn.attr("d", newPath);
+    var _newPath = "";
+    _pathAry.forEach(function (p) {
+        _newPath += p[0] + " ";
+        if ("Z" != p[0]) {
+            _newPath += p[1] + " ";
+            _newPath += p[2] + " ";
+        }
+    });
+
+    //element.attr("transform", "");
+    arrow.attr("d", _newPath);
+    arrow.transform(m);
 
     gSvg.selectAll("[id^='" + grp + "point'").forEach(function (element) {
         var cx = parseInt(element.attr("cx"), 10);
         var cy = parseInt(element.attr("cy"), 10);
-        element.attr("transform", "");
+        //element.attr("transform", "");
+        element.transform("translate(0 0)");
         element.attr("cx", cx + x);
         element.attr("cy", cy + y);
     });
@@ -340,7 +387,6 @@ function reDrawPointByPath(grp, conn, g) {
         var fx = parseInt(lastSubPath[2], 10);
         var fy = parseInt(lastSubPath[3], 10);
 
-        //<path d="M75 20 L75 17 L80 20 L80 21 L75 23 Z" class="myConnector" transform="rotate(-45 80 20)"/>
         var arrowPath = "M " + (fx - 5) + " " + fy;
         arrowPath += " L " + (fx - 5) + " " + (fy - 3);
         arrowPath += " L " + fx + " " + fy;
@@ -352,6 +398,18 @@ function reDrawPointByPath(grp, conn, g) {
         arrow.addClass("myConnector");
         arrow.attr("id", arrowId);
         //arrow.node.style["zIndex"] = -10;
+        arrow.mouseover(connectorMouseOver);
+        arrow.mouseout(connectorMouseOut);
+
+        var fx1 = parseInt(lastSubPath[0], 10);
+        var fy1 = parseInt(lastSubPath[1], 10);
+
+        var deg = Snap.angle(fx, fy, fx1, fy1);//Math.atan(arc)*180/Math.PI;
+
+        var m = Snap.matrix();
+        m.rotate(deg, fx, fy);
+        //arrow.attr("transform", "rotate( " + deg + " " + fx + " " + fy + " )");
+        arrow.transform(m);
 
         g.append(arrow);
 

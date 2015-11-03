@@ -248,23 +248,27 @@ function correctRectXY(grp, rect) {
     x += nowX;
     y += nowY;
 
-    g.attr("transform", "");
+    //g.attr("transform", "");
+    g.transform("translate(0 0)");
 
-    rect.attr("transform", "");
+    //rect.attr("transform", "");
+    rect.transform("translate(0 0)");
     rect.attr("x", x);
     rect.attr("y", y);
 
     var close = gSvg.select("#" + grp + "close");
     var closeXY = getElementXYofRect(x, y, "close");
 
-    close.attr("transform", "");
+    //close.attr("transform", "");
+    close.transform("translate(0 0)");
     close.attr("cx", closeXY[0]);
     close.attr("cy", closeXY[1]);
 
     var text = gSvg.select("#" + grp + "text");
     var textXY = getElementXYofRect(x, y, "text");
 
-    text.attr("transform", "");
+    //text.attr("transform", "");
+    text.transform("translate(0 0)");
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
 
