@@ -25,6 +25,14 @@ function addConnector() {
     newConn.mousedown(svgElMouseDown);
     newConn.node.addEventListener("contextmenu", connectorContextMenu);
 
+    var len = newConn.getTotalLength();
+    var targetPoint = newConn.getPointAtLength(len/2);
+    var textId = grp + "text";
+    var textXY = getElementXYofRect(targetPoint.x-20, targetPoint.y-20, "text");
+    var text = gSvg.text(textXY[0], textXY[1], "LABEL");
+    text.attr("id", textId);
+    text.addClass("myLabel");
+
     var g = gSvg.g(newConn);
     var grpId = grp + "g";
     g.attr("id", grpId);

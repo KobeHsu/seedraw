@@ -78,6 +78,7 @@ function addRect() {
     var textXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "text");
     var text = gSvg.text(textXY[0], textXY[1], "TEXT HERE");
     text.attr("id", textId);
+    text.addClass("myLabel");
 
     text.dblclick(textDblClick);
 
