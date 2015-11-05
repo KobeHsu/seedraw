@@ -33,7 +33,7 @@ function addConnector() {
     text.attr("id", textId);
     text.addClass("myLabel");
 
-    var g = gSvg.g(newConn);
+    var g = gSvg.g(newConn, text);
     var grpId = grp + "g";
     g.attr("id", grpId);
 
@@ -142,6 +142,15 @@ function correctConnectorXY(grp, conn) {
     //conn.attr("transform", "");
     conn.transform("translate(0 0)");
     conn.attr("d", newPath);
+
+    var len = conn.getTotalLength();
+    var targetPoint = conn.getPointAtLength(len / 2);
+    var text = gSvg.select("[id^='" + grp + "text']");
+    var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    text.attr("x", textXY[0]);
+    text.attr("y", textXY[1]);
+
+    text.dblclick(textDblClick);
 
     var arrow = gSvg.select("[id^='" + grp + "arrow']");
 
@@ -422,6 +431,13 @@ function reDrawPointByPath(grp, conn, g) {
         g.append(arrow);
 
     }
+
+    var len = conn.getTotalLength();
+    var targetPoint = conn.getPointAtLength(len / 2);
+    var text = gSvg.select("[id^='" + grp + "text']");
+    var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    text.attr("x", textXY[0]);
+    text.attr("y", textXY[1]);
 
 }
 
