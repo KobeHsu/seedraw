@@ -117,13 +117,15 @@ function textDblClick() {
     gCurrent = grp;
     var text = gSvg.select("#" + grp + "text");
 
-    var textBBox = text.getBBox();
+    //var textBBox = text.getBBox();
+    var textBBoxX = parseInt(text.attr("x"), 10);
+    var textBBoxY = parseInt(text.attr("y"), 10);
     text.addClass("hide");
 
     var input = document.getElementById("rectText");
     input.value = text.innerSVG();
-    input.style["left"] = (gStartX + textBBox.x) + "px";
-    input.style["top"] = (gStartY + textBBox.y) + "px";
+    input.style["left"] = (gStartX + textBBoxX) + "px";
+    input.style["top"] = (gStartY + textBBoxY) + "px";
     input.style["display"] = "";
     input.focus();
 
