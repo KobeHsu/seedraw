@@ -125,3 +125,12 @@ input[type="text"].focus {
 .toBack {
     z-index: 0;
 }
+
+.myGroup {
+    #z-index: 4;
+    stroke: #61B7CF;
+    stroke-width: 2;
+    stroke-dasharray:5,5;
+    fill: none;
+    cursor: move;
+}

@@ -156,9 +156,9 @@ function svgElMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    if (id.indexOf("rect")>0) {
+    if (id.indexOf("rect") > 0) {
         gDragType = "rect";
-    } else if (id.indexOf("connector")>0) {
+    } else if (id.indexOf("connector") > 0) {
         gDragType = "connector";
     } else {
         gDragType = "unknown";
@@ -183,7 +183,7 @@ function svgElMouseMove(event) {
     if ("" != gCurrent) {
         grp = gCurrent;
     } else {
-       return;
+        return;
     }
 
     var svgEl = gSvg.select("#" + grp + gDragType);
@@ -225,10 +225,10 @@ function svgElMouseUp() {
 }
 
 function correctXY(grp, svgEl, dragType) {
-    if ("rect"==dragType) {
+    if ("rect" == dragType) {
         correctRectXY(grp, svgEl);
-    } else if ("connector"==dragType) {
-        correctConnectorXY(grp,svgEl);
+    } else if ("connector" == dragType) {
+        correctConnectorXY(grp, svgEl);
     }
 }
 
@@ -292,11 +292,88 @@ function getGroupPrefix(id) {
 
 document.addEventListener("DOMContentLoaded", function (event) {
     // do things after dom ready
+
+    gSvg = Snap.select("#snapSvg");
     gDrawArea = document.getElementById("drawArea");
-    gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
-    gSvg.appendTo(gDrawArea);
+
+    if (!gSvg) {
+        gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
+        gSvg.appendTo(gDrawArea);
+    } else {
+
+        var initGrp = "group_0000_";
+        // dispatch all events
+        gSvg.selectAll("rect").forEach(function (newRect) {
+
+            newRect.mouseover(rectMouseOver);
+            newRect.mouseout(rectMouseOut);
+            newRect.mousedown(svgElMouseDown);
+
+            var id = newRect.attr("id");
+            var grp = getGroupPrefix(id);
+
+            if (grp > initGrp) {
+                initGrp = grp;
+            }
+
+        });
+
+        gSvg.selectAll(".myClose").forEach(function (close) {
+
+            close.mouseover(rectMouseOver);
+            close.mouseout(rectMouseOut);
+            close.click(closeClick);
+
+        });
+
+        gSvg.selectAll("text").forEach(function (text) {
+
+            text.dblclick(textDblClick);
+
+        });
+
+        gSvg.selectAll("[id$='connector']").forEach(function (newConn) {
+
+            newConn.mouseover(connectorMouseOver);
+            newConn.mouseout(connectorMouseOut);
+            newConn.mousedown(svgElMouseDown);
+            newConn.node.addEventListener("contextmenu", connectorContextMenu);
+
+            var id = newConn.attr("id");
+            var grp = getGroupPrefix(id);
+
+            if (grp > initGrp) {
+                initGrp = grp;
+            }
+
+            reDrawPointByPath(grp, newConn);
+
+        });
+
+        var grpAry = initGrp.split(SEPARATOR);
+        var sn = parseInt(grpAry[1], 10);
+        gSerialNo = sn + 1;
+        //gSvg.selectAll(".myEndPoint").forEach(function (newConn) {
+        //
+        //    endPoint.mouseover(connectorMouseOver);
+        //    endPoint.mouseout(connectorMouseOut);
+        //    endPoint.mousedown(endPointMouseDown);
+        //
+        //});
+        //
+        //gSvg.selectAll(".myEndPoint").forEach(function (newConn) {
+        //
+        //    endPoint.mouseover(connectorMouseOver);
+        //    endPoint.mouseout(connectorMouseOut);
+        //    endPoint.mousedown(endPointMouseDown);
+        //
+        //});
+
+    }
 
     gStartX = gSvg.node.offsetLeft;//gSvg.node).position().left;
-    gStartY = gSvg.node.offsetTop;//$(gSvg.node).position().top;
+    gStartY = gSvg.node.offsetTop;
+//$(gSvg.node).position().top;
 
-});
+})
+;
