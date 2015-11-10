@@ -432,8 +432,8 @@ function reDrawPointByPath(grp, conn, g) {
 
     }
 
-    var len = conn.getTotalLength();
-    var targetPoint = conn.getPointAtLength(len / 2);
+    var connLen = conn.getTotalLength();
+    var targetPoint = conn.getPointAtLength(connLen / 2);
     var text = gSvg.select("[id^='" + grp + "text']");
     var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
     text.attr("x", textXY[0]);
