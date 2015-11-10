@@ -32,7 +32,7 @@ input[type="text"].focus {
     box-shadow: inset 1px 1px 2px 0 #c9c9c9;
 }
 
-.myRect {
+/*.myRect {
     fill: #0099CC;
     border: 1px solid #346789;
     box-shadow: 2px 2px 19px #aaa;
@@ -49,12 +49,12 @@ input[type="text"].focus {
     background: #eeeeef linear-gradient(#eeeeef 50%, #cdcdd6 50%);
     color: black;
     font-family: helvetica;
-    /*padding: 0.5em;*/
+    /!*padding: 0.5em;*!/
     font-size: 0.9em;
     min-width: 80px;
     min-height: 60px;
     overflow: auto;
-    /*padding: 5px 5px 5px 5px;*/
+    /!*padding: 5px 5px 5px 5px;*!/
     cursor: move;
 }
 
@@ -63,6 +63,38 @@ input[type="text"].focus {
     -o-box-shadow: 2px 2px 19px #444;
     -webkit-box-shadow: 2px 2px 19px #444;
     -moz-box-shadow: 2px 2px 19px #444;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+}*/
+
+.myRect {
+    fill: #FFFFFF;
+    stroke: #4492c2;
+    #border: solid #4492c2 2px;
+    -webkit-border-radius: 6;
+    -moz-border-radius: 6;
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    text-align: center;
+    z-index: 10;
+    position: absolute;
+    color: #211d21;
+    font-family: Courier New;
+    text-decoration: none;
+    overflow: auto;
+    /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
+}
+
+.myRect:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
     opacity: 0.6;
     filter: alpha(opacity=60);
 }
