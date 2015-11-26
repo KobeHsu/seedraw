@@ -131,7 +131,7 @@
     color: #666;
 }
 
-.round-block input[type="text"], .round-block textarea, .round-block select {
+.round-block input[type="text"], .round-block textarea, .round-block select, .round-block input[list="newList"] {
     color: #888;
     width: 100px;
     padding: 0px 0px 0px 5px;
@@ -159,6 +159,10 @@
     cursor: move;
 }
 
+.round-block span > input{
+    cursor: move;
+}
+
 .round-block input[type="button"] {
     padding: 7px 10px 7px 10px;
     margin: 5px 5px 5px 5px;
@@ -170,6 +174,7 @@
     -moz-box-shadow: 1px 1px 1px #4C6E91;
     text-shadow: 1px 1px 1px #5079A3;
     width: 100px;
+    height:32px;
     float: left;
     cursor: move;
 }
