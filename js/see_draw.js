@@ -28,16 +28,16 @@ var gStartY;
 var gCurrent;
 var gDragType;
 
-function getElementXYofRect(bboxX, bboxY, elName) {
+function getElementXYofRect(bBoxX, bBoxY, elName) {
 
     var xy = [];
 
     if ("close" == elName) {
-        xy.push(bboxX + RECT_WIDTH - CIRCLE_R_HALF);
-        xy.push(bboxY + CIRCLE_R_HALF);
+        xy.push(bBoxX + RECT_WIDTH - CIRCLE_R_HALF);
+        xy.push(bBoxY + CIRCLE_R_HALF);
     } else if ("text" == elName) {
-        xy.push(bboxX + 10);
-        xy.push(bboxY + RECT_HEIGHT_HALF + 5);
+        xy.push(bBoxX + 10);
+        xy.push(bBoxY + RECT_HEIGHT_HALF + 5);
     }
     //else if ("port" == elName) {
     //    xy.push(rectX + RECT_WIDTH_HALF);
@@ -290,7 +290,7 @@ function getGroupPrefix(id) {
 
 }
 
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", function () {
     // do things after dom ready
 
     gSvg = Snap.select("#snapSvg");
