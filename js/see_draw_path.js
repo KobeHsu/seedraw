@@ -29,7 +29,7 @@ function addConnector() {
     var targetPoint = newConn.getPointAtLength(len/2);
     var textId = grp + "text";
     var textXY = getElementXYofRect(targetPoint.x-20, targetPoint.y-20, "text");
-    var text = gSvg.text(textXY[0], textXY[1], "LABEL");
+    var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
 

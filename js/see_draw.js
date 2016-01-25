@@ -86,13 +86,18 @@ function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
 
 }
 
-function addRect() {
+function addRect(type) {
 
     var grp = getGroupPrefix(gSerialNo);
     var grpId = grp + "g";
     var rectId = grp + "rect";
     var newRect = gSvg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
     newRect.addClass("myRect");
+    if ("dash"==type) {
+        newRect.addClass("myRectDash");
+    } else if ("light"==type) {
+        newRect.addClass("myRectLight");
+    }
     newRect.attr("id", rectId);
 
     newRect.mouseover(rectMouseOver);
@@ -161,7 +166,7 @@ function addRect() {
 
     var textId = grp + "text";
     var textXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "text", rectId);
-    var text = gSvg.text(textXY[0], textXY[1], "TEXT HERE");
+    var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
 
@@ -752,7 +757,7 @@ function addEllipse() {
 
     var textId = grp + "text";
     var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
-    var text = gSvg.text(textXY[0], textXY[1], "TEXT HERE");
+    var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
 
@@ -1320,7 +1325,7 @@ function addLine() {
 
     var textId = grp + "text";
     var textXY = getElementXYofLine(bBoxLine.x, bBoxLine.y, "text", lineId);
-    var text = gSvg.text(textXY[0], textXY[1], "TEXT HERE");
+    var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
 
@@ -1691,6 +1696,7 @@ function showElement(elId) {
     }
 
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     // do things after dom ready
 
@@ -1777,7 +1783,6 @@ document.addEventListener("DOMContentLoaded", function () {
     gStartY = bound.top;
 //$(gSvg.node).position().top;
 
-})
-;
+});
 //endregion
 

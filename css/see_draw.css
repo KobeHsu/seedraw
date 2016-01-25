@@ -87,6 +87,14 @@ input[type="text"].focus {
     cursor: move;
 }
 
+.myRectDash {
+    stroke-dasharray: 5, 5;
+}
+
+.myRectLight {
+    stroke: #9fc7e0;
+}
+
 .myRect:hover {
     background: #3cb0fd;
     background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
