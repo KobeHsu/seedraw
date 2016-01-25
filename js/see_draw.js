@@ -20,6 +20,8 @@ var CIRCLE_R_HALF = CIRCLE_R / 2;
 var ELLIPSE_RX = 20;
 var ELLIPSE_RY = 20;
 
+var LINE_WIDTH = 80;
+
 var REMOVE_CONNECTOR_MSG = "Remove this connection ?";
 var REMOVE_ENDOPOINT_MSG = "Remove this node ?";
 var REMOVE_RECT_MSG = "Remove this rect ?";
@@ -1302,7 +1304,7 @@ function addLine() {
 
     wResize.mouseover(rectMouseOver);
     wResize.mouseout(rectMouseOut);
-    //wResize.mousedown(wResizeLineMouseDown);
+    wResize.mousedown(wResizeLineMouseDown);
 
     var eResizeId = grp + "eResize";
     var eResizeXY = getElementXYofLine(bBoxLine.x, bBoxLine.y, "eResize", lineId);
@@ -1313,7 +1315,7 @@ function addLine() {
 
     eResize.mouseover(rectMouseOver);
     eResize.mouseout(rectMouseOut);
-    //eResize.mousedown(eResizeLineMouseDown);
+    eResize.mousedown(eResizeLineMouseDown);
 
 
     var textId = grp + "text";
@@ -1406,6 +1408,165 @@ function correctLineXY(grp, line) {
 
 }
 
+function wResizeLineMouseDown() {
+
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
+    gCurrent = grp;
+
+    gDragType = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var line = gSvg.select("#" + grp + "line");
+
+    svgEl.data("mousedown-x", event.clientX);
+    svgEl.data("mousedown-y", event.clientY);
+    svgEl.data("mousedown-x1", parseInt(line.attr("x1"), 10));
+    svgEl.data("mousedown-y1", parseInt(line.attr("y1"), 10));
+    svgEl.data("mousedown-x2", parseInt(line.attr("x2"), 10));
+    svgEl.data("mousedown-y2", parseInt(line.attr("y2"), 10));
+
+    svgEl.addClass("toFront");
+
+    gDrawArea.onmousemove = wResizeLineMouseMove;
+    gDrawArea.onmouseup = wResizeLineMouseUp;
+}
+
+function wResizeLineMouseMove(event) {
+
+    var grp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
+    } else {
+        return;
+    }
+
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
+    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
+    var x1 = (parseInt(svgEl.data('mousedown-x1')) || 0);
+    var y1 = (parseInt(svgEl.data('mousedown-y1')) || 0);
+    var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
+    var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
+
+    var dx = event.clientX - x;
+    var dy = event.clientY - y;
+
+    var newX1 = x1 + dx;
+    //if (Math.abs(newX1 - x1) < LINE_WIDTH) {
+    //    return;
+    //}
+
+    var myMatrix = new Snap.Matrix();
+    myMatrix.translate(dx, dy);
+
+    svgEl.transform(myMatrix);
+
+    var line = gSvg.select("#" + gCurrent + "line");
+    line.attr("x1", newX1);
+
+}
+
+function wResizeLineMouseUp() {
+
+    if ("" != gCurrent) {
+
+        var grp = getGroupPrefix(gCurrent);
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        svgEl.removeClass("toFront");
+
+        var line = gSvg.select("#" + gCurrent + "line");
+        correctXY(grp, line, "line");
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gCurrent = "";
+    gDragType = "";
+}
+
+function eResizeLineMouseDown() {
+
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
+    gCurrent = grp;
+
+    gDragType = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var line = gSvg.select("#" + grp + "line");
+
+    svgEl.data("mousedown-x", event.clientX);
+    svgEl.data("mousedown-y", event.clientY);
+    svgEl.data("mousedown-x1", parseInt(line.attr("x1"), 10));
+    svgEl.data("mousedown-y1", parseInt(line.attr("y1"), 10));
+    svgEl.data("mousedown-x2", parseInt(line.attr("x2"), 10));
+    svgEl.data("mousedown-y2", parseInt(line.attr("y2"), 10));
+
+    svgEl.addClass("toFront");
+
+    gDrawArea.onmousemove = eResizeLineMouseMove;
+    gDrawArea.onmouseup = eResizeLineMouseUp;
+}
+
+function eResizeLineMouseMove(event) {
+
+    var grp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
+    } else {
+        return;
+    }
+
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
+    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
+    var x1 = (parseInt(svgEl.data('mousedown-x1')) || 0);
+    var y1 = (parseInt(svgEl.data('mousedown-y1')) || 0);
+    var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
+    var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
+
+    var dx = event.clientX - x;
+    var dy = event.clientY - y;
+
+    var newX2 = x2 + dx;
+    //if (Math.abs(newX2 - x2) < LINE_WIDTH) {
+    //    return;
+    //}
+
+    var myMatrix = new Snap.Matrix();
+    myMatrix.translate(dx, dy);
+
+    svgEl.transform(myMatrix);
+
+    var line = gSvg.select("#" + gCurrent + "line");
+    line.attr("x2", newX2);
+
+}
+
+function eResizeLineMouseUp() {
+
+    if ("" != gCurrent) {
+
+        var grp = getGroupPrefix(gCurrent);
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        svgEl.removeClass("toFront");
+
+        var line = gSvg.select("#" + gCurrent + "line");
+        correctXY(grp, line, "line");
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gCurrent = "";
+    gDragType = "";
+}
 //endregion
 
 //region Common
