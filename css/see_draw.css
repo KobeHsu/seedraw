@@ -25,6 +25,7 @@ input[type="text"] {
     opacity: .7;
     /*z-index: 10;*/
     position: absolute;
+    font: 12px sans-serif;
 }
 
 input[type="text"]:focus,

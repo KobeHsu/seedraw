@@ -37,6 +37,9 @@ var gStartY;
 var gCurrent;
 var gDragType;
 
+var gMenuWidth;
+var gMenuHeight;
+
 //region Rect
 function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
 
@@ -243,15 +246,15 @@ function textDblClick() {
     gCurrent = grp;
     var text = gSvg.select("#" + grp + "text");
 
-    //var textBBox = text.getBBox();
+    var textBBox = text.node.getBoundingClientRect();
     var textBBoxX = parseInt(text.attr("x"), 10);
     var textBBoxY = parseInt(text.attr("y"), 10);
     text.addClass("hide");
 
     var input = document.getElementById("rectText");
     input.value = text.innerSVG();
-    input.style["left"] = (gStartX + textBBoxX) + "px";
-    input.style["top"] = (gStartY + textBBoxY) + "px";
+    input.style["left"] = (textBBox.left - gMenuWidth) + "px";
+    input.style["top"] = (textBBox.top - gMenuHeight) + "px";
     input.style["display"] = "";
     input.focus();
 
@@ -1781,6 +1784,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var bound = gSvg.node.getBoundingClientRect()
     gStartX = bound.left;//gSvg.node).position().left;
     gStartY = bound.top;
+
+    var mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
+    gMenuWidth = mainAreaBound.left;
+    gMenuHeight = mainAreaBound.top;
 //$(gSvg.node).position().top;
 
 });
