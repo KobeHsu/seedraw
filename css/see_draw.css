@@ -104,6 +104,30 @@ input[type="text"].focus {
     cursor: no-drop;
 }
 
+.myNResize {
+    stroke: black;
+    fill: white;
+    cursor: n-resize;
+}
+
+.mySResize {
+    stroke: black;
+    fill: white;
+    cursor: s-resize;
+}
+
+.myWResize {
+    stroke: black;
+    fill: white;
+    cursor: w-resize;
+}
+
+.myEResize {
+    stroke: black;
+    fill: white;
+    cursor: e-resize;
+}
+
 .myMidPoint {
     fill: #FFFFFF;
     stroke: grey;
@@ -162,7 +186,53 @@ input[type="text"].focus {
     #z-index: 4;
     stroke: #61B7CF;
     stroke-width: 2;
-    stroke-dasharray:5,5;
+    stroke-dasharray: 5, 5;
     fill: none;
     cursor: move;
+}
+
+.myEllipse {
+    fill: #FFFFFF;
+    stroke: #4492c2;
+    #border: solid #4492c2 2px;
+    -webkit-border-radius: 6;
+    -moz-border-radius: 6;
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    text-align: center;
+    z-index: 10;
+    position: absolute;
+    color: #211d21;
+    font-family: Courier New;
+    text-decoration: none;
+    overflow: auto;
+    /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
+}
+
+.myEllipse:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+}
+
+.myLine {
+    #z-index: 4;
+    stroke: #61B7CF;
+    stroke-width: 2;
+    stroke-dasharray: 10, 10;
+    fill: none;
+    cursor: move;
+}
+
+.myLine:hover {
+    stroke-width: 4;
+    stroke: #5555FF;
 }

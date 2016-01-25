@@ -18,13 +18,19 @@
 <nav></nav>
 <section id="mainArea">
     <div id="component" style="width:150px;">
-        <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect()">
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect()">
             <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect"/>
             <text x="15" y="25" class="myLabel">NEW</text>
         </svg>
-        <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addConnector()">
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addConnector()">
             <path d="M0 20 L80 20" class="myConnector"/>
             <path d="M80 20 L75 17 L75 23 Z" class="myConnector"/>
+        </svg>
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addEllipse()">
+            <ellipse cx="25" cy="20" rx="20" ry="20" class="myEllipse"/>
+        </svg>
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addLine()">
+            <line x1="0" y1="20" x2="80" y2="20" class="myLine"/>
         </svg>
     </div>
     <div id="drawArea" style="width:800px;"><input type="text" id="rectText" style="display:none;"/></div>
