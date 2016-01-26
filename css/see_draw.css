@@ -245,3 +245,27 @@ input[type="text"].focus {
     stroke-width: 4;
     stroke: #5555FF;
 }
+
+.myBreak {
+    stroke: #61B7CF;
+    stroke-width: 2;
+    fill: none;
+    cursor: move;
+    z-index: 15;
+}
+
+.myBreak:hover {
+    stroke-width: 3;
+    stroke: #5555FF;
+}
+
+.myBrace {
+    font: sans-serif;
+    z-index: 21;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    cursor: move;
+    stroke: #000000;
+    stroke-width: 10px;
+    fill: none;
+}

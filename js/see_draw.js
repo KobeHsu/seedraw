@@ -22,12 +22,16 @@ var ELLIPSE_RY = 20;
 
 var LINE_WIDTH = 80;
 
+var BRACE_WIDTH = 20;
+var BRACE_Q = 0.6;
+
 var REMOVE_CONNECTOR_MSG = "Remove this connection ?";
 var REMOVE_ENDOPOINT_MSG = "Remove this node ?";
 var REMOVE_RECT_MSG = "Remove this rect ?";
 var REMOVE_ELLIPSE_MSG = "Remove this ellipse ?";
 var REMOVE_LINE_MSG = "Remove this boundary ?";
-
+var REMOVE_BREAK_MSG = "Remove this breakdown ?";
+var REMOVE_BRACE_MSG = "Remove this brace ?";
 var gSerialNo = 0;
 
 var gDrawArea;
@@ -96,9 +100,9 @@ function addRect(type) {
     var rectId = grp + "rect";
     var newRect = gSvg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
     newRect.addClass("myRect");
-    if ("dash"==type) {
+    if ("dash" == type) {
         newRect.addClass("myRectDash");
-    } else if ("light"==type) {
+    } else if ("light" == type) {
         newRect.addClass("myRectLight");
     }
     newRect.attr("id", rectId);
@@ -172,6 +176,9 @@ function addRect(type) {
     var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
+    if ("noLabel" == type) {
+        text.addClass("hide");
+    }
 
     text.dblclick(textDblClick);
 
@@ -247,8 +254,8 @@ function textDblClick() {
     var text = gSvg.select("#" + grp + "text");
 
     var textBBox = text.node.getBoundingClientRect();
-    var textBBoxX = parseInt(text.attr("x"), 10);
-    var textBBoxY = parseInt(text.attr("y"), 10);
+//    var textBBoxX = parseInt(text.attr("x"), 10);
+//    var textBBoxY = parseInt(text.attr("y"), 10);
     text.addClass("hide");
 
     var input = document.getElementById("rectText");
@@ -1577,6 +1584,450 @@ function eResizeLineMouseUp() {
 }
 //endregion
 
+
+//region Brace
+// refer: http://bl.ocks.org/alexhornbake/6005176
+//returns path string d for <path d="This string">
+//a curly brace between x1,y1 and x2,y2, w pixels wide
+//and q factor, .5 is normal, higher q = more expressive bracket
+function makeCurlyBrace(x1, y1, x2, y2, w, q) {
+
+    //Calculate unit vector
+    var dx = x1 - x2;
+    var dy = y1 - y2;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    dx = dx / len;
+    dy = dy / len;
+
+    //Calculate Control Points of path,
+    var qx1 = x1 + q * w * dy;
+    var qy1 = y1 - q * w * dx;
+    var qx2 = (x1 - .25 * len * dx) + (1 - q) * w * dy;
+    var qy2 = (y1 - .25 * len * dy) - (1 - q) * w * dx;
+    var tx1 = (x1 - .5 * len * dx) + w * dy;
+    var ty1 = (y1 - .5 * len * dy) - w * dx;
+    var qx3 = x2 + q * w * dy;
+    var qy3 = y2 - q * w * dx;
+    var qx4 = (x1 - .75 * len * dx) + (1 - q) * w * dy;
+    var qy4 = (y1 - .75 * len * dy) - (1 - q) * w * dx;
+
+    return ( "M " + x1 + " " + y1 +
+    " Q " + qx1 + " " + qy1 + " " + qx2 + " " + qy2 +
+    " T " + tx1 + " " + ty1 +
+    " M " + x2 + " " + y2 +
+    " Q " + qx3 + " " + qy3 + " " + qx4 + " " + qy4 +
+    " T " + tx1 + " " + ty1 );
+}
+
+function addBrace(dir) {
+
+    var grp = getGroupPrefix(gSerialNo);
+    var grpId = grp + "g";
+    var braceId = grp + "brace";
+
+    var pathStr = "";
+    if ("left" == dir) {
+        pathStr = makeCurlyBrace(20, 20, 20, 60, BRACE_WIDTH, BRACE_Q);
+    } else if ("right" == dir) {
+        pathStr = makeCurlyBrace(20, 60, 20, 20, BRACE_WIDTH, BRACE_Q);
+    } else {
+        return;
+    }
+
+    var newBrace = gSvg.path(pathStr);
+    newBrace.addClass("myBrace");
+    newBrace.attr("id", braceId);
+    newBrace.attr("dir", dir);
+
+    newBrace.mouseover(rectMouseOver);
+    newBrace.mouseout(rectMouseOut);
+    newBrace.mousedown(svgElMouseDown);
+
+    newBrace.node.addEventListener("contextmenu", braceContextMenu);
+
+    var bBoxBrace = newBrace.getBBox();
+
+    var nResizeId = grp + "nResize";
+    var nResizeXY = getElementXYofBrace(bBoxBrace.x, bBoxBrace.y, "nResize", braceId);
+    var nResize = gSvg.circle(nResizeXY[0], nResizeXY[1], CIRCLE_R);
+    nResize.addClass("myNResize");
+    nResize.addClass("hide");
+    nResize.attr("id", nResizeId);
+
+    nResize.mouseover(rectMouseOver);
+    nResize.mouseout(rectMouseOut);
+    nResize.mousedown(nResizeBraceMouseDown);
+
+    var sResizeId = grp + "sResize";
+    var sResizeXY = getElementXYofBrace(bBoxBrace.x, bBoxBrace.y, "sResize", braceId);
+    var sResize = gSvg.circle(sResizeXY[0], sResizeXY[1], CIRCLE_R);
+    sResize.addClass("mySResize");
+    sResize.addClass("hide");
+    sResize.attr("id", sResizeId);
+
+    sResize.mouseover(rectMouseOver);
+    sResize.mouseout(rectMouseOut);
+    sResize.mousedown(sResizeBraceMouseDown);
+
+    var g = gSvg.g(newBrace, nResize, sResize);
+    g.attr("id", grpId);
+
+    gSerialNo++;
+
+}
+
+function braceContextMenu(e) {
+
+    e.preventDefault();
+
+    var r = confirm(REMOVE_BRACE_MSG);
+    if (!r) {
+        return;
+    }
+
+    var grp = getGroupPrefix(this.id);
+    var grpId = grp + "g";
+    gSvg.select("#" + grpId).remove();
+
+    return false;
+
+}
+
+function getElementXYofBrace(bBoxX, bBoxY, elName, braceId) {
+
+    var xy = [];
+    var brace = gSvg.select("#" + braceId);
+    var bBox = brace.getBBox();
+
+    if ("nResize" == elName) {
+
+        xy.push(bBoxX + (bBox.width ) / 2);
+        xy.push(bBoxY);
+
+    } else if ("sResize" == elName) {
+
+        xy.push(bBoxX + (bBox.width ) / 2);
+        xy.push(bBoxY + bBox.height);
+
+    }
+
+    return xy;
+
+}
+
+function correctBraceXY(grp, brace) {
+
+    var g = gSvg.select("#" + grp + "g");
+
+    var tStrAry = Snap.parseTransformString(g.attr("transform"));
+
+    if (tStrAry.length == 0) {
+        return;
+    }
+
+    var dx = parseInt(tStrAry[0][1], 10);
+    var dy = parseInt(tStrAry[0][2], 10);
+
+    var pathStr = brace.attr("d");
+    var pathAry = Snap.parsePathString(pathStr);
+
+    var nowX = parseInt(pathAry[0][1], 10);
+    var nowY = parseInt(pathAry[0][2], 10);
+
+    var x = dx + nowX;
+    var y = dy + nowY;
+
+    var dir = brace.attr("dir");
+    var newPath = "";
+    if ("left" == dir) {
+        newPath = makeCurlyBrace(x, y, x, y + brace.getBBox().height, BRACE_WIDTH, BRACE_Q);
+    } else if ("right" == dir) {
+        newPath = makeCurlyBrace(x, y, x, y - brace.getBBox().height, BRACE_WIDTH, BRACE_Q);
+    } else {
+        return;
+    }
+
+    g.transform("translate(0 0)");
+
+    var braceId = grp + "brace";
+
+    brace.transform("translate(0 0)");
+    brace.attr("d", newPath);
+
+    var bBox = brace.getBBox();
+
+    var nResize = gSvg.select("#" + grp + "nResize");
+    var nResizeXY = getElementXYofBrace(bBox.x, bBox.y, "nResize", braceId);
+
+    nResize.transform("translate(0 0)");
+    nResize.attr("cx", nResizeXY[0]);
+    nResize.attr("cy", nResizeXY[1]);
+
+    var sResize = gSvg.select("#" + grp + "sResize");
+    var sResizeXY = getElementXYofBrace(bBox.x, bBox.y, "sResize", braceId);
+
+    sResize.transform("translate(0 0)");
+    sResize.attr("cx", sResizeXY[0]);
+    sResize.attr("cy", sResizeXY[1]);
+
+}
+
+function nResizeBraceMouseDown() {
+
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
+    gCurrent = grp;
+
+    gDragType = "nResize";
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var brace = gSvg.select("#" + grp + "brace");
+    var bBox = brace.getBBox();
+
+    svgEl.data("mousedown-x", event.clientX);
+    svgEl.data("mousedown-y", event.clientY);
+    svgEl.data("mousedown-x1", parseInt(bBox.x, 10));
+    svgEl.data("mousedown-y1", parseInt(bBox.y, 10));
+    svgEl.data("mousedown-x2", parseInt(bBox.x, 10));
+    svgEl.data("mousedown-y2", parseInt(bBox.y + bBox.height, 10));
+
+    svgEl.addClass("toFront");
+
+    gDrawArea.onmousemove = nResizeBraceMouseMove;
+    gDrawArea.onmouseup = nResizeBraceMouseUp;
+}
+
+function nResizeBraceMouseMove(event) {
+
+    var grp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
+    } else {
+        return;
+    }
+
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
+    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
+    var x1 = (parseInt(svgEl.data('mousedown-x1')) || 0);
+    var y1 = (parseInt(svgEl.data('mousedown-y1')) || 0);
+    var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
+    var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
+
+    var dx = event.clientX - x;
+    var dy = event.clientY - y;
+
+    var brace = gSvg.select("#" + gCurrent + "brace");
+
+    var dir = brace.attr("dir");
+    var newPath = "";
+    if ("left" == dir) {
+        newPath = makeCurlyBrace(x1 + BRACE_WIDTH, y1 + dy, x2 + BRACE_WIDTH, y2, BRACE_WIDTH, BRACE_Q);
+    } else if ("right" == dir) {
+        newPath = makeCurlyBrace(x1, y2, x2, y1 + dy, BRACE_WIDTH, BRACE_Q);
+    } else {
+        return;
+    }
+
+    brace.attr("d", newPath);
+
+}
+
+function nResizeBraceMouseUp() {
+
+    if ("" != gCurrent) {
+
+        var grp = getGroupPrefix(gCurrent);
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        svgEl.removeClass("toFront");
+
+        var brace = gSvg.select("#" + gCurrent + "brace");
+        correctXY(grp, brace, "brace");
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gCurrent = "";
+    gDragType = "";
+}
+
+function sResizeBraceMouseDown() {
+
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
+    gCurrent = grp;
+
+    gDragType = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var brace = gSvg.select("#" + grp + "brace");
+    var bBox = brace.getBBox();
+
+    svgEl.data("mousedown-x", event.clientX);
+    svgEl.data("mousedown-y", event.clientY);
+    svgEl.data("mousedown-x1", parseInt(bBox.x, 10));
+    svgEl.data("mousedown-y1", parseInt(bBox.y, 10));
+    svgEl.data("mousedown-x2", parseInt(bBox.x, 10));
+    svgEl.data("mousedown-y2", parseInt(bBox.y + bBox.height, 10));
+
+    svgEl.addClass("toFront");
+
+    gDrawArea.onmousemove = sResizeBraceMouseMove;
+    gDrawArea.onmouseup = sResizeBraceMouseUp;
+}
+
+function sResizeBraceMouseMove(event) {
+
+    var grp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
+    } else {
+        return;
+    }
+
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
+    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
+    var x1 = (parseInt(svgEl.data('mousedown-x1')) || 0);
+    var y1 = (parseInt(svgEl.data('mousedown-y1')) || 0);
+    var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
+    var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
+
+    var dx = event.clientX - x;
+    var dy = event.clientY - y;
+
+    var brace = gSvg.select("#" + gCurrent + "brace");
+
+    var dir = brace.attr("dir");
+    var newPath = "";
+    if ("left" == dir) {
+        newPath = makeCurlyBrace(x1 + BRACE_WIDTH, y1, x2 + BRACE_WIDTH, y2 + dy, BRACE_WIDTH, BRACE_Q);
+    } else if ("right" == dir) {
+        newPath = makeCurlyBrace(x1, y2 + dy, x2, y1, BRACE_WIDTH, BRACE_Q);
+    } else {
+        return;
+    }
+
+    brace.attr("d", newPath);
+
+}
+
+function sResizeBraceMouseUp() {
+
+    if ("" != gCurrent) {
+
+        var grp = getGroupPrefix(gCurrent);
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        svgEl.removeClass("toFront");
+
+        var brace = gSvg.select("#" + gCurrent + "brace");
+        correctXY(grp, brace, "brace");
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gCurrent = "";
+    gDragType = "";
+}
+//endregion
+
+//region BreakDown
+function addBreak() {
+
+    var grp = getGroupPrefix(gSerialNo);
+    var breakId = grp + "break";
+
+    var newBreak = gSvg.path("M 7 2 L 7 11 L 10 11 L 10 20 L 14 8 L 10 8 L 14 2 Z");
+    newBreak.addClass("myBreak");
+    newBreak.attr("id", breakId);
+
+    newBreak.mouseover(connectorMouseOver);
+    newBreak.mouseout(connectorMouseOut);
+    newBreak.mousedown(svgElMouseDown);
+    newBreak.node.addEventListener("contextmenu", breakContextMenu);
+
+    var g = gSvg.g(newBreak);
+    var grpId = grp + "g";
+    g.attr("id", grpId);
+
+    gSerialNo++;
+}
+
+function breakContextMenu(e) {
+
+    e.preventDefault();
+
+    var r = confirm(REMOVE_BREAK_MSG);
+    if (!r) {
+        return;
+    }
+
+    var grp = getGroupPrefix(this.id);
+    var grpId = grp + "g";
+    gSvg.select("#" + grpId).remove();
+
+    return false;
+
+}
+
+function correctBreakXY(grp, conn) {
+
+    var g = gSvg.select("#" + grp + "g");
+
+    var tStrAry = Snap.parseTransformString(g.attr("transform"));
+
+    if (tStrAry.length == 0) {
+        return;
+    }
+
+    var x = parseInt(tStrAry[0][1], 10);
+    var y = parseInt(tStrAry[0][2], 10);
+
+    //g.attr("transform", "");
+    g.transform("translate(0 0)");
+
+    var pathStr = conn.attr("d");
+    pathStr = pathStr.substring(0, pathStr.length - 1);
+    var pathAry = Snap.parsePathString(pathStr);
+    var pathLen = pathAry.length;
+
+    pathAry.forEach(function (p) {
+        p[1] = parseInt(p[1]) + x;
+        p[2] = parseInt(p[2]) + y;
+    });
+
+    var newPath = "";
+    var lastSubPath = [];
+    for (var i = 0; i < pathLen; i++) {
+
+        var act = pathAry[i][0];
+        var cx = pathAry[i][1];
+        var cy = pathAry[i][2];
+
+        newPath += act + " ";
+        newPath += cx + " ";
+        newPath += cy + " ";
+
+        if (i >= pathLen - 2) {
+            lastSubPath.push(cx);
+            lastSubPath.push(cy);
+        }
+    }
+
+    newPath = newPath + "Z";
+    //conn.attr("transform", "");
+    conn.transform("translate(0 0)");
+    conn.attr("d", newPath);
+
+}
+//endregion
+
 //region Common
 function svgElMouseDown(event) {
 
@@ -1592,6 +2043,10 @@ function svgElMouseDown(event) {
         gDragType = "ellipse";
     } else if (id.indexOf("line") > 0) {
         gDragType = "line";
+    } else if (id.indexOf("break") > 0) {
+        gDragType = "break";
+    } else if (id.indexOf("brace") > 0) {
+        gDragType = "brace";
     } else {
         gDragType = "unknown";
     }
@@ -1665,6 +2120,10 @@ function correctXY(grp, svgEl, dragType) {
         correctEllipseXY(grp, svgEl);
     } else if ("line" == dragType) {
         correctLineXY(grp, svgEl);
+    } else if ("break" == dragType) {
+        correctBreakXY(grp, svgEl);
+    } else if ("brace" == dragType) {
+        correctBraceXY(grp, svgEl);
     }
 }
 
@@ -1790,6 +2249,6 @@ document.addEventListener("DOMContentLoaded", function () {
     gMenuHeight = mainAreaBound.top;
 //$(gSvg.node).position().top;
 
+
 });
 //endregion
-

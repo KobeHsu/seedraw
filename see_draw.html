@@ -38,6 +38,16 @@
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addLine()">
             <line x1="0" y1="20" x2="80" y2="20" class="myLine"/>
         </svg>
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addBreak()">
+            <!-- <path d="M0 0h24v24H0z" fill="none"/> -->
+            <path d="M 7 2 L 7 11 L 10 11 L 10 20 L 14 8 L 10 8 L 14 2 Z" transform="translate(20 0)" class="myBreak"/>
+        </svg>
+        <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addBrace('left')">
+            <text x="20" y="15" transform="scale(1 2)">{</text>
+        </svg>
+        <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addBrace('right')">
+            <text x="20" y="15" transform="scale(1 2)">}</text>
+        </svg>
     </div>
     <div id="drawArea" style="width:800px;"><input type="text" id="rectText" style="display:none;"/></div>
 </section>
