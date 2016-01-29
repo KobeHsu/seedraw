@@ -86,10 +86,6 @@ function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
         xy.push(bBoxY + height / 2);
 
     }
-    //else if ("port" == elName) {
-    //    xy.push(rectX + RECT_WIDTH_HALF);
-    //    xy.push(rectY + RECT_HEIGHT);
-    //}
 
     return xy;
 
@@ -218,11 +214,6 @@ function rectMouseOver() {
     showElement(grp + "wResize");
     showElement(grp + "eResize");
 
-    //gSvg.select("#" + grp + "close").removeClass("hide");
-    //gSvg.select("#" + grp + "nResize").removeClass("hide");
-    //gSvg.select("#" + grp + "sResize").removeClass("hide");
-    //gSvg.select("#" + grp + "wResize").removeClass("hide");
-    //gSvg.select("#" + grp + "eResize").removeClass("hide");
 }
 
 function rectMouseOut() {
@@ -235,11 +226,6 @@ function rectMouseOut() {
     hideElement(grp + "wResize");
     hideElement(grp + "eResize");
 
-    //gSvg.select("#" + grp + "close").addClass("hide");
-    //gSvg.select("#" + grp + "nResize").addClass("hide");
-    //gSvg.select("#" + grp + "sResize").addClass("hide");
-    //gSvg.select("#" + grp + "wResize").addClass("hide");
-    //gSvg.select("#" + grp + "eResize").addClass("hide");
 }
 
 function closeClick() {
@@ -256,8 +242,6 @@ function textDblClick() {
     var text = gSvg.select("#" + grp + "text");
 
     var textBBox = text.node.getBoundingClientRect();
-//    var textBBoxX = parseInt(text.attr("x"), 10);
-//    var textBBoxY = parseInt(text.attr("y"), 10);
     text.addClass("hide");
 
     var input = document.getElementById("rectText");
@@ -292,7 +276,7 @@ function inputBlur() {
     if (line) {
 
         var textBBox = text.getBBox();
-        textWidth = textBBox.width;
+        var textWidth = textBBox.width;
 
         text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
         //text.attr("y", textXY[1]);
@@ -318,7 +302,6 @@ function nResizeMouseDown() {
     svgEl.data("mousedown-w", parseInt(rect.attr("width"), 10));
 
     svgEl.addClass("toFront");
-    //correctRectXY(grp, rect);
 
     gDrawArea.onmousemove = nResizeMouseMove;
     gDrawArea.onmouseup = nResizeMouseUp;
@@ -555,7 +538,6 @@ function eResizeMouseDown() {
     svgEl.data("mousedown-w", parseInt(rect.attr("width"), 10));
 
     svgEl.addClass("toFront");
-    //correctRectXY(grp, rect);
 
     gDrawArea.onmousemove = eResizeMouseMove;
     gDrawArea.onmouseup = eResizeMouseUp;
@@ -838,10 +820,6 @@ function getElementXYofEllipse(bBoxX, bBoxY, elName, ellipseId) {
         xy.push(bBoxY + ry);
 
     }
-    //else if ("port" == elName) {
-    //    xy.push(rectX + RECT_WIDTH_HALF);
-    //    xy.push(rectY + RECT_HEIGHT);
-    //}
 
     return xy;
 
@@ -1186,7 +1164,6 @@ function eResizeEllipseMouseDown() {
     svgEl.data("mousedown-ry", parseInt(ellipse.attr("ry"), 10));
 
     svgEl.addClass("toFront");
-    //correctRectXY(grp, rect);
 
     gDrawArea.onmousemove = eResizeEllipseMouseMove;
     gDrawArea.onmouseup = eResizeEllipseMouseUp;
@@ -1387,10 +1364,8 @@ function correctLineXY(grp, line) {
     var x2 = x + nowX2;
     var y2 = y + nowY2;
 
-    //g.attr("transform", "");
     g.transform("translate(0 0)");
 
-    //rect.attr("transform", "");
     var lineId = grp + "line";
     line.transform("translate(0 0)");
     line.attr("x1", x1);
@@ -1415,7 +1390,6 @@ function correctLineXY(grp, line) {
     var text = gSvg.select("#" + grp + "text");
     var textXY = getElementXYofLine(x1, y1, "text", lineId);
 
-    //text.attr("transform", "");
     text.transform("translate(0 0)");
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
@@ -1468,9 +1442,6 @@ function wResizeLineMouseMove(event) {
     var dy = event.clientY - y;
 
     var newX1 = x1 + dx;
-    //if (Math.abs(newX1 - x1) < LINE_WIDTH) {
-    //    return;
-    //}
 
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
@@ -1548,9 +1519,6 @@ function eResizeLineMouseMove(event) {
     var dy = event.clientY - y;
 
     var newX2 = x2 + dx;
-    //if (Math.abs(newX2 - x2) < LINE_WIDTH) {
-    //    return;
-    //}
 
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
@@ -2573,7 +2541,6 @@ function svgElMouseDown(event) {
     svgEl.data("mousedown-y", event.clientY);
 
     svgEl.addClass("toFront");
-    //correctRectXY(grp, rect);
 
     gDrawArea.onmousemove = svgElMouseMove;
     gDrawArea.onmouseup = svgElMouseUp;
@@ -2897,14 +2864,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     var bound = gSvg.node.getBoundingClientRect()
-    gStartX = bound.left;//gSvg.node).position().left;
+    gStartX = bound.left;
     gStartY = bound.top;
 
-    var mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
-    //var mainAreaBound = document.getElementById("drawArea").getBoundingClientRect();
+    var mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect(); // local dev
+    //var mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); // for seewebj site
     gMenuWidth = mainAreaBound.left;
     gMenuHeight = mainAreaBound.top;
-    //$(gSvg.node).position().top;
 
 
 });
