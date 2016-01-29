@@ -623,68 +623,68 @@ function correctRectXY(grp, rect) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
-    if (tStrAry.length == 0) {
-        return;
+    var rectId = grp + "rect";
+    if (tStrAry.length != 0) {
+
+        var x = parseInt(tStrAry[0][1], 10);
+        var y = parseInt(tStrAry[0][2], 10);
+
+        var nowX = parseInt(rect.attr("x"), 10);
+        var nowY = parseInt(rect.attr("y"), 10);
+
+        x += nowX;
+        y += nowY;
+
+        g.transform("translate(0 0)");
+
+        rect.transform("translate(0 0)");
+        rect.attr("x", x);
+        rect.attr("y", y);
+
     }
 
-    var x = parseInt(tStrAry[0][1], 10);
-    var y = parseInt(tStrAry[0][2], 10);
-
-    var nowX = parseInt(rect.attr("x"), 10);
-    var nowY = parseInt(rect.attr("y"), 10);
-
-    x += nowX;
-    y += nowY;
-
-    //g.attr("transform", "");
-    g.transform("translate(0 0)");
-
-    //rect.attr("transform", "");
-    var rectId = grp + "rect";
-    rect.transform("translate(0 0)");
-    rect.attr("x", x);
-    rect.attr("y", y);
+    var bBox = rect.getBBox();
+    var bBoxX = bBox.x;
+    var bBoxY = bBox.y;
 
     var close = gSvg.select("#" + grp + "close");
-    var closeXY = getElementXYofRect(x, y, "close", rectId);
+    var closeXY = getElementXYofRect(bBoxX, bBoxY, "close", rectId);
 
-    //close.attr("transform", "");
     close.transform("translate(0 0)");
     close.attr("cx", closeXY[0]);
     close.attr("cy", closeXY[1]);
 
     var nResize = gSvg.select("#" + grp + "nResize");
-    var nResizeXY = getElementXYofRect(x, y, "nResize", rectId);
+    var nResizeXY = getElementXYofRect(bBoxX, bBoxY, "nResize", rectId);
 
     nResize.transform("translate(0 0)");
     nResize.attr("cx", nResizeXY[0]);
     nResize.attr("cy", nResizeXY[1]);
 
     var sResize = gSvg.select("#" + grp + "sResize");
-    var sResizeXY = getElementXYofRect(x, y, "sResize", rectId);
+    var sResizeXY = getElementXYofRect(bBoxX, bBoxY, "sResize", rectId);
 
     sResize.transform("translate(0 0)");
     sResize.attr("cx", sResizeXY[0]);
     sResize.attr("cy", sResizeXY[1]);
 
     var wResize = gSvg.select("#" + grp + "wResize");
-    var wResizeXY = getElementXYofRect(x, y, "wResize", rectId);
+    var wResizeXY = getElementXYofRect(bBoxX, bBoxY, "wResize", rectId);
 
     wResize.transform("translate(0 0)");
     wResize.attr("cx", wResizeXY[0]);
     wResize.attr("cy", wResizeXY[1]);
 
     var eResize = gSvg.select("#" + grp + "eResize");
-    var eResizeXY = getElementXYofRect(x, y, "eResize", rectId);
+    var eResizeXY = getElementXYofRect(bBoxX, bBoxY, "eResize", rectId);
 
     eResize.transform("translate(0 0)");
     eResize.attr("cx", eResizeXY[0]);
     eResize.attr("cy", eResizeXY[1]);
 
     var text = gSvg.select("#" + grp + "text");
-    var textXY = getElementXYofRect(x, y, "text", rectId);
+    var textXY = getElementXYofRect(bBoxX, bBoxY, "text", rectId);
 
-    //text.attr("transform", "");
     text.transform("translate(0 0)");
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
@@ -853,34 +853,31 @@ function correctEllipseXY(grp, ellipse) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
-    if (tStrAry.length == 0) {
-        return;
-    }
-
-    var cx = parseInt(tStrAry[0][1], 10);
-    var cy = parseInt(tStrAry[0][2], 10);
-
-    var nowX = parseInt(ellipse.attr("cx"), 10);
-    var nowY = parseInt(ellipse.attr("cy"), 10);
-
-    cx += nowX;
-    cy += nowY;
-
-    //g.attr("transform", "");
-    g.transform("translate(0 0)");
-
-    //rect.attr("transform", "");
     var ellipseId = grp + "ellipse";
-    ellipse.transform("translate(0 0)");
-    ellipse.attr("cx", cx);
-    ellipse.attr("cy", cy);
+    if (tStrAry.length != 0) {
+
+        var cx = parseInt(tStrAry[0][1], 10);
+        var cy = parseInt(tStrAry[0][2], 10);
+
+        var nowX = parseInt(ellipse.attr("cx"), 10);
+        var nowY = parseInt(ellipse.attr("cy"), 10);
+
+        cx += nowX;
+        cy += nowY;
+
+        g.transform("translate(0 0)");
+
+        ellipse.transform("translate(0 0)");
+        ellipse.attr("cx", cx);
+        ellipse.attr("cy", cy);
+
+    }
 
     var bBoxEllipse = ellipse.getBBox();
 
     var close = gSvg.select("#" + grp + "close");
     var closeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "close", ellipseId);
 
-    //close.attr("transform", "");
     close.transform("translate(0 0)");
     close.attr("cx", closeXY[0]);
     close.attr("cy", closeXY[1]);
@@ -916,7 +913,6 @@ function correctEllipseXY(grp, ellipse) {
     var text = gSvg.select("#" + grp + "text");
     var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
 
-    //text.attr("transform", "");
     text.transform("translate(0 0)");
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
@@ -1373,6 +1369,7 @@ function correctLineXY(grp, line) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
+    // FIXME: re-init bug
     if (tStrAry.length == 0) {
         return;
     }
@@ -1723,38 +1720,37 @@ function correctBraceXY(grp, brace) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
-    if (tStrAry.length == 0) {
-        return;
-    }
-
-    var dx = parseInt(tStrAry[0][1], 10);
-    var dy = parseInt(tStrAry[0][2], 10);
-
-    var pathStr = brace.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-
-    var nowX = parseInt(pathAry[0][1], 10);
-    var nowY = parseInt(pathAry[0][2], 10);
-
-    var x = dx + nowX;
-    var y = dy + nowY;
-
-    var dir = brace.attr("dir");
-    var newPath = "";
-    if ("left" == dir) {
-        newPath = makeCurlyBrace(x, y, x, y + brace.getBBox().height, BRACE_WIDTH, BRACE_Q);
-    } else if ("right" == dir) {
-        newPath = makeCurlyBrace(x, y, x, y - brace.getBBox().height, BRACE_WIDTH, BRACE_Q);
-    } else {
-        return;
-    }
-
-    g.transform("translate(0 0)");
-
     var braceId = grp + "brace";
+    if (tStrAry.length != 0) {
 
-    brace.transform("translate(0 0)");
-    brace.attr("d", newPath);
+        var dx = parseInt(tStrAry[0][1], 10);
+        var dy = parseInt(tStrAry[0][2], 10);
+
+        var pathStr = brace.attr("d");
+        var pathAry = Snap.parsePathString(pathStr);
+
+        var nowX = parseInt(pathAry[0][1], 10);
+        var nowY = parseInt(pathAry[0][2], 10);
+
+        var x = dx + nowX;
+        var y = dy + nowY;
+
+        var dir = brace.attr("dir");
+        var newPath = "";
+        if ("left" == dir) {
+            newPath = makeCurlyBrace(x, y, x, y + brace.getBBox().height, BRACE_WIDTH, BRACE_Q);
+        } else if ("right" == dir) {
+            newPath = makeCurlyBrace(x, y, x, y - brace.getBBox().height, BRACE_WIDTH, BRACE_Q);
+        } else {
+            return;
+        }
+
+        g.transform("translate(0 0)");
+
+        brace.transform("translate(0 0)");
+        brace.attr("d", newPath);
+
+    }
 
     var bBox = brace.getBBox();
 
@@ -1984,48 +1980,48 @@ function correctBreakXY(grp, conn) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
-    if (tStrAry.length == 0) {
-        return;
-    }
+    if (tStrAry.length != 0) {
 
-    var x = parseInt(tStrAry[0][1], 10);
-    var y = parseInt(tStrAry[0][2], 10);
+        var x = parseInt(tStrAry[0][1], 10);
+        var y = parseInt(tStrAry[0][2], 10);
 
-    //g.attr("transform", "");
-    g.transform("translate(0 0)");
+        //g.attr("transform", "");
+        g.transform("translate(0 0)");
 
-    var pathStr = conn.attr("d");
-    pathStr = pathStr.substring(0, pathStr.length - 1);
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
+        var pathStr = conn.attr("d");
+        pathStr = pathStr.substring(0, pathStr.length - 1);
+        var pathAry = Snap.parsePathString(pathStr);
+        var pathLen = pathAry.length;
 
-    pathAry.forEach(function (p) {
-        p[1] = parseInt(p[1]) + x;
-        p[2] = parseInt(p[2]) + y;
-    });
+        pathAry.forEach(function (p) {
+            p[1] = parseInt(p[1]) + x;
+            p[2] = parseInt(p[2]) + y;
+        });
 
-    var newPath = "";
-    var lastSubPath = [];
-    for (var i = 0; i < pathLen; i++) {
+        var newPath = "";
+        var lastSubPath = [];
+        for (var i = 0; i < pathLen; i++) {
 
-        var act = pathAry[i][0];
-        var cx = pathAry[i][1];
-        var cy = pathAry[i][2];
+            var act = pathAry[i][0];
+            var cx = pathAry[i][1];
+            var cy = pathAry[i][2];
 
-        newPath += act + " ";
-        newPath += cx + " ";
-        newPath += cy + " ";
+            newPath += act + " ";
+            newPath += cx + " ";
+            newPath += cy + " ";
 
-        if (i >= pathLen - 2) {
-            lastSubPath.push(cx);
-            lastSubPath.push(cy);
+            if (i >= pathLen - 2) {
+                lastSubPath.push(cx);
+                lastSubPath.push(cy);
+            }
         }
-    }
 
-    newPath = newPath + "Z";
-    //conn.attr("transform", "");
-    conn.transform("translate(0 0)");
-    conn.attr("d", newPath);
+        newPath = newPath + "Z";
+        //conn.attr("transform", "");
+        conn.transform("translate(0 0)");
+        conn.attr("d", newPath);
+
+    }
 
 }
 //endregion
@@ -2037,7 +2033,19 @@ function insertImage() {
 
 function addImage() {
 
-    file = document.getElementById("insertImg").files[0];
+    var file = document.getElementById("insertImg").files[0];
+
+    if (!file) {
+        return;
+    }
+
+    var textType = /image.*/;
+    if (!file.type.match(textType)) {
+        alert("File not supported!");
+        document.getElementById("insertImg").value = "";
+        return;
+    }
+
     var fReader = new FileReader();
     fReader.onload = function (event) {
 
@@ -2173,27 +2181,25 @@ function correctImageXY(grp, image) {
 
     var tStrAry = Snap.parseTransformString(g.attr("transform"));
 
-    if (tStrAry.length == 0) {
-        return;
-    }
-
-    var x = parseInt(tStrAry[0][1], 10);
-    var y = parseInt(tStrAry[0][2], 10);
-
-    var nowX = parseInt(image.attr("x"), 10);
-    var nowY = parseInt(image.attr("y"), 10);
-
-    x += nowX;
-    y += nowY;
-
-    //g.attr("transform", "");
-    g.transform("translate(0 0)");
-
-    //rect.attr("transform", "");
     var imageId = grp + "image";
-    image.transform("translate(0 0)");
-    image.attr("x", x);
-    image.attr("y", y);
+    if (tStrAry.length != 0) {
+
+        var x = parseInt(tStrAry[0][1], 10);
+        var y = parseInt(tStrAry[0][2], 10);
+
+        var nowX = parseInt(image.attr("x"), 10);
+        var nowY = parseInt(image.attr("y"), 10);
+
+        x += nowX;
+        y += nowY;
+
+        g.transform("translate(0 0)");
+
+        image.transform("translate(0 0)");
+        image.attr("x", x);
+        image.attr("y", y);
+
+    }
 
     var nResize = gSvg.select("#" + grp + "nResize");
     var nResizeXY = getElementXYofImage("nResize", imageId);
@@ -2691,6 +2697,30 @@ document.addEventListener("DOMContentLoaded", function () {
             newRect.mouseout(rectMouseOut);
             newRect.mousedown(svgElMouseDown);
 
+            newRect.node.addEventListener("contextmenu", rectContextMenu);
+
+            // resize event
+            newRect.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
+                nResize.mouseover(rectMouseOver);
+                nResize.mouseout(rectMouseOut);
+                nResize.mousedown(nResizeMouseDown);
+            });
+            newRect.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
+                sResize.mouseover(rectMouseOver);
+                sResize.mouseout(rectMouseOut);
+                sResize.mousedown(sResizeMouseDown);
+            });
+            newRect.parent().selectAll("[id$='wResize']").forEach(function (wResize) {
+                wResize.mouseover(rectMouseOver);
+                wResize.mouseout(rectMouseOut);
+                wResize.mousedown(wResizeMouseDown);
+            });
+            newRect.parent().selectAll("[id$='eResize']").forEach(function (eResize) {
+                eResize.mouseover(rectMouseOver);
+                eResize.mouseout(rectMouseOut);
+                eResize.mousedown(eResizeMouseDown);
+            });
+
             var id = newRect.attr("id");
             var grp = getGroupPrefix(id);
 
@@ -2732,24 +2762,133 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
+        gSvg.selectAll("ellipse").forEach(function (newEllipse) {
+
+            newEllipse.mouseover(rectMouseOver);
+            newEllipse.mouseout(rectMouseOut);
+            newEllipse.mousedown(svgElMouseDown);
+
+            newEllipse.node.addEventListener("contextmenu", ellipseContextMenu);
+
+            // resize event
+            newEllipse.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
+                nResize.mouseover(rectMouseOver);
+                nResize.mouseout(rectMouseOut);
+                nResize.mousedown(nResizeEllipseMouseDown);
+            });
+            newEllipse.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
+                sResize.mouseover(rectMouseOver);
+                sResize.mouseout(rectMouseOut);
+                sResize.mousedown(sResizeEllipseMouseDown);
+            });
+            newEllipse.parent().selectAll("[id$='wResize']").forEach(function (wResize) {
+                wResize.mouseover(rectMouseOver);
+                wResize.mouseout(rectMouseOut);
+                wResize.mousedown(wResizeEllipseMouseDown);
+            });
+            newEllipse.parent().selectAll("[id$='eResize']").forEach(function (eResize) {
+                eResize.mouseover(rectMouseOver);
+                eResize.mouseout(rectMouseOut);
+                eResize.mousedown(eResizeEllipseMouseDown);
+            });
+
+            var id = newEllipse.attr("id");
+            var grp = getGroupPrefix(id);
+
+            if (grp > initGrp) {
+                initGrp = grp;
+            }
+
+        });
+
+        gSvg.selectAll("[id$='_brace']").forEach(function (newBrace) {
+
+            newBrace.mouseover(rectMouseOver);
+            newBrace.mouseout(rectMouseOut);
+            newBrace.mousedown(svgElMouseDown);
+
+            newBrace.node.addEventListener("contextmenu", braceContextMenu);
+
+            // resize event
+            newBrace.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
+                nResize.mouseover(rectMouseOver);
+                nResize.mouseout(rectMouseOut);
+                nResize.mousedown(nResizeBraceMouseDown);
+            });
+            newBrace.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
+                sResize.mouseover(rectMouseOver);
+                sResize.mouseout(rectMouseOut);
+                sResize.mousedown(sResizeBraceMouseDown);
+            });
+
+            var id = newBrace.attr("id");
+            var grp = getGroupPrefix(id);
+
+            if (grp > initGrp) {
+                initGrp = grp;
+            }
+
+        });
+
+        gSvg.selectAll("[id$='_break']").forEach(function (newBreak) {
+
+            newBreak.mouseover(rectMouseOver);
+            newBreak.mouseout(rectMouseOut);
+            newBreak.mousedown(svgElMouseDown);
+
+            newBreak.node.addEventListener("contextmenu", breakContextMenu);
+
+            var id = newBreak.attr("id");
+            var grp = getGroupPrefix(id);
+
+            if (grp > initGrp) {
+                initGrp = grp;
+            }
+
+        });
+
+        gSvg.selectAll("image").forEach(function (newImage) {
+
+            newImage.mouseover(rectMouseOver);
+            newImage.mouseout(rectMouseOut);
+            newImage.mousedown(svgElMouseDown);
+
+            newImage.node.addEventListener("contextmenu", imageContextMenu);
+
+            // resize event
+            newImage.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
+                nResize.mouseover(rectMouseOver);
+                nResize.mouseout(rectMouseOut);
+                nResize.mousedown(nResizeImageMouseDown);
+            });
+            newImage.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
+                sResize.mouseover(rectMouseOver);
+                sResize.mouseout(rectMouseOut);
+                sResize.mousedown(sResizeImageMouseDown);
+            });
+            newImage.parent().selectAll("[id$='wResize']").forEach(function (wResize) {
+                wResize.mouseover(rectMouseOver);
+                wResize.mouseout(rectMouseOut);
+                wResize.mousedown(wResizeImageMouseDown);
+            });
+            newImage.parent().selectAll("[id$='eResize']").forEach(function (eResize) {
+                eResize.mouseover(rectMouseOver);
+                eResize.mouseout(rectMouseOut);
+                eResize.mousedown(eResizeImageMouseDown);
+            });
+
+            var id = newImage.attr("id");
+            var grp = getGroupPrefix(id);
+
+            if (grp > initGrp) {
+                initGrp = grp;
+            }
+
+        });
+
         var grpAry = initGrp.split(SEPARATOR);
         var sn = parseInt(grpAry[1], 10);
         gSerialNo = sn + 1;
-        //gSvg.selectAll(".myEndPoint").forEach(function (newConn) {
-        //
-        //    endPoint.mouseover(connectorMouseOver);
-        //    endPoint.mouseout(connectorMouseOut);
-        //    endPoint.mousedown(endPointMouseDown);
-        //
-        //});
-        //
-        //gSvg.selectAll(".myEndPoint").forEach(function (newConn) {
-        //
-        //    endPoint.mouseover(connectorMouseOver);
-        //    endPoint.mouseout(connectorMouseOut);
-        //    endPoint.mousedown(endPointMouseDown);
-        //
-        //});
 
     }
 
@@ -2758,10 +2897,15 @@ document.addEventListener("DOMContentLoaded", function () {
     gStartY = bound.top;
 
     var mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
+    //var mainAreaBound = document.getElementById("drawArea").getBoundingClientRect();
     gMenuWidth = mainAreaBound.left;
     gMenuHeight = mainAreaBound.top;
-//$(gSvg.node).position().top;
+    //$(gSvg.node).position().top;
 
 
 });
+
+function newDraw() {
+    gSvg.node.innerHTML = "";
+}
 //endregion

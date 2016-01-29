@@ -18,6 +18,10 @@
 <nav></nav>
 <section id="mainArea">
     <div id="component" style="width:150px;">
+        <button onclick="newDraw()">new</button>
+        <button onclick="loadDraw()">load</button>
+        <button onclick="saveDraw()">save</button>
+        <button onclick="deleteDraw()">delete</button>
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect('dash')">
             <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect myRectDash"/>
             <text x="15" y="25" class="myLabel">Place</text>
@@ -43,13 +47,13 @@
             <path d="M 7 2 L 7 11 L 10 11 L 10 20 L 14 8 L 10 8 L 14 2 Z" transform="translate(20 0)" class="myBreak"/>
         </svg>
         <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addBrace('left')">
-            <text x="20" y="15" transform="scale(1 2)">{</text>
+            <text x="20" y="15" transform="scale(1 2)" style="cursor: move;">{</text>
         </svg>
         <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addBrace('right')">
-            <text x="20" y="15" transform="scale(1 2)">}</text>
+            <text x="20" y="15" transform="scale(1 2)" style="cursor: move;">}</text>
         </svg>
         <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="insertImage()">
-            <g transform="scale(2 2)">
+            <g transform="scale(2 2)" style="cursor: move;">
                 <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
                 <path d="M0 0h24v24H0z" fill="none"/>
             </g>
