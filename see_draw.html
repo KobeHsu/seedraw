@@ -22,6 +22,7 @@
         <button onclick="loadDraw()">load</button>
         <button onclick="saveDraw()">save</button>
         <button onclick="deleteDraw()">delete</button>
+        <input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect('dash')">
             <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect myRectDash"/>
             <text x="15" y="25" class="myLabel">Place</text>
