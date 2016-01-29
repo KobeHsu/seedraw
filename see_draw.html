@@ -48,6 +48,13 @@
         <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="addBrace('right')">
             <text x="20" y="15" transform="scale(1 2)">}</text>
         </svg>
+        <svg width="150" height="40" style="margin: 10px 10px 10px 10px" onclick="insertImage()">
+            <g transform="scale(2 2)">
+                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                <path d="M0 0h24v24H0z" fill="none"/>
+            </g>
+        </svg>
+        <input type="file" id="insertImg" name="insertImg" onchange="addImage()" style="display:none"/>
     </div>
     <div id="drawArea" style="width:800px;"><input type="text" id="rectText" style="display:none;"/></div>
 </section>
