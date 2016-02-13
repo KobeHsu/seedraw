@@ -184,6 +184,7 @@ input[type="text"].focus {
     filter: alpha(opacity=80);
     cursor: pointer;
     position: absolute;
+    pointer-events: none;
 }
 
 .hide {
@@ -394,11 +395,12 @@ input[type="text"].focus {
 
 .mySelected {
     fill: none;
-    stroke: rgb(255, 0, 0);
+    stroke: #6c8ebf;
     stroke-miterlimit: 10;
     stroke-width: 2px;
-    pointer-events: all;
+    stroke-dasharray: 5, 5;
+    pointer-events: none;
     /*z-index: 9;*/
-    opacity: 0.5;
+    opacity: 0.8;
     cursor: move;
 }

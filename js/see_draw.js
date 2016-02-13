@@ -1,7 +1,7 @@
 var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
 
-//var __DEBUG = true;
+var __DEBUG_OUTPUT = false;
 
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
@@ -51,6 +51,7 @@ var gStartX;
 var gStartY;
 var gCurrent;
 var gDragType;
+var gTextEditing;
 
 var gMenuWidth;
 var gMenuHeight;
@@ -105,7 +106,7 @@ function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
 
 }
 
-function setSelectedMark(bBox, grp) {
+function generateSelectedMark(bBox, grp) {
 
     var selectedId = grp + "selected";
 
@@ -116,7 +117,7 @@ function setSelectedMark(bBox, grp) {
 
     selected.attr("id", selectedId);
     selected.addClass("mySelected");
-    hideElement(selectedId);
+    hideElementById(selectedId);
 
     return selected;
 
@@ -151,19 +152,7 @@ function addRect(type) {
     newRect.node.addEventListener("contextmenu", rectContextMenu);
 
     var bBoxRect = newRect.getBBox();
-    var selected = setSelectedMark(bBoxRect, grp);
-
-    selected.mouseover(rectMouseOver);
-    selected.mouseout(rectMouseOut);
-    selected.mousedown(function (e) {
-        e.stopPropagation();
-        var event = new MouseEvent('mousedown', {
-                'clientX': e.clientX,
-                'clientY': e.clientY
-            })
-            ;
-        newRect.node.dispatchEvent(event);
-    });
+    var selected = generateSelectedMark(bBoxRect, grp);
 
     var closeId = grp + "close";
     var closeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "close", rectId);
@@ -172,9 +161,9 @@ function addRect(type) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    close.mouseover(rectMouseOver);
-    close.mouseout(rectMouseOut);
-    close.click(closeClick);
+    //close.mouseover(rectMouseOver);
+    //close.mouseout(rectMouseOut);
+    close.mousedown(closeClick);
 
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "nResize", rectId);
@@ -183,8 +172,8 @@ function addRect(type) {
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
 
-    nResize.mouseover(rectMouseOver);
-    nResize.mouseout(rectMouseOut);
+    //nResize.mouseover(rectMouseOver);
+    //nResize.mouseout(rectMouseOut);
     nResize.mousedown(nResizeMouseDown);
 
     var sResizeId = grp + "sResize";
@@ -194,8 +183,8 @@ function addRect(type) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    sResize.mouseover(rectMouseOver);
-    sResize.mouseout(rectMouseOut);
+    //sResize.mouseover(rectMouseOver);
+    //sResize.mouseout(rectMouseOut);
     sResize.mousedown(sResizeMouseDown);
 
     var wResizeId = grp + "wResize";
@@ -205,8 +194,8 @@ function addRect(type) {
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
 
-    wResize.mouseover(rectMouseOver);
-    wResize.mouseout(rectMouseOut);
+    //wResize.mouseover(rectMouseOver);
+    //wResize.mouseout(rectMouseOut);
     wResize.mousedown(wResizeMouseDown);
 
     var eResizeId = grp + "eResize";
@@ -216,8 +205,8 @@ function addRect(type) {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    eResize.mouseover(rectMouseOver);
-    eResize.mouseout(rectMouseOut);
+    //eResize.mouseover(rectMouseOver);
+    //eResize.mouseout(rectMouseOut);
     eResize.mousedown(eResizeMouseDown);
 
     var textId = grp + "text";
@@ -229,16 +218,27 @@ function addRect(type) {
         text.addClass("hide");
     }
 
-    text.dblclick(textDblClick);
+    newRect.dblclick(textDblClick);
 
     var g = gSvg.g(newRect, close, nResize, sResize, wResize, eResize, text, selected);
     g.attr("id", grpId);
 
     gSerialNo++;
 
-    clearSelected();
-    showElement(selected.attr("id"));
+    setSelected(grp);
     gCurrent = grp;
+
+}
+
+function setSelected(grp) {
+
+    clearSelected();
+    showElementById(grp + "selected");
+    showElementById(grp + "close");
+    showElementById(grp + "nResize");
+    showElementById(grp + "sResize");
+    showElementById(grp + "wResize");
+    showElementById(grp + "eResize");
 
 }
 
@@ -263,11 +263,11 @@ function rectMouseOver() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    showElement(grp + "close");
-    showElement(grp + "nResize");
-    showElement(grp + "sResize");
-    showElement(grp + "wResize");
-    showElement(grp + "eResize");
+    showElementById(grp + "close");
+    showElementById(grp + "nResize");
+    showElementById(grp + "sResize");
+    showElementById(grp + "wResize");
+    showElementById(grp + "eResize");
 
 }
 
@@ -275,16 +275,16 @@ function rectMouseOut() {
 
     var grp = getGroupPrefix(this.attr("id"));
 
-    hideElement(grp + "close");
-    hideElement(grp + "nResize");
-    hideElement(grp + "sResize");
-    hideElement(grp + "wResize");
-    hideElement(grp + "eResize");
+    hideElementById(grp + "close");
+    hideElementById(grp + "nResize");
+    hideElementById(grp + "sResize");
+    hideElementById(grp + "wResize");
+    hideElementById(grp + "eResize");
 
 }
 
 function closeClick(e) {
-
+    log("closeClick");
     e.stopPropagation();
 
     var r = confirm(REMOVE_RECT_MSG);
@@ -299,12 +299,14 @@ function closeClick(e) {
 }
 
 function textDblClick(event) {
-
+    log("textDblClick, id=" + this.attr("id"));
+    log("gCurrent=" + gCurrent);
+    gTextEditing = true;
     event.stopPropagation();
-
-    var grp = getGroupPrefix(this.attr("id"));
-    gCurrent = grp;
-    var text = gSvg.select("#" + grp + "text");
+    //
+    //var grp = getGroupPrefix(this.attr("id"));
+    //gCurrent = grp;
+    var text = gSvg.select("#" + gCurrent + "text");
 
     var textBBox = text.node.getBoundingClientRect();
     text.addClass("hide");
@@ -320,7 +322,9 @@ function textDblClick(event) {
 }
 
 function inputBlur(event) {
-
+    log("inputBlur");
+    log("gCurrent=" + gCurrent);
+    gTextEditing = false;
     event.stopPropagation();
 
     var grp = gCurrent;
@@ -790,19 +794,7 @@ function addEllipse(type) {
     newEllipse.node.addEventListener("contextmenu", ellipseContextMenu);
 
     var bBoxEllipse = newEllipse.getBBox();
-    var selected = setSelectedMark(bBoxEllipse, grp);
-
-    selected.mouseover(rectMouseOver);
-    selected.mouseout(rectMouseOut);
-    selected.mousedown(function (e) {
-        e.stopPropagation();
-        var event = new MouseEvent('mousedown', {
-                'clientX': e.clientX,
-                'clientY': e.clientY
-            })
-            ;
-        newEllipse.node.dispatchEvent(event);
-    });
+    var selected = generateSelectedMark(bBoxEllipse, grp);
 
     var closeId = grp + "close";
     var closeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "close", ellipseId);
@@ -811,9 +803,9 @@ function addEllipse(type) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    close.mouseover(rectMouseOver);
-    close.mouseout(rectMouseOut);
-    close.click(closeClick);
+    //close.mouseover(rectMouseOver);
+    //close.mouseout(rectMouseOut);
+    close.mousedown(closeClick);
 
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "nResize", ellipseId);
@@ -822,8 +814,8 @@ function addEllipse(type) {
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
 
-    nResize.mouseover(rectMouseOver);
-    nResize.mouseout(rectMouseOut);
+    //nResize.mouseover(rectMouseOver);
+    //nResize.mouseout(rectMouseOut);
     nResize.mousedown(nResizeEllipseMouseDown);
 
     var sResizeId = grp + "sResize";
@@ -833,8 +825,8 @@ function addEllipse(type) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    sResize.mouseover(rectMouseOver);
-    sResize.mouseout(rectMouseOut);
+    //sResize.mouseover(rectMouseOver);
+    //sResize.mouseout(rectMouseOut);
     sResize.mousedown(sResizeEllipseMouseDown);
 
     var wResizeId = grp + "wResize";
@@ -844,8 +836,8 @@ function addEllipse(type) {
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
 
-    wResize.mouseover(rectMouseOver);
-    wResize.mouseout(rectMouseOut);
+    //wResize.mouseover(rectMouseOver);
+    //wResize.mouseout(rectMouseOut);
     wResize.mousedown(wResizeEllipseMouseDown);
 
     var eResizeId = grp + "eResize";
@@ -855,8 +847,8 @@ function addEllipse(type) {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    eResize.mouseover(rectMouseOver);
-    eResize.mouseout(rectMouseOut);
+    //eResize.mouseover(rectMouseOver);
+    //eResize.mouseout(rectMouseOut);
     eResize.mousedown(eResizeEllipseMouseDown);
 
 
@@ -866,12 +858,15 @@ function addEllipse(type) {
     text.attr("id", textId);
     text.addClass("myLabel");
 
-    text.dblclick(textDblClick);
+    newEllipse.dblclick(textDblClick);
 
     var g = gSvg.g(newEllipse, close, nResize, sResize, wResize, eResize, text, selected);
     g.attr("id", grpId);
 
     gSerialNo++;
+
+    setSelected(grp);
+    gCurrent = grp;
 
 }
 
@@ -930,11 +925,12 @@ function getElementXYofEllipse(bBoxX, bBoxY, elName, ellipseId) {
         xy.push(bBoxX + rx * 2);
         xy.push(bBoxY + ry);
 
+    } else if ("selected" == elName) {
+
+        xy.push(bBoxX);
+        xy.push(bBoxY);
+
     }
-    //else if ("port" == elName) {
-    //    xy.push(rectX + RECT_WIDTH_HALF);
-    //    xy.push(rectY + RECT_HEIGHT);
-    //}
 
     return xy;
 
@@ -1010,9 +1006,17 @@ function correctEllipseXY(grp, ellipse) {
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
 
+    var selected = gSvg.select("#" + grp + "selected");
+    var selectedXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "selected", ellipseId);
+    selected.transform("translate(0 0)");
+    selected.attr("x", selectedXY[0]);
+    selected.attr("y", selectedXY[1]);
+
 }
 
 function nResizeEllipseMouseDown() {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -1072,6 +1076,10 @@ function nResizeEllipseMouseMove(event) {
     ellipse.attr("cy", cy + dy);
     ellipse.attr("ry", newRy);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("y", ellipse.getBBox().y);
+    selected.attr("height", ellipse.getBBox().height);
+
 }
 
 function nResizeEllipseMouseUp() {
@@ -1090,11 +1098,13 @@ function nResizeEllipseMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
 function sResizeEllipseMouseDown() {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -1155,6 +1165,9 @@ function sResizeEllipseMouseMove(event) {
     ellipse.attr("cy", cy + dy);
     ellipse.attr("ry", newRy);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("height", ellipse.getBBox().height);
+
 }
 
 function sResizeEllipseMouseUp() {
@@ -1173,11 +1186,13 @@ function sResizeEllipseMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
 function wResizeEllipseMouseDown() {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -1238,6 +1253,10 @@ function wResizeEllipseMouseMove(event) {
     ellipse.attr("cx", cx + dx);
     ellipse.attr("rx", newRx);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("x", ellipse.getBBox().x);
+    selected.attr("width", ellipse.getBBox().width);
+
 }
 
 function wResizeEllipseMouseUp() {
@@ -1256,11 +1275,13 @@ function wResizeEllipseMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
 function eResizeEllipseMouseDown() {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -1279,7 +1300,6 @@ function eResizeEllipseMouseDown() {
     svgEl.data("mousedown-ry", parseInt(ellipse.attr("ry"), 10));
 
     svgEl.addClass("toFront");
-    //correctRectXY(grp, rect);
 
     gDrawArea.onmousemove = eResizeEllipseMouseMove;
     gDrawArea.onmouseup = eResizeEllipseMouseUp;
@@ -1322,6 +1342,9 @@ function eResizeEllipseMouseMove(event) {
     ellipse.attr("cx", cx + dx);
     ellipse.attr("rx", newRx);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("width", ellipse.getBBox().width);
+
 }
 
 function eResizeEllipseMouseUp() {
@@ -1340,10 +1363,9 @@ function eResizeEllipseMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
-
 //endregion
 
 //region Boundary
@@ -2637,13 +2659,13 @@ function eResizeImageMouseUp() {
 
 // region Common
 function svgElMouseDown(event) {
-
+    log("svgElMouseDown");
     event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
     gCurrent = grp;
-    showElement(gCurrent + "selected");
+    setSelected(gCurrent);
 
     if (id.indexOf("rect") > 0) {
         gDragType = "rect";
@@ -2705,7 +2727,7 @@ function svgElMouseMove(event) {
 }
 
 function svgElMouseUp() {
-
+    log("svgElMouseUp");
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
@@ -2756,22 +2778,29 @@ function getGroupPrefix(id) {
 }
 
 
-function hideElement(elId) {
+function hideElementById(elId) {
 
     var el = gSvg.select("#" + elId);
-    if (el) {
-        el.addClass("hide");
-    }
+    hideElement(el);
 
 }
 
-function showElement(elId) {
+function hideElement(el) {
+    if (el) {
+        el.addClass("hide");
+    }
+}
+
+function showElementById(elId) {
 
     var el = gSvg.select("#" + elId);
+    showElement(el);
+}
+
+function showElement(el) {
     if (el) {
         el.removeClass("hide");
     }
-
 }
 
 function reloadSvg() {
@@ -2997,7 +3026,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     gDrawArea.onmousedown = function () {
-        if (gCurrent != "") {
+        log("gDrawArea onmousedown");
+        if (gCurrent != "" && !gTextEditing) {
             clearSelected();
             gCurrent = "";
         }
@@ -3019,7 +3049,15 @@ document.addEventListener("DOMContentLoaded", function () {
 function clearSelected() {
 
     gSvg.selectAll("[id$='selected'").forEach(function (element) {
-        hideElement(element.attr("id"));
+        hideElement(element);
+    });
+
+    gSvg.selectAll("[id$='close'").forEach(function (element) {
+        hideElement(element);
+    });
+
+    gSvg.selectAll("[id$='Resize'").forEach(function (element) {
+        hideElement(element);
     });
 
 
@@ -3063,6 +3101,12 @@ function performLoadSvg() {
 
 function deleteDraw() {
     gSvg.node.innerHTML = "";
+}
+
+function log(msg) {
+    if (__DEBUG_OUTPUT) {
+        console.log(msg);
+    }
 }
 //endregion
 
