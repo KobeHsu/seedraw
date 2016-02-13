@@ -1698,7 +1698,6 @@ function eResizeLineMouseUp() {
 }
 //endregion
 
-
 //region Brace
 // refer: http://bl.ocks.org/alexhornbake/6005176
 //returns path string d for <path d="This string">
@@ -1753,13 +1752,23 @@ function addBrace(dir) {
     newBrace.attr("id", braceId);
     newBrace.attr("dir", dir);
 
-    newBrace.mouseover(rectMouseOver);
-    newBrace.mouseout(rectMouseOut);
+    //newBrace.mouseover(rectMouseOver);
+    //newBrace.mouseout(rectMouseOut);
     newBrace.mousedown(svgElMouseDown);
 
     newBrace.node.addEventListener("contextmenu", braceContextMenu);
 
     var bBoxBrace = newBrace.getBBox();
+    var selected = generateSelectedMark(bBoxBrace, grp);
+
+    var closeId = grp + "close";
+    var closeXY = getElementXYofBrace(bBoxBrace.x, bBoxBrace.y, "close", braceId);
+    var close = gSvg.circle(closeXY[0], closeXY[1], CIRCLE_R);
+    close.addClass("myClose");
+    close.addClass("hide");
+    close.attr("id", closeId);
+
+    close.mousedown(closeClick);
 
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofBrace(bBoxBrace.x, bBoxBrace.y, "nResize", braceId);
@@ -1768,8 +1777,8 @@ function addBrace(dir) {
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
 
-    nResize.mouseover(rectMouseOver);
-    nResize.mouseout(rectMouseOut);
+    //nResize.mouseover(rectMouseOver);
+    //nResize.mouseout(rectMouseOut);
     nResize.mousedown(nResizeBraceMouseDown);
 
     var sResizeId = grp + "sResize";
@@ -1779,29 +1788,32 @@ function addBrace(dir) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    sResize.mouseover(rectMouseOver);
-    sResize.mouseout(rectMouseOut);
+    //sResize.mouseover(rectMouseOver);
+    //sResize.mouseout(rectMouseOut);
     sResize.mousedown(sResizeBraceMouseDown);
 
-    var g = gSvg.g(newBrace, nResize, sResize);
+    var g = gSvg.g(newBrace, nResize, sResize, selected, close);
     g.attr("id", grpId);
 
     gSerialNo++;
+
+    setSelected(grp);
+    gCurrent = grp;
 
 }
 
 function braceContextMenu(e) {
 
-    e.preventDefault();
-
-    var r = confirm(REMOVE_BRACE_MSG);
-    if (!r) {
-        return;
-    }
-
-    var grp = getGroupPrefix(this.id);
-    var grpId = grp + "g";
-    gSvg.select("#" + grpId).remove();
+    //e.preventDefault();
+    //
+    //var r = confirm(REMOVE_BRACE_MSG);
+    //if (!r) {
+    //    return;
+    //}
+    //
+    //var grp = getGroupPrefix(this.id);
+    //var grpId = grp + "g";
+    //gSvg.select("#" + grpId).remove();
 
     return false;
 
@@ -1822,6 +1834,16 @@ function getElementXYofBrace(bBoxX, bBoxY, elName, braceId) {
 
         xy.push(bBoxX + (bBox.width ) / 2);
         xy.push(bBoxY + bBox.height);
+
+    } else if ("selected" == elName) {
+
+        xy.push(bBoxX);
+        xy.push(bBoxY);
+
+    } else if ("close" == elName) {
+
+        xy.push(bBoxX + bBox.width - CIRCLE_R_HALF);
+        xy.push(bBoxY + bBox.height / 2);
 
     }
 
@@ -1869,6 +1891,13 @@ function correctBraceXY(grp, brace) {
 
     var bBox = brace.getBBox();
 
+    var close = gSvg.select("#" + grp + "close");
+    var closeXY = getElementXYofBrace(bBox.x, bBox.y, "close", braceId);
+
+    close.transform("translate(0 0)");
+    close.attr("cx", closeXY[0]);
+    close.attr("cy", closeXY[1]);
+
     var nResize = gSvg.select("#" + grp + "nResize");
     var nResizeXY = getElementXYofBrace(bBox.x, bBox.y, "nResize", braceId);
 
@@ -1883,9 +1912,17 @@ function correctBraceXY(grp, brace) {
     sResize.attr("cx", sResizeXY[0]);
     sResize.attr("cy", sResizeXY[1]);
 
+    var selected = gSvg.select("#" + grp + "selected");
+    var selectedXY = getElementXYofRect(bBox.x, bBox.y, "selected", braceId);
+    selected.transform("translate(0 0)");
+    selected.attr("x", selectedXY[0]);
+    selected.attr("y", selectedXY[1]);
+
 }
 
-function nResizeBraceMouseDown() {
+function nResizeBraceMouseDown(event) {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -1945,6 +1982,10 @@ function nResizeBraceMouseMove(event) {
 
     brace.attr("d", newPath);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("y", event.clientY - gStartY);
+    selected.attr("height", brace.getBBox().height);
+
 }
 
 function nResizeBraceMouseUp() {
@@ -1963,11 +2004,13 @@ function nResizeBraceMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
-function sResizeBraceMouseDown() {
+function sResizeBraceMouseDown(event) {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -2027,6 +2070,10 @@ function sResizeBraceMouseMove(event) {
 
     brace.attr("d", newPath);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("height", brace.getBBox().height);
+
+
 }
 
 function sResizeBraceMouseUp() {
@@ -2045,7 +2092,7 @@ function sResizeBraceMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 //endregion
@@ -2174,14 +2221,26 @@ function addImage() {
         newImage.attr("x", 10);
         newImage.attr("y", 10);
 
-        newImage.mouseover(rectMouseOver);
-        newImage.mouseout(rectMouseOut);
+        //newImage.mouseover(rectMouseOver);
+        //newImage.mouseout(rectMouseOut);
         newImage.mousedown(svgElMouseDown);
 
         newImage.node.addEventListener("contextmenu", imageContextMenu);
         newImage.node.addEventListener("load",
 
             function () {
+
+                var bBoxImage = newImage.getBBox();
+                var selected = generateSelectedMark(bBoxImage, grp);
+
+                var closeId = grp + "close";
+                var closeXY = getElementXYofImage("close", imageId);
+                var close = gSvg.circle(closeXY[0], closeXY[1], CIRCLE_R);
+                close.addClass("myClose");
+                close.addClass("hide");
+                close.attr("id", closeId);
+
+                close.mousedown(closeClick);
 
                 var nResizeId = grp + "nResize";
                 var nResizeXY = getElementXYofImage("nResize", imageId);
@@ -2190,8 +2249,8 @@ function addImage() {
                 nResize.addClass("hide");
                 nResize.attr("id", nResizeId);
 
-                nResize.mouseover(rectMouseOver);
-                nResize.mouseout(rectMouseOut);
+                //nResize.mouseover(rectMouseOver);
+                //nResize.mouseout(rectMouseOut);
                 nResize.mousedown(nResizeImageMouseDown);
 
                 var sResizeId = grp + "sResize";
@@ -2201,8 +2260,8 @@ function addImage() {
                 sResize.addClass("hide");
                 sResize.attr("id", sResizeId);
 
-                sResize.mouseover(rectMouseOver);
-                sResize.mouseout(rectMouseOut);
+                //sResize.mouseover(rectMouseOver);
+                //sResize.mouseout(rectMouseOut);
                 sResize.mousedown(sResizeImageMouseDown);
 
                 var wResizeId = grp + "wResize";
@@ -2212,8 +2271,8 @@ function addImage() {
                 wResize.addClass("hide");
                 wResize.attr("id", wResizeId);
 
-                wResize.mouseover(rectMouseOver);
-                wResize.mouseout(rectMouseOut);
+                //wResize.mouseover(rectMouseOver);
+                //wResize.mouseout(rectMouseOut);
                 wResize.mousedown(wResizeImageMouseDown);
 
                 var eResizeId = grp + "eResize";
@@ -2223,13 +2282,16 @@ function addImage() {
                 eResize.addClass("hide");
                 eResize.attr("id", eResizeId);
 
-                eResize.mouseover(rectMouseOver);
-                eResize.mouseout(rectMouseOut);
+                //eResize.mouseover(rectMouseOver);
+                //eResize.mouseout(rectMouseOut);
                 eResize.mousedown(eResizeImageMouseDown);
 
-                var g = gSvg.g(newImage, nResize, sResize, wResize, eResize);
+                var g = gSvg.g(newImage, nResize, sResize, wResize, eResize, close, selected);
                 var grpId = grp + "g";
                 g.attr("id", grpId);
+
+                setSelected(grp);
+                gCurrent = grp;
 
             });
 
@@ -2242,16 +2304,16 @@ function addImage() {
 
 function imageContextMenu(e) {
 
-    e.preventDefault();
-
-    var r = confirm(REMOVE_IMAGE_MSG);
-    if (!r) {
-        return;
-    }
-
-    var grp = getGroupPrefix(this.id);
-    var grpId = grp + "g";
-    gSvg.select("#" + grpId).remove();
+    //e.preventDefault();
+    //
+    //var r = confirm(REMOVE_IMAGE_MSG);
+    //if (!r) {
+    //    return;
+    //}
+    //
+    //var grp = getGroupPrefix(this.id);
+    //var grpId = grp + "g";
+    //gSvg.select("#" + grpId).remove();
 
     return false;
 
@@ -2283,6 +2345,16 @@ function getElementXYofImage(elName, imageId) {
 
         xy.push(bBox.x + bBox.width);
         xy.push(bBox.y + bBox.height / 2);
+
+    } else if ("close" == elName) {
+
+        xy.push(bBox.x + bBox.width - CIRCLE_R_HALF);
+        xy.push(bBox.y + CIRCLE_R_HALF);
+
+    } else if ("selected" == elName) {
+
+        xy.push(bBox.x);
+        xy.push(bBox.y);
 
     }
 
@@ -2316,6 +2388,13 @@ function correctImageXY(grp, image) {
 
     }
 
+    var close = gSvg.select("#" + grp + "close");
+    var closeXY = getElementXYofImage("close", imageId);
+
+    close.transform("translate(0 0)");
+    close.attr("cx", closeXY[0]);
+    close.attr("cy", closeXY[1]);
+
     var nResize = gSvg.select("#" + grp + "nResize");
     var nResizeXY = getElementXYofImage("nResize", imageId);
 
@@ -2344,9 +2423,17 @@ function correctImageXY(grp, image) {
     eResize.attr("cx", eResizeXY[0]);
     eResize.attr("cy", eResizeXY[1]);
 
+    var selected = gSvg.select("#" + grp + "selected");
+    var selectedXY = getElementXYofImage("selected", imageId);
+    selected.transform("translate(0 0)");
+    selected.attr("x", selectedXY[0]);
+    selected.attr("y", selectedXY[1]);
+
 }
 
-function nResizeImageMouseDown() {
+function nResizeImageMouseDown(event) {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -2402,6 +2489,10 @@ function nResizeImageMouseMove(event) {
     image.attr("y", event.clientY - gStartY);
     image.attr("height", newHeight);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("y", event.clientY - gStartY);
+    selected.attr("height", image.getBBox().height);
+
 }
 
 function nResizeImageMouseUp() {
@@ -2420,11 +2511,13 @@ function nResizeImageMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
-function sResizeImageMouseDown() {
+function sResizeImageMouseDown(event) {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -2479,6 +2572,9 @@ function sResizeImageMouseMove(event) {
     var image = gSvg.select("#" + gCurrent + "image");
     image.attr("height", newHeight);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("height", image.getBBox().height);
+
 }
 
 function sResizeImageMouseUp() {
@@ -2497,11 +2593,13 @@ function sResizeImageMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
-function wResizeImageMouseDown() {
+function wResizeImageMouseDown(event) {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -2557,6 +2655,10 @@ function wResizeImageMouseMove(event) {
     image.attr("x", event.clientX - gStartX);
     image.attr("width", newWidth);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("x", event.clientX - gStartX);
+    selected.attr("width", image.getBBox().width);
+
 }
 
 function wResizeImageMouseUp() {
@@ -2575,11 +2677,13 @@ function wResizeImageMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 
-function eResizeImageMouseDown() {
+function eResizeImageMouseDown(event) {
+
+    event.stopPropagation();
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
@@ -2634,6 +2738,9 @@ function eResizeImageMouseMove(event) {
     var image = gSvg.select("#" + gCurrent + "image");
     image.attr("width", newWidth);
 
+    var selected = gSvg.select("#" + gCurrent + "selected");
+    selected.attr("width", image.getBBox().width);
+
 }
 
 function eResizeImageMouseUp() {
@@ -2652,7 +2759,7 @@ function eResizeImageMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    //gCurrent = "";
     gDragType = "";
 }
 // endregion
