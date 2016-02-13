@@ -10,6 +10,7 @@
     <script src="js/snap.svg-min.js"></script>
     <script src="js/see_draw.js"></script>
     <script src="js/see_draw_path.js"></script>
+    <script src="js/CustomPath.js"></script>
 </head>
 <body>
 
@@ -17,7 +18,7 @@
 
 <nav></nav>
 <section id="mainArea">
-    <div id="component" style="width:150px;">
+    <div id="component" style="width:150px;float:left">
         <button onclick="newDraw()">new</button>
         <button onclick="loadDraw()">load</button>
         <button onclick="saveDraw()">save</button>
@@ -59,9 +60,12 @@
                 <path d="M0 0h24v24H0z" fill="none"/>
             </g>
         </svg>
+        <svg width="350" height="150" style="margin: 10px 10px 10px 10px" onclick="addCustomPath()">
+            <path d="M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z" transform="matrix(1,0,0,1,0,0)" class="myClippingSquare"></path>
+        </svg>
         <input type="file" id="insertImg" name="insertImg" onchange="addImage()" style="display:none"/>
     </div>
-    <div id="drawArea" style="width:800px;"><input type="text" id="rectText" style="display:none;"/></div>
+    <div id="drawArea" style="width:800px;float:left;"><input type="text" id="rectText" style="display:none;"/></div>
 </section>
 
 <footer></footer>

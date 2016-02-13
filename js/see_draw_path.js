@@ -11,13 +11,17 @@
 //
 //}
 
-function addConnector() {
+function addConnector(type) {
 
     var grp = getGroupPrefix(gSerialNo);
     var connectorId = grp + "connector";
 
     var newConn = gSvg.path("M 10 60 L 110 60");
-    newConn.addClass("myConnector");
+    if ('route' == type) {
+        newConn.addClass("myConnector2");
+    } else {
+        newConn.addClass("myConnector");
+    }
     newConn.attr("id", connectorId);
 
     newConn.mouseover(connectorMouseOver);
@@ -26,9 +30,9 @@ function addConnector() {
     newConn.node.addEventListener("contextmenu", connectorContextMenu);
 
     var len = newConn.getTotalLength();
-    var targetPoint = newConn.getPointAtLength(len/2);
+    var targetPoint = newConn.getPointAtLength(len / 2);
     var textId = grp + "text";
-    var textXY = getElementXYofRect(targetPoint.x-20, targetPoint.y-20, "text");
+    var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
     var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
@@ -37,7 +41,7 @@ function addConnector() {
     var grpId = grp + "g";
     g.attr("id", grpId);
 
-    reDrawPointByPath(grp, newConn, g);
+    reDrawPointByPath(grp, newConn, g, type);
 
     gSerialNo++;
 }
@@ -121,8 +125,8 @@ function correctConnectorXY(grp, conn) {
         var cy = pathAry[i][2];
 
         newPath += act + " ";
-            newPath += cx + " ";
-            newPath += cy + " ";
+        newPath += cx + " ";
+        newPath += cy + " ";
 
         if (i >= pathLen - 2) {
             lastSubPath.push(cx);
@@ -325,7 +329,7 @@ function endPointRemove(id) {
 
 }
 
-function reDrawPointByPath(grp, conn, g) {
+function reDrawPointByPath(grp, conn, g, type) {
 
     if (!g) {
         var gId = grp + "g";
@@ -412,7 +416,11 @@ function reDrawPointByPath(grp, conn, g) {
         arrowPath += " Z";
 
         var arrow = gSvg.path(arrowPath);
-        arrow.addClass("myConnector");
+        if ('route' == type) {
+            arrow.addClass("myConnector2");
+        } else {
+            arrow.addClass("myConnector");
+        }
         arrow.attr("id", arrowId);
         //arrow.node.style["zIndex"] = -10;
         arrow.mouseover(connectorMouseOver);

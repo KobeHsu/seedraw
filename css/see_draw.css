@@ -1,10 +1,10 @@
+/*
 #mainArea div {
-    /*height:600px;*/
     float: left;
     border: 1px solid red;
     margin: 20px 0px 0px 20px;
 }
-
+*/
 /*svg>rect {*/
 /*fill:#00FF99;*/
 /*stroke:black;*/
@@ -69,8 +69,9 @@ input[type="text"].focus {
 }*/
 
 .myRect {
-    fill: #FFFFFF;
-    stroke: #4492c2;
+    fill: #C6E9C2;
+    stroke: #43973A;
+    stroke-width: 4px;
     #border: solid #4492c2 2px;
     -webkit-border-radius: 6;
     -moz-border-radius: 6;
@@ -86,6 +87,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
+    pointer-events:all;
 }
 
 .myRectDash {
@@ -111,30 +113,35 @@ input[type="text"].focus {
 .myClose {
     fill: #70717C;
     cursor: no-drop;
+    z-index: 20;
 }
 
 .myNResize {
     stroke: black;
     fill: white;
     cursor: n-resize;
+    z-index: 20;
 }
 
 .mySResize {
     stroke: black;
     fill: white;
     cursor: s-resize;
+    z-index: 20;
 }
 
 .myWResize {
     stroke: black;
     fill: white;
     cursor: w-resize;
+    z-index: 20;
 }
 
 .myEResize {
     stroke: black;
     fill: white;
     cursor: e-resize;
+    z-index: 20;
 }
 
 .myMidPoint {
@@ -201,9 +208,10 @@ input[type="text"].focus {
 }
 
 .myEllipse {
-    fill: #FFFFFF;
-    stroke: #4492c2;
-    #border: solid #4492c2 2px;
+    fill: #FFF5C5;
+    stroke: #F3913D;
+    stroke-width: 4px;
+    #border: solid #4492c2 4px;
     -webkit-border-radius: 6;
     -moz-border-radius: 6;
     border-radius: 6px;
@@ -218,6 +226,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
+    pointer-events:all;
 }
 
 .myEllipse:hover {
@@ -239,6 +248,7 @@ input[type="text"].focus {
     stroke-dasharray: 10, 10;
     fill: none;
     cursor: move;
+    pointer-events:all;
 }
 
 .myLine:hover {
@@ -247,16 +257,17 @@ input[type="text"].focus {
 }
 
 .myBreak {
-    stroke: #61B7CF;
-    stroke-width: 2;
-    fill: none;
+    stroke: #FF0000;
+    stroke-width: 1;
+    fill: #FF0000;
     cursor: move;
     z-index: 15;
+    pointer-events:all;
 }
 
 .myBreak:hover {
-    stroke-width: 3;
-    stroke: #5555FF;
+    stroke-width: 1;
+    stroke: #FF0000;
 }
 
 .myBrace {
@@ -268,8 +279,126 @@ input[type="text"].focus {
     stroke: #000000;
     stroke-width: 10px;
     fill: none;
+    pointer-events:all;
 }
 
 .myImage {
 
+}
+
+.myRect2 {
+    fill: #FFEE9C;
+    stroke: #FF7400;
+    stroke-width: 4px;
+    #border: solid #4492c2 2px;
+    -webkit-border-radius: 6;
+    -moz-border-radius: 6;
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    text-align: center;
+    z-index: 5;
+    position: absolute;
+    color: #211d21;
+    font-family: Courier New;
+    text-decoration: none;
+    overflow: auto;
+    /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
+    pointer-events:all;
+}
+
+.myRect3 {
+    fill: none;
+    stroke: red;
+    stroke-width: 4px;
+    #border: solid #4492c2 2px;
+    -webkit-border-radius: 6;
+    -moz-border-radius: 6;
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    text-align: center;
+    z-index: 1;
+    position: absolute;
+    color: #211d21;
+    font-family: Courier New;
+    text-decoration: none;
+    overflow: auto;
+    /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
+    pointer-events:all;
+}
+
+.myConnector2 {
+    #z-index: 4;
+    stroke: red;
+    stroke-width: 4;
+    fill: none;
+    cursor: move;
+    pointer-events:all;
+}
+
+.myDiamond {
+    fill: #FFCBCB;
+    stroke: #801515;
+    stroke-width: 2px;
+    #border: solid #4492c2 2px;
+    -webkit-border-radius: 6;
+    -moz-border-radius: 6;
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    text-align: center;
+    z-index: 10;
+    position: absolute;
+    color: #211d21;
+    font-family: Courier New;
+    text-decoration: none;
+    overflow: auto;
+    /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
+    pointer-events:all;
+}
+
+.myClippingSquare {
+    fill: #FFEE9C;
+    stroke: #FF7400;
+    stroke-width: 4px;
+    #border: solid #4492c2 2px;
+    -webkit-border-radius: 6;
+    -moz-border-radius: 6;
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    text-align: center;
+    z-index: 10;
+    position: absolute;
+    color: #211d21;
+    font-family: Courier New;
+    text-decoration: none;
+    overflow: auto;
+    /*padding: 5px 5px 5px 5px;*/
+    cursor: move;
+    pointer-events:all;
+}
+
+.myConnector-dash {
+    #z-index: 4;
+    stroke: #AAAAAA;
+    stroke-dasharray: 5, 5;
+    stroke-width: 2;
+    fill: none;
+    cursor: move;
+}
+
+.mySelected {
+    fill: none;
+    stroke: rgb(255, 0, 0);
+    stroke-miterlimit: 10;
+    stroke-width: 2px;
+    pointer-events: all;
+    /*z-index: 9;*/
+    opacity: 0.5;
+    cursor: move;
 }
