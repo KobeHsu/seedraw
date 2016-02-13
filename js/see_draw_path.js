@@ -24,72 +24,112 @@ function addConnector(type) {
     }
     newConn.attr("id", connectorId);
 
-    newConn.mouseover(connectorMouseOver);
-    newConn.mouseout(connectorMouseOut);
+    //newConn.mouseover(connectorMouseOver);
+    //newConn.mouseout(connectorMouseOut);
     newConn.mousedown(svgElMouseDown);
     newConn.node.addEventListener("contextmenu", connectorContextMenu);
+
+    var bBoxConn = newConn.getBBox();
+    var selected = generateSelectedMark(bBoxConn, grp, true);
+
+    var closeId = grp + "close";
+    var closeXY = getElementXYofConn(selected.getBBox(), "close");
+    var close = gSvg.circle(closeXY[0], closeXY[1], CIRCLE_R);
+    close.addClass("myClose");
+    close.addClass("hide");
+    close.attr("id", closeId);
+
+    close.mousedown(closeClick);
 
     var len = newConn.getTotalLength();
     var targetPoint = newConn.getPointAtLength(len / 2);
     var textId = grp + "text";
-    var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    var textXY = getElementXYofConn(selected.getBBox(), "text", targetPoint.x - 20, targetPoint.y - 20);
     var text = gSvg.text(textXY[0], textXY[1], "Label");
     text.attr("id", textId);
     text.addClass("myLabel");
 
-    var g = gSvg.g(newConn, text);
+    newConn.dblclick(textDblClick);
+
+    var g = gSvg.g(newConn, text, close, selected);
     var grpId = grp + "g";
     g.attr("id", grpId);
 
     reDrawPointByPath(grp, newConn, g, type);
 
     gSerialNo++;
+
+    setSelected(grp);
+    gCurrent = grp;
+}
+
+function getElementXYofConn(bBox, elName, targetX, targetY) {
+
+    var xy = [];
+
+    var width = (bBox == null) ? 0 : bBox.width;
+    var height = (bBox == null) ? 0 : bBox.height;
+
+    if ("close" == elName) {
+
+        xy.push(bBox.x + width - CIRCLE_R_HALF);
+        xy.push(bBox.y + CIRCLE_R_HALF);
+
+    } else if ("text" == elName) {
+
+        xy.push(bBox.x + 10);
+        xy.push(bBox.y + height / 2 + 5);
+
+    }
+
+    return xy;
+
 }
 
 function connectorContextMenu(e) {
 
-    e.preventDefault();
-
-    var r = confirm(REMOVE_CONNECTOR_MSG);
-    if (!r) {
-        return;
-    }
-
-    var grp = getGroupPrefix(this.id);
-    var grpId = grp + "g";
-    gSvg.select("#" + grpId).remove();
+    //e.preventDefault();
+    //
+    //var r = confirm(REMOVE_CONNECTOR_MSG);
+    //if (!r) {
+    //    return;
+    //}
+    //
+    //var grp = getGroupPrefix(this.id);
+    //var grpId = grp + "g";
+    //gSvg.select("#" + grpId).remove();
 
     return false;
 
 }
 
-function connectorMouseOver() {
-
-    var grp = getGroupPrefix(this.attr("id"));
-
-    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
-        element.removeClass("hide");
-    });
-
-    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
-        element.addClass("hide");
-    });
-
-}
-
-function connectorMouseOut() {
-
-    var grp = getGroupPrefix(this.attr("id"));
-
-    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
-        element.addClass("hide");
-    });
-
-    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
-        element.removeClass("hide");
-    });
-
-}
+//function connectorMouseOver(grp) {
+//
+//    //var grp = getGroupPrefix(this.attr("id"));
+//
+//    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+//        element.removeClass("hide");
+//    });
+//
+//    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+//        element.addClass("hide");
+//    });
+//
+//}
+//
+//function connectorMouseOut(grp) {
+//
+//    //var grp = getGroupPrefix(this.attr("id"));
+//
+//    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+//        element.addClass("hide");
+//    });
+//
+//    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+//        element.removeClass("hide");
+//    });
+//
+//}
 
 function correctConnectorXY(grp, conn) {
 
@@ -188,10 +228,28 @@ function correctConnectorXY(grp, conn) {
         element.attr("cy", cy + y);
     });
 
+    var selected = gSvg.select("#" + grp + "selected");
+    var bBoxConn = conn.getBBox();
+
+    selected.transform("translate(0 0)");
+    selected.attr("x", bBoxConn.x - PATH_BBOX_ADD);
+    selected.attr("y", bBoxConn.y - PATH_BBOX_ADD);
+    selected.attr("width", bBoxConn.width + PATH_BBOX_ADD * 2);
+    selected.attr("height", bBoxConn.height + PATH_BBOX_ADD * 2);
+
+    var close = gSvg.select("#" + grp + "close");
+    var closeXY = getElementXYofConn(selected.getBBox(), "close");
+
+    close.transform("translate(0 0)");
+    close.attr("cx", closeXY[0]);
+    close.attr("cy", closeXY[1]);
+
 }
 
 function endPointMouseDown(event) {
 
+    event.stopPropagation();
+    gGrpTmp = gCurrent;
     gCurrent = this.attr("id");
 
     var midPoint = gSvg.select("#" + gCurrent);
@@ -201,8 +259,8 @@ function endPointMouseDown(event) {
 
     var grp = getGroupPrefix(gCurrent);
     var conn = gSvg.select("#" + grp + "connector");
-    conn.unmouseout(connectorMouseOut);
-    midPoint.unmouseout(connectorMouseOut);
+    //conn.unmouseout(connectorMouseOut);
+    //midPoint.unmouseout(connectorMouseOut);
     midPoint.addClass("toFront");
 
     gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
@@ -265,17 +323,16 @@ function endPointMouseUp(event) {
 
         var grp = getGroupPrefix(gCurrent);
         var conn = gSvg.select("#" + grp + "connector");
-        conn.mouseout(connectorMouseOut);
-        midPoint.mouseout(connectorMouseOut);
-
+        //conn.mouseout(connectorMouseOut);
+        //midPoint.mouseout(connectorMouseOut);
+        reDrawPointByPath(grp, conn);
     }
-
-    reDrawPointByPath(grp, conn);
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gCurrent = "";
+    gCurrent = gGrpTmp;
+    setSelected(gCurrent);
 
 }
 
@@ -363,8 +420,8 @@ function reDrawPointByPath(grp, conn, g, type) {
         endPoint.addClass("myEndPoint");
         endPoint.addClass("hide");
 
-        endPoint.mouseover(connectorMouseOver);
-        endPoint.mouseout(connectorMouseOut);
+        //endPoint.mouseover(connectorMouseOver);
+        //endPoint.mouseout(connectorMouseOut);
         endPoint.mousedown(endPointMouseDown);
 
         g.append(endPoint);
@@ -384,8 +441,8 @@ function reDrawPointByPath(grp, conn, g, type) {
             midPoint.addClass("myMidPoint");
             midPoint.addClass("hide");
 
-            midPoint.mouseover(connectorMouseOver);
-            midPoint.mouseout(connectorMouseOut);
+            //midPoint.mouseover(connectorMouseOver);
+            //midPoint.mouseout(connectorMouseOut);
             midPoint.mousedown(midPointMouseDown);
 
             g.append(midPoint);
@@ -423,8 +480,8 @@ function reDrawPointByPath(grp, conn, g, type) {
         }
         arrow.attr("id", arrowId);
         //arrow.node.style["zIndex"] = -10;
-        arrow.mouseover(connectorMouseOver);
-        arrow.mouseout(connectorMouseOut);
+        //arrow.mouseover(connectorMouseOver);
+        //arrow.mouseout(connectorMouseOut);
 
         var fx1 = parseInt(lastSubPath[0], 10);
         var fy1 = parseInt(lastSubPath[1], 10);
@@ -446,6 +503,22 @@ function reDrawPointByPath(grp, conn, g, type) {
     var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
     text.attr("x", textXY[0]);
     text.attr("y", textXY[1]);
+
+    var selected = gSvg.select("#" + grp + "selected");
+    var bBoxConn = conn.getBBox();
+
+    selected.transform("translate(0 0)");
+    selected.attr("x", bBoxConn.x - PATH_BBOX_ADD);
+    selected.attr("y", bBoxConn.y - PATH_BBOX_ADD);
+    selected.attr("width", bBoxConn.width + PATH_BBOX_ADD * 2);
+    selected.attr("height", bBoxConn.height + PATH_BBOX_ADD * 2);
+
+    var close = gSvg.select("#" + grp + "close");
+    var closeXY = getElementXYofConn(selected.getBBox(), "close");
+
+    close.transform("translate(0 0)");
+    close.attr("cx", closeXY[0]);
+    close.attr("cy", closeXY[1]);
 
 }
 

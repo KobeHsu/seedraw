@@ -166,6 +166,7 @@ input[type="text"].focus {
     stroke-width: 2;
     fill: none;
     cursor: move;
+    position: absolute;
 }
 
 .myConnector:hover {
@@ -206,6 +207,7 @@ input[type="text"].focus {
     stroke-dasharray: 5, 5;
     fill: none;
     cursor: move;
+    position: absolute;
 }
 
 .myEllipse {
@@ -228,6 +230,7 @@ input[type="text"].focus {
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
     pointer-events:all;
+    position: absolute;
 }
 
 .myEllipse:hover {
@@ -250,6 +253,7 @@ input[type="text"].focus {
     fill: none;
     cursor: move;
     pointer-events:all;
+    position: absolute;
 }
 
 .myLine:hover {
@@ -264,6 +268,7 @@ input[type="text"].focus {
     cursor: move;
     z-index: 15;
     pointer-events:all;
+    position: absolute;
 }
 
 .myBreak:hover {
@@ -281,6 +286,7 @@ input[type="text"].focus {
     stroke-width: 10px;
     fill: none;
     pointer-events:all;
+    position: absolute;
 }
 
 .myImage {
@@ -338,6 +344,7 @@ input[type="text"].focus {
     fill: none;
     cursor: move;
     pointer-events:all;
+    position: absolute;
 }
 
 .myDiamond {
@@ -360,6 +367,7 @@ input[type="text"].focus {
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
     pointer-events:all;
+    position: absolute;
 }
 
 .myClippingSquare {
@@ -382,6 +390,7 @@ input[type="text"].focus {
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
     pointer-events:all;
+    position: absolute;
 }
 
 .myConnector-dash {
@@ -391,6 +400,7 @@ input[type="text"].focus {
     stroke-width: 2;
     fill: none;
     cursor: move;
+    position: absolute;
 }
 
 .mySelected {
@@ -403,4 +413,5 @@ input[type="text"].focus {
     /*z-index: 9;*/
     opacity: 0.8;
     cursor: move;
+    position: absolute;
 }

@@ -34,14 +34,18 @@ var LINE_WIDTH = 80;
 var BRACE_WIDTH = 20;
 var BRACE_Q = 0.6;
 
+var PATH_BBOX_ADD = 10;
+
+var REMOVE_CONFIRM_MSG = "Are you sure to remove this?";
+
 var REMOVE_CONNECTOR_MSG = "Remove this connection ?";
 var REMOVE_ENDOPOINT_MSG = "Remove this node ?";
-var REMOVE_RECT_MSG = "Remove this rect ?";
-var REMOVE_ELLIPSE_MSG = "Remove this ellipse ?";
+
 var REMOVE_LINE_MSG = "Remove this boundary ?";
-var REMOVE_BREAK_MSG = "Remove this breakdown ?";
-var REMOVE_BRACE_MSG = "Remove this brace ?";
-var REMOVE_IMAGE_MSG = "Remove this image ?";
+//var REMOVE_ELLIPSE_MSG = "Remove this ellipse ?";
+//var REMOVE_BREAK_MSG = "Remove this breakdown ?";
+//var REMOVE_BRACE_MSG = "Remove this brace ?";
+//var REMOVE_IMAGE_MSG = "Remove this image ?";
 
 var gSerialNo = 0;
 
@@ -52,6 +56,7 @@ var gStartY;
 var gCurrent;
 var gDragType;
 var gTextEditing;
+var gGrpTmp;
 
 var gMenuWidth;
 var gMenuHeight;
@@ -62,8 +67,8 @@ function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
     var xy = [];
     var rect = gSvg.select("#" + rectId);
 
-    var width = (rect == null) ? 0 : parseInt(rect.attr("width"), 10);
-    var height = (rect == null) ? 0 : parseInt(rect.attr("height"), 10);
+    var width = (rect == null) ? 0 : rect.getBBox().width;// parseInt(rect.attr("width"), 10);
+    var height = (rect == null) ? 0 : rect.getBBox().height;//parseInt(rect.attr("height"), 10);
 
     if ("close" == elName) {
 
@@ -106,14 +111,18 @@ function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
 
 }
 
-function generateSelectedMark(bBox, grp) {
+function generateSelectedMark(bBox, grp, isPath) {
 
     var selectedId = grp + "selected";
 
     //var pathStr = "M " + bBox.x + " " + bBox.+ " L " + bBox.x + " " + bBox.y2 + " L " + bBox.x2 + " " + bBox.y2 + " L " + bBox.x2 + " " + bBox.y + " Z";
     //var selected = gSvg.path(pathStr);
+    var add = 0;
+    if (isPath) {
+        add = PATH_BBOX_ADD;
+    }
 
-    var selected = gSvg.rect(bBox.x, bBox.y, bBox.width, bBox.height);
+    var selected = gSvg.rect(bBox.x - add, bBox.y - add, bBox.width + add * 2, bBox.height + add * 2);
 
     selected.attr("id", selectedId);
     selected.addClass("mySelected");
@@ -230,23 +239,12 @@ function addRect(type) {
 
 }
 
-function setSelected(grp) {
-
-    clearSelected();
-    showElementById(grp + "selected");
-    showElementById(grp + "close");
-    showElementById(grp + "nResize");
-    showElementById(grp + "sResize");
-    showElementById(grp + "wResize");
-    showElementById(grp + "eResize");
-
-}
 
 function rectContextMenu(e) {
 
     //e.preventDefault();
     //
-    //var r = confirm(REMOVE_RECT_MSG);
+    //var r = confirm(REMOVE_CONFIRM_MSG);
     //if (!r) {
     //    return;
     //}
@@ -287,7 +285,7 @@ function closeClick(e) {
     log("closeClick");
     e.stopPropagation();
 
-    var r = confirm(REMOVE_RECT_MSG);
+    var r = confirm(REMOVE_CONFIRM_MSG);
     if (!r) {
         return;
     }
@@ -353,6 +351,87 @@ function inputBlur(event) {
         //text.attr("y", textXY[1]);
 
     }
+
+}
+
+function correctRectXY(grp, rect) {
+
+    var g = gSvg.select("#" + grp + "g");
+
+    var tStrAry = Snap.parseTransformString(g.attr("transform"));
+
+    var rectId = grp + "rect";
+
+    var nowX = parseInt(rect.attr("x"), 10);
+    var nowY = parseInt(rect.attr("y"), 10);
+
+    if (tStrAry.length != 0) {
+
+        var x = parseInt(tStrAry[0][1], 10);
+        var y = parseInt(tStrAry[0][2], 10);
+
+        x += nowX;
+        y += nowY;
+
+        g.transform("translate(0 0)");
+
+        rect.transform("translate(0 0)");
+        rect.attr("x", x);
+        rect.attr("y", y);
+
+    }
+
+    var bBox = rect.getBBox();
+    var bBoxX = bBox.x;
+    var bBoxY = bBox.y;
+
+    var close = gSvg.select("#" + grp + "close");
+    var closeXY = getElementXYofRect(bBoxX, bBoxY, "close", rectId);
+
+    close.transform("translate(0 0)");
+    close.attr("cx", closeXY[0]);
+    close.attr("cy", closeXY[1]);
+
+    var nResize = gSvg.select("#" + grp + "nResize");
+    var nResizeXY = getElementXYofRect(bBoxX, bBoxY, "nResize", rectId);
+
+    nResize.transform("translate(0 0)");
+    nResize.attr("cx", nResizeXY[0]);
+    nResize.attr("cy", nResizeXY[1]);
+
+    var sResize = gSvg.select("#" + grp + "sResize");
+    var sResizeXY = getElementXYofRect(bBoxX, bBoxY, "sResize", rectId);
+
+    sResize.transform("translate(0 0)");
+    sResize.attr("cx", sResizeXY[0]);
+    sResize.attr("cy", sResizeXY[1]);
+
+    var wResize = gSvg.select("#" + grp + "wResize");
+    var wResizeXY = getElementXYofRect(bBoxX, bBoxY, "wResize", rectId);
+
+    wResize.transform("translate(0 0)");
+    wResize.attr("cx", wResizeXY[0]);
+    wResize.attr("cy", wResizeXY[1]);
+
+    var eResize = gSvg.select("#" + grp + "eResize");
+    var eResizeXY = getElementXYofRect(bBoxX, bBoxY, "eResize", rectId);
+
+    eResize.transform("translate(0 0)");
+    eResize.attr("cx", eResizeXY[0]);
+    eResize.attr("cy", eResizeXY[1]);
+
+    var text = gSvg.select("#" + grp + "text");
+    var textXY = getElementXYofRect(bBoxX, bBoxY, "text", rectId);
+
+    text.transform("translate(0 0)");
+    text.attr("x", textXY[0]);
+    text.attr("y", textXY[1]);
+
+    var selected = gSvg.select("#" + grp + "selected");
+    var selectedXY = getElementXYofRect(bBoxX, bBoxY, "selected", rectId);
+    selected.transform("translate(0 0)");
+    selected.attr("x", selectedXY[0]);
+    selected.attr("y", selectedXY[1]);
 
 }
 
@@ -688,86 +767,7 @@ function eResizeMouseUp() {
     gDragType = "";
 }
 
-function correctRectXY(grp, rect) {
 
-    var g = gSvg.select("#" + grp + "g");
-
-    var tStrAry = Snap.parseTransformString(g.attr("transform"));
-
-    var rectId = grp + "rect";
-
-    var nowX = parseInt(rect.attr("x"), 10);
-    var nowY = parseInt(rect.attr("y"), 10);
-
-    if (tStrAry.length != 0) {
-
-        var x = parseInt(tStrAry[0][1], 10);
-        var y = parseInt(tStrAry[0][2], 10);
-
-        x += nowX;
-        y += nowY;
-
-        g.transform("translate(0 0)");
-
-        rect.transform("translate(0 0)");
-        rect.attr("x", x);
-        rect.attr("y", y);
-
-    }
-
-    var bBox = rect.getBBox();
-    var bBoxX = bBox.x;
-    var bBoxY = bBox.y;
-
-    var close = gSvg.select("#" + grp + "close");
-    var closeXY = getElementXYofRect(bBoxX, bBoxY, "close", rectId);
-
-    close.transform("translate(0 0)");
-    close.attr("cx", closeXY[0]);
-    close.attr("cy", closeXY[1]);
-
-    var nResize = gSvg.select("#" + grp + "nResize");
-    var nResizeXY = getElementXYofRect(bBoxX, bBoxY, "nResize", rectId);
-
-    nResize.transform("translate(0 0)");
-    nResize.attr("cx", nResizeXY[0]);
-    nResize.attr("cy", nResizeXY[1]);
-
-    var sResize = gSvg.select("#" + grp + "sResize");
-    var sResizeXY = getElementXYofRect(bBoxX, bBoxY, "sResize", rectId);
-
-    sResize.transform("translate(0 0)");
-    sResize.attr("cx", sResizeXY[0]);
-    sResize.attr("cy", sResizeXY[1]);
-
-    var wResize = gSvg.select("#" + grp + "wResize");
-    var wResizeXY = getElementXYofRect(bBoxX, bBoxY, "wResize", rectId);
-
-    wResize.transform("translate(0 0)");
-    wResize.attr("cx", wResizeXY[0]);
-    wResize.attr("cy", wResizeXY[1]);
-
-    var eResize = gSvg.select("#" + grp + "eResize");
-    var eResizeXY = getElementXYofRect(bBoxX, bBoxY, "eResize", rectId);
-
-    eResize.transform("translate(0 0)");
-    eResize.attr("cx", eResizeXY[0]);
-    eResize.attr("cy", eResizeXY[1]);
-
-    var text = gSvg.select("#" + grp + "text");
-    var textXY = getElementXYofRect(bBoxX, bBoxY, "text", rectId);
-
-    text.transform("translate(0 0)");
-    text.attr("x", textXY[0]);
-    text.attr("y", textXY[1]);
-
-    var selected = gSvg.select("#" + grp + "selected");
-    var selectedXY = getElementXYofRect(bBoxX, bBoxY, "selected", rectId);
-    selected.transform("translate(0 0)");
-    selected.attr("x", selectedXY[0]);
-    selected.attr("y", selectedXY[1]);
-
-}
 //endregion
 
 
@@ -2107,30 +2107,47 @@ function addBreak() {
     newBreak.addClass("myBreak");
     newBreak.attr("id", breakId);
 
-    newBreak.mouseover(connectorMouseOver);
-    newBreak.mouseout(connectorMouseOut);
+    //newBreak.mouseover(connectorMouseOver);
+    //newBreak.mouseout(connectorMouseOut);
     newBreak.mousedown(svgElMouseDown);
+
     newBreak.node.addEventListener("contextmenu", breakContextMenu);
 
-    var g = gSvg.g(newBreak);
+    var bBoxBreak = newBreak.getBBox();
+    var selected = generateSelectedMark(bBoxBreak, grp);
+
+    var closeId = grp + "close";
+    var closeXY = getElementXYofRect(bBoxBreak.x, bBoxBreak.y, "close", breakId);
+    var close = gSvg.circle(closeXY[0], closeXY[1], CIRCLE_R);
+    close.addClass("myClose");
+    close.addClass("hide");
+    close.attr("id", closeId);
+
+    close.mousedown(closeClick);
+
+    var g = gSvg.g(newBreak, close, selected);
     var grpId = grp + "g";
     g.attr("id", grpId);
 
     gSerialNo++;
+
+    setSelected(grp);
+    gCurrent = grp;
+
 }
 
 function breakContextMenu(e) {
 
-    e.preventDefault();
-
-    var r = confirm(REMOVE_BREAK_MSG);
-    if (!r) {
-        return;
-    }
-
-    var grp = getGroupPrefix(this.id);
-    var grpId = grp + "g";
-    gSvg.select("#" + grpId).remove();
+    //e.preventDefault();
+    //
+    //var r = confirm(REMOVE_BREAK_MSG);
+    //if (!r) {
+    //    return;
+    //}
+    //
+    //var grp = getGroupPrefix(this.id);
+    //var grpId = grp + "g";
+    //gSvg.select("#" + grpId).remove();
 
     return false;
 
@@ -2182,6 +2199,20 @@ function correctBreakXY(grp, conn) {
         //conn.attr("transform", "");
         conn.transform("translate(0 0)");
         conn.attr("d", newPath);
+
+        var bBoxConn = conn.getBBox();
+        var close = gSvg.select("#" + grp + "close");
+        var closeXY = getElementXYofRect(bBoxConn.x, bBoxConn.y, "close", conn.attr("id"));
+
+        close.transform("translate(0 0)");
+        close.attr("cx", closeXY[0]);
+        close.attr("cy", closeXY[1]);
+
+        var selected = gSvg.select("#" + grp + "selected");
+        var selectedXY = getElementXYofRect(bBoxConn.x, bBoxConn.y, "selected", conn.attr("id"));
+        selected.transform("translate(0 0)");
+        selected.attr("x", selectedXY[0]);
+        selected.attr("y", selectedXY[1]);
 
     }
 
@@ -2771,8 +2802,9 @@ function svgElMouseDown(event) {
 
     var id = this.attr("id");
     var grp = getGroupPrefix(id);
+
+    setSelected(grp, gCurrent);
     gCurrent = grp;
-    setSelected(gCurrent);
 
     if (id.indexOf("rect") > 0) {
         gDragType = "rect";
@@ -3135,12 +3167,12 @@ document.addEventListener("DOMContentLoaded", function () {
     gDrawArea.onmousedown = function () {
         log("gDrawArea onmousedown");
         if (gCurrent != "" && !gTextEditing) {
-            clearSelected();
+            clearSelected(gCurrent);
             gCurrent = "";
         }
     }
 
-    var bound = gSvg.node.getBoundingClientRect()
+    var bound = gSvg.node.getBoundingClientRect();
     gStartX = bound.left;//gSvg.node).position().left;
     gStartY = bound.top;
 
@@ -3153,7 +3185,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-function clearSelected() {
+function setSelected(grp, grpOld) {
+
+    clearSelected(grpOld);
+    showElementById(grp + "selected");
+    showElementById(grp + "close");
+    showElementById(grp + "nResize");
+    showElementById(grp + "sResize");
+    showElementById(grp + "wResize");
+    showElementById(grp + "eResize");
+
+    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+        showElement(element);
+    });
+
+    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+        hideElement(element);
+    });
+
+}
+
+function clearSelected(grp) {
 
     gSvg.selectAll("[id$='selected'").forEach(function (element) {
         hideElement(element);
@@ -3165,6 +3217,14 @@ function clearSelected() {
 
     gSvg.selectAll("[id$='Resize'").forEach(function (element) {
         hideElement(element);
+    });
+
+    gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
+        hideElement(element);
+    });
+
+    gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
+        showElement(element);
     });
 
 
