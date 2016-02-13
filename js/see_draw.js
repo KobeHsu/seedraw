@@ -1,7 +1,7 @@
 var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
 
-var __DEBUG_OUTPUT = false;
+var __DEBUG_OUTPUT = true;
 
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;

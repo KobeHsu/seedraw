@@ -248,7 +248,10 @@ function correctConnectorXY(grp, conn) {
 
 function endPointMouseDown(event) {
 
+    log("endPointMouseDown");
+
     event.stopPropagation();
+
     gGrpTmp = gCurrent;
     gCurrent = this.attr("id");
 
@@ -257,15 +260,15 @@ function endPointMouseDown(event) {
     midPoint.data("mousedown-x", event.clientX);
     midPoint.data("mousedown-y", event.clientY);
 
-    var grp = getGroupPrefix(gCurrent);
-    var conn = gSvg.select("#" + grp + "connector");
+    //var grp = getGroupPrefix(gCurrent);
+    //var conn = gSvg.select("#" + grp + "connector");
     //conn.unmouseout(connectorMouseOut);
     //midPoint.unmouseout(connectorMouseOut);
     midPoint.addClass("toFront");
 
-    gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
-        element.remove();
-    });
+    //gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
+    //    element.remove();
+    //});
 
     gDrawArea.onmousemove = endPointMouseMove;
     gDrawArea.onmouseup = endPointMouseUp;
@@ -273,6 +276,8 @@ function endPointMouseDown(event) {
 }
 
 function endPointMouseMove() {
+
+    log("endPointMouseMove");
 
     if ("" == gCurrent) {
         return;
@@ -288,20 +293,51 @@ function endPointMouseMove() {
 
     var idx = parseInt(gCurrent.substr(gCurrent.lastIndexOf(SEPARATOR) + 1), 10);
 
+
     var grp = getGroupPrefix(gCurrent);
     var conn = gSvg.select("#" + grp + "connector");
     var pathStr = conn.attr("d");
     var pathAry = Snap.parsePathString(pathStr);
 
-    pathAry[idx][1] = x;
-    pathAry[idx][2] = y;
+    var isMidPoint = (gCurrent.indexOf("_mid_") > 0);
+    if (!isMidPoint) {
+        pathAry[idx][1] = x;
+        pathAry[idx][2] = y;
+    } else {
+
+        gSvg.selectAll("[id^='" + grp + "point_end']").forEach(function (element) {
+            var id = element.attr("id");
+            var _idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
+            if (_idx > idx) {
+                element.attr("id", grp + "point_end_" + (_idx + 1));
+            }
+        });
+        var newId = grp + "point_end_" + (idx + 1);
+        midPoint.attr("id", newId);
+        gCurrent = newId;
+    }
 
     var newPath = "";
-    pathAry.forEach(function (p) {
-        newPath += p[0] + " ";
-        newPath += p[1] + " ";
-        newPath += p[2] + " ";
-    });
+
+    for (var i = 0; i < pathAry.length; i++) {
+
+        newPath += pathAry[i][0] + " ";
+        newPath += pathAry[i][1] + " ";
+        newPath += pathAry[i][2] + " ";
+
+        if (isMidPoint && i == idx) {
+            newPath += "L" + " ";
+            newPath += x + " ";
+            newPath += y + " ";
+        }
+
+    }
+
+    //pathAry.forEach(function (p) {
+    //    newPath += p[0] + " ";
+    //    newPath += p[1] + " ";
+    //    newPath += p[2] + " ";
+    //});
 
     conn.attr("d", newPath);
 
@@ -309,15 +345,21 @@ function endPointMouseMove() {
 
 function endPointMouseUp(event) {
 
+    log("endPointMouseUp");
+
     if ("" != gCurrent) {
 
         var midPoint = gSvg.select("#" + gCurrent);
 
         var x = midPoint.data("mousedown-x");
         var y = midPoint.data("mousedown-y");
-        if (x == event.clientX && y == event.clientY) {
-            endPointRemove(midPoint.attr("id"));
-        }
+
+        //if (x != event.clientX || y != event.clientY) {
+        //    //endPointRemove(midPoint.attr("id"));
+        //    if (gCurrent.indexOf("_mid_")>0) {
+        //        midPointMouseDown(gCurrent);
+        //    }
+        //}
 
         midPoint.removeClass("toFront");
 
@@ -443,7 +485,7 @@ function reDrawPointByPath(grp, conn, g, type) {
 
             //midPoint.mouseover(connectorMouseOver);
             //midPoint.mouseout(connectorMouseOut);
-            midPoint.mousedown(midPointMouseDown);
+            midPoint.mousedown(endPointMouseDown);
 
             g.append(midPoint);
 
@@ -522,9 +564,11 @@ function reDrawPointByPath(grp, conn, g, type) {
 
 }
 
-function midPointMouseDown() {
+function midPointMouseDown(id) {
 
-    var id = this.attr("id");
+    log("midPointMouseDown");
+
+    //var id = this.attr("id");
     var midPoint = gSvg.select("#" + id);
     var idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
 
@@ -550,6 +594,10 @@ function midPointMouseDown() {
     }
 
     conn.attr("d", newPath);
+
+    gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
+        element.remove();
+    });
 
     reDrawPointByPath(grp, conn);
 
