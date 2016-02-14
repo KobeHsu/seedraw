@@ -63,6 +63,8 @@ var gMenuHeight;
 
 var gRatioAry = [];
 
+var gContextMenu;
+
 "use strict";
 
 //region Rect
@@ -225,18 +227,28 @@ function addRect(type) {
 
 function rectContextMenu(e) {
 
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_CONFIRM_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
+    e.preventDefault();
 
-    return false;
+    gContextMenu.classList.add( "context-menu--active" );
+    gContextMenu.style["left"] = (e.clientX - gMenuWidth ) + "px";
+    gContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
+    gGrpTmp = gCurrent;
+
+}
+
+function rectRemove() {
+
+    var r = confirm(REMOVE_CONFIRM_MSG);
+    if (!r) {
+        return;
+    }
+
+    if (""!=gGrpTmp) {
+        var grpId = gGrpTmp + "g";
+        gSvg.select("#" + grpId).remove();
+        gContextMenu.classList.remove("context-menu--active");
+        gGrpTmp = "";
+    }
 
 }
 
@@ -4321,6 +4333,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     gSvg = Snap.select("#snapSvg");
     gDrawArea = document.getElementById("drawArea");
+    gContextMenu = document.getElementById("context-menu");
+    gContextMenu.addEventListener("mouseover", function () {
+        gContextMenu.classList.add("context-menu--active");
+    });
+
+    gContextMenu.addEventListener("mouseout", function() {
+        gContextMenu.classList.remove( "context-menu--active" );
+    });
 
     if (!gSvg) {
         gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);

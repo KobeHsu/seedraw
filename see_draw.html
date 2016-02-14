@@ -65,7 +65,24 @@
         </svg>
         <input type="file" id="insertImg" name="insertImg" onchange="addImage()" style="display:none"/>
     </div>
-    <div id="drawArea" style="width:800px;float:left;"><input type="text" id="rectText" style="display:none;"/></div>
+    <div id="drawArea" style="width:800px;float:left;"><input type="text" id="rectText" style="display:none;"/>
+        <nav id="context-menu" class="context-menu">
+            <ul class="context-menu__items">
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="rectRemove()">Delete</a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link">Duplicate</a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link">To Front</a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link">To Back</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </section>
 
 <footer></footer>
