@@ -564,41 +564,41 @@ function reDrawPointByPath(grp, conn, g, type) {
 
 }
 
-function midPointMouseDown(id) {
-
-    log("midPointMouseDown");
-
-    //var id = this.attr("id");
-    var midPoint = gSvg.select("#" + id);
-    var idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
-
-    var grp = getGroupPrefix(id);
-    var conn = gSvg.select("#" + grp + "connector");
-
-    var pathStr = conn.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var newPath = "";
-
-    for (var i = 0; i < pathAry.length; i++) {
-
-        newPath += pathAry[i][0] + " ";
-        newPath += pathAry[i][1] + " ";
-        newPath += pathAry[i][2] + " ";
-
-        if (idx == i) {
-            newPath += "L ";
-            newPath += midPoint.attr("cx") + " ";
-            newPath += midPoint.attr("cy") + " ";
-        }
-
-    }
-
-    conn.attr("d", newPath);
-
-    gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
-        element.remove();
-    });
-
-    reDrawPointByPath(grp, conn);
-
-}
+//function midPointMouseDown(id) {
+//
+//    log("midPointMouseDown");
+//
+//    //var id = this.attr("id");
+//    var midPoint = gSvg.select("#" + id);
+//    var idx = parseInt(id.substr(id.lastIndexOf(SEPARATOR) + 1), 10);
+//
+//    var grp = getGroupPrefix(id);
+//    var conn = gSvg.select("#" + grp + "connector");
+//
+//    var pathStr = conn.attr("d");
+//    var pathAry = Snap.parsePathString(pathStr);
+//    var newPath = "";
+//
+//    for (var i = 0; i < pathAry.length; i++) {
+//
+//        newPath += pathAry[i][0] + " ";
+//        newPath += pathAry[i][1] + " ";
+//        newPath += pathAry[i][2] + " ";
+//
+//        if (idx == i) {
+//            newPath += "L ";
+//            newPath += midPoint.attr("cx") + " ";
+//            newPath += midPoint.attr("cy") + " ";
+//        }
+//
+//    }
+//
+//    conn.attr("d", newPath);
+//
+//    gSvg.selectAll("[id^='" + grp + "point_mid']").forEach(function (element) {
+//        element.remove();
+//    });
+//
+//    reDrawPointByPath(grp, conn);
+//
+//}
