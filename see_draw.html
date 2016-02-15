@@ -10,7 +10,6 @@
     <script src="js/snap.svg-min.js"></script>
     <script src="js/see_draw.js"></script>
     <script src="js/see_draw_path.js"></script>
-    <script src="js/CustomPath.js"></script>
 </head>
 <body>
 
@@ -69,16 +68,16 @@
         <nav id="context-menu" class="context-menu">
             <ul class="context-menu__items">
                 <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="rectRemove()">Delete</a>
+                    <a href="#" class="context-menu__link" onClick="svgElRemove()">Delete</a>
                 </li>
                 <li class="context-menu__item">
-                    <a href="#" class="context-menu__link">Duplicate</a>
+                    <a href="#" class="context-menu__link" onClick="svgElDuplcate()">Duplicate</a>
                 </li>
                 <li class="context-menu__item">
-                    <a href="#" class="context-menu__link">To Front</a>
+                    <a href="#" class="context-menu__link" onClick="svgElToFront()">To Front</a>
                 </li>
                 <li class="context-menu__item">
-                    <a href="#" class="context-menu__link">To Back</a>
+                    <a href="#" class="context-menu__link" onClick="svgElToBack()">To Back</a>
                 </li>
             </ul>
         </nav>
