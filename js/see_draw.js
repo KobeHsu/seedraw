@@ -757,7 +757,7 @@ function addEllipse(type) {
     //newEllipse.mouseout(rectMouseOut);
     newEllipse.mousedown(svgElMouseDown);
 
-    newEllipse.node.addEventListener("contextmenu", ellipseContextMenu);
+    newEllipse.node.addEventListener("contextmenu", showContextMenu);
 
     var bBoxEllipse = newEllipse.getBBox();
     var selected = generateSelectedMark(bBoxEllipse, grp);
@@ -833,23 +833,6 @@ function addEllipse(type) {
 
     setSelected(grp);
     gCurrent = grp;
-
-}
-
-function ellipseContextMenu(e) {
-
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_ELLIPSE_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
-
-    return false;
 
 }
 
@@ -1722,7 +1705,7 @@ function addBrace(dir) {
     //newBrace.mouseout(rectMouseOut);
     newBrace.mousedown(svgElMouseDown);
 
-    newBrace.node.addEventListener("contextmenu", braceContextMenu);
+    newBrace.node.addEventListener("contextmenu", showContextMenu);
 
     var bBoxBrace = newBrace.getBBox();
     var selected = generateSelectedMark(bBoxBrace, grp);
@@ -1765,23 +1748,6 @@ function addBrace(dir) {
 
     setSelected(grp);
     gCurrent = grp;
-
-}
-
-function braceContextMenu(e) {
-
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_BRACE_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
-
-    return false;
 
 }
 
@@ -2078,7 +2044,7 @@ function addBreak() {
     //newBreak.mouseout(connectorMouseOut);
     newBreak.mousedown(svgElMouseDown);
 
-    newBreak.node.addEventListener("contextmenu", breakContextMenu);
+    newBreak.node.addEventListener("contextmenu", showContextMenu);
 
     var pathAry = Snap.parsePathString(pathStr);
     var pathLen = pathAry.length;
@@ -2160,23 +2126,6 @@ function addBreak() {
 
     setSelected(grp);
     gCurrent = grp;
-
-}
-
-function breakContextMenu(e) {
-
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_BREAK_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
-
-    return false;
 
 }
 
@@ -2713,7 +2662,6 @@ function eResizeBreakMouseUp() {
     gDragType = "";
 }
 
-
 //endregion
 
 //region Image
@@ -2753,7 +2701,7 @@ function addImage() {
         //newImage.mouseout(rectMouseOut);
         newImage.mousedown(svgElMouseDown);
 
-        newImage.node.addEventListener("contextmenu", imageContextMenu);
+        newImage.node.addEventListener("contextmenu", showContextMenu);
         newImage.node.addEventListener("load",
 
             function () {
@@ -2827,23 +2775,6 @@ function addImage() {
 
     };
     fReader.readAsDataURL(file);
-
-}
-
-function imageContextMenu(e) {
-
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_IMAGE_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
-
-    return false;
 
 }
 
@@ -3293,7 +3224,6 @@ function eResizeImageMouseUp() {
 // endregion
 
 //region Custom
-
 var CUSTOM_DEF = {
   "ClippingSquare": {path:"M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z", clsName: "myClippingSquare" }
 };
@@ -3310,7 +3240,7 @@ function addCustom(customDef) {
 
     newCustom.mousedown(svgElMouseDown);
 
-    newCustom.node.addEventListener("contextmenu", customContextMenu);
+    newCustom.node.addEventListener("contextmenu", showContextMenu);
 
     var pathAry = Snap.parsePathString(pathStr);
     var pathLen = pathAry.length;
@@ -3392,23 +3322,6 @@ function addCustom(customDef) {
 
     setSelected(grp);
     gCurrent = grp;
-
-}
-
-function customContextMenu(e) {
-
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_BREAK_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
-
-    return false;
 
 }
 
