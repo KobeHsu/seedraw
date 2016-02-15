@@ -4336,8 +4336,17 @@ function svgElRemove() {
 function svgElDuplicate() {
 
     if ("" != gGrpTmp) {
+
         var grpId = gGrpTmp + "g";
         var svgElClone = gSvg.select("#" + grpId).clone();
+
+        var newGrp = getGroupPrefix(gSerialNo);
+        var newGrpId = newGrp + "g";
+        var innerHtml = svgElClone.node.innerHTML.replace(gGrpTmp,newGrp);
+        svgElClone.node.innerHTML = innerHtml;
+        svgElClone.attr("id", newGrpId);
+
+        gSerialNo++;
         gSvg.append(svgElClone);
     }
 
