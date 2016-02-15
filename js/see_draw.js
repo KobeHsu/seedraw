@@ -2045,9 +2045,9 @@ function addBreak() {
 
     //newBreak.mouseover(connectorMouseOver);
     //newBreak.mouseout(connectorMouseOut);
-    newBreak.mousedown(svgElMouseDown);
+    //newBreak.mousedown(svgElMouseDown);
 
-    newBreak.node.addEventListener("contextmenu", showContextMenu);
+    //newBreak.node.addEventListener("contextmenu", showContextMenu);
 
     var pathAry = Snap.parsePathString(pathStr);
     var pathLen = pathAry.length;
@@ -2083,7 +2083,7 @@ function addBreak() {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    close.mousedown(closeClick);
+    //close.mousedown(closeClick);
 
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofBBox(bBoxBreak, "nResize");
@@ -2092,7 +2092,7 @@ function addBreak() {
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
 
-    nResize.mousedown(nResizeBreakMouseDown);
+    //nResize.mousedown(nResizeBreakMouseDown);
 
     var sResizeId = grp + "sResize";
     var sResizeXY = getElementXYofBBox(bBoxBreak, "sResize");
@@ -2101,7 +2101,7 @@ function addBreak() {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    sResize.mousedown(sResizeBreakMouseDown);
+    //sResize.mousedown(sResizeBreakMouseDown);
 
     var wResizeId = grp + "wResize";
     var wResizeXY = getElementXYofBBox(bBoxBreak, "wResize");
@@ -2110,7 +2110,7 @@ function addBreak() {
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
 
-    wResize.mousedown(wResizeBreakMouseDown);
+    //wResize.mousedown(wResizeBreakMouseDown);
 
     var eResizeId = grp + "eResize";
     var eResizeXY = getElementXYofBBox(bBoxBreak, "eResize");
@@ -2119,7 +2119,8 @@ function addBreak() {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    eResize.mousedown(eResizeBreakMouseDown);
+    //eResize.mousedown(eResizeBreakMouseDown);
+    registerListener(breakId);
 
     var g = gSvg.g(newBreak, close, nResize, sResize, wResize, eResize, selected);
     var grpId = grp + "g";
@@ -2700,11 +2701,9 @@ function addImage() {
         newImage.attr("x", 10);
         newImage.attr("y", 10);
 
-        //newImage.mouseover(rectMouseOver);
-        //newImage.mouseout(rectMouseOut);
-        newImage.mousedown(svgElMouseDown);
+        //newImage.mousedown(svgElMouseDown);
 
-        newImage.node.addEventListener("contextmenu", showContextMenu);
+        //newImage.node.addEventListener("contextmenu", showContextMenu);
         newImage.node.addEventListener("load",
 
             function () {
@@ -2719,7 +2718,7 @@ function addImage() {
                 close.addClass("hide");
                 close.attr("id", closeId);
 
-                close.mousedown(closeClick);
+                //close.mousedown(closeClick);
 
                 var nResizeId = grp + "nResize";
                 var nResizeXY = getElementXYofImage("nResize", imageId);
@@ -2728,9 +2727,7 @@ function addImage() {
                 nResize.addClass("hide");
                 nResize.attr("id", nResizeId);
 
-                //nResize.mouseover(rectMouseOver);
-                //nResize.mouseout(rectMouseOut);
-                nResize.mousedown(nResizeImageMouseDown);
+                //nResize.mousedown(nResizeImageMouseDown);
 
                 var sResizeId = grp + "sResize";
                 var sResizeXY = getElementXYofImage("sResize", imageId);
@@ -2739,9 +2736,7 @@ function addImage() {
                 sResize.addClass("hide");
                 sResize.attr("id", sResizeId);
 
-                //sResize.mouseover(rectMouseOver);
-                //sResize.mouseout(rectMouseOut);
-                sResize.mousedown(sResizeImageMouseDown);
+                //sResize.mousedown(sResizeImageMouseDown);
 
                 var wResizeId = grp + "wResize";
                 var wResizeXY = getElementXYofImage("wResize", imageId);
@@ -2750,9 +2745,7 @@ function addImage() {
                 wResize.addClass("hide");
                 wResize.attr("id", wResizeId);
 
-                //wResize.mouseover(rectMouseOver);
-                //wResize.mouseout(rectMouseOut);
-                wResize.mousedown(wResizeImageMouseDown);
+                //wResize.mousedown(wResizeImageMouseDown);
 
                 var eResizeId = grp + "eResize";
                 var eResizeXY = getElementXYofImage("eResize", imageId);
@@ -2761,9 +2754,8 @@ function addImage() {
                 eResize.addClass("hide");
                 eResize.attr("id", eResizeId);
 
-                //eResize.mouseover(rectMouseOver);
-                //eResize.mouseout(rectMouseOut);
-                eResize.mousedown(eResizeImageMouseDown);
+                //eResize.mousedown(eResizeImageMouseDown);
+                registerListener(imageId);
 
                 var g = gSvg.g(newImage, nResize, sResize, wResize, eResize, close, selected);
                 var grpId = grp + "g";
@@ -3241,9 +3233,9 @@ function addCustom(customDef) {
     newCustom.addClass(CUSTOM_DEF[customDef].clsName);
     newCustom.attr("id", customId);
 
-    newCustom.mousedown(svgElMouseDown);
+    //newCustom.mousedown(svgElMouseDown);
 
-    newCustom.node.addEventListener("contextmenu", showContextMenu);
+    //newCustom.node.addEventListener("contextmenu", showContextMenu);
 
     var pathAry = Snap.parsePathString(pathStr);
     var pathLen = pathAry.length;
@@ -3279,7 +3271,7 @@ function addCustom(customDef) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    close.mousedown(closeClick);
+    //close.mousedown(closeClick);
 
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofBBox(bBoxCustom, "nResize");
@@ -3288,7 +3280,7 @@ function addCustom(customDef) {
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
 
-    nResize.mousedown(nResizeCustomMouseDown);
+    //nResize.mousedown(nResizeCustomMouseDown);
 
     var sResizeId = grp + "sResize";
     var sResizeXY = getElementXYofBBox(bBoxCustom, "sResize");
@@ -3297,7 +3289,7 @@ function addCustom(customDef) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    sResize.mousedown(sResizeCustomMouseDown);
+    //sResize.mousedown(sResizeCustomMouseDown);
 
     var wResizeId = grp + "wResize";
     var wResizeXY = getElementXYofBBox(bBoxCustom, "wResize");
@@ -3306,7 +3298,7 @@ function addCustom(customDef) {
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
 
-    wResize.mousedown(wResizeCustomMouseDown);
+    //wResize.mousedown(wResizeCustomMouseDown);
 
     var eResizeId = grp + "eResize";
     var eResizeXY = getElementXYofBBox(bBoxCustom, "eResize");
@@ -3315,9 +3307,17 @@ function addCustom(customDef) {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    eResize.mousedown(eResizeCustomMouseDown);
+    //eResize.mousedown(eResizeCustomMouseDown);
 
-    var g = gSvg.g(newCustom, close, nResize, sResize, wResize, eResize, selected);
+    var textId = grp + "text";
+    var textXY = getElementXYofBBox(bBoxCustom, "text");
+    var text = gSvg.text(textXY[0], textXY[1], "Label");
+    text.attr("id", textId);
+    text.addClass("myLabel");
+
+    registerListener(customId);
+
+    var g = gSvg.g(newCustom, close, nResize, sResize, wResize, eResize, text, selected);
     var grpId = grp + "g";
     g.attr("id", grpId);
 
@@ -3406,6 +3406,13 @@ function correctCustomXY(grp, conn) {
     eResize.transform("translate(0 0)");
     eResize.attr("cx", eResizeXY[0]);
     eResize.attr("cy", eResizeXY[1]);
+
+    var text = gSvg.select("#" + grp + "text");
+    var textXY = getElementXYofBBox(bBoxConn, "text");
+
+    text.transform("translate(0 0)");
+    text.attr("x", textXY[0]);
+    text.attr("y", textXY[1]);
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofBBox(bBoxConn, "selected");
@@ -4304,6 +4311,76 @@ function registerListener(id) {
             sResize.mousedown(sResizeBraceMouseDown);
         });
 
+    } else if ("break" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+
+        var parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeBreakMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeBreakMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeBreakMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeBreakMouseDown);
+        });
+
+    } else if ("image" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+
+        var parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeImageMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeImageMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeImageMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeImageMouseDown);
+        });
+
+    } else if ("custom" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+        svgEl.dblclick(textDblClick);
+
+        var parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeCustomMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeCustomMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeCustomMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeCustomMouseDown);
+        });
+
     }
 
     return type;
@@ -4467,7 +4544,28 @@ function svgElDuplicate() {
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
-        }  else if ("brace" == type) {
+        } else if ("brace" == type) {
+
+            var myMatrix = new Snap.Matrix();
+            myMatrix.translate(30, 30);
+            g.transform(myMatrix);
+            correctXY(newGrp, firstChild, type);
+
+        } else if ("break" == type) {
+
+            var myMatrix = new Snap.Matrix();
+            myMatrix.translate(30, 30);
+            g.transform(myMatrix);
+            correctXY(newGrp, firstChild, type);
+
+        } else if ("image" == type) {
+
+            var myMatrix = new Snap.Matrix();
+            myMatrix.translate(30, 30);
+            g.transform(myMatrix);
+            correctXY(newGrp, firstChild, type);
+
+        } else if ("custom" == type) {
 
             var myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
@@ -4631,6 +4729,11 @@ function getElementXYofBBox(bBox, elName) {
 
         xy.push(bBoxX);
         xy.push(bBoxY);
+
+    } else if ("text" == elName) {
+
+        xy.push(bBoxX + 10);
+        xy.push(bBoxY + height / 2 + 5);
 
     }
 
