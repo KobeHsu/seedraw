@@ -4328,6 +4328,17 @@ function svgElRemove() {
         gSvg.select("#" + grpId).remove();
         gContextMenu.classList.remove("context-menu--active");
         gGrpTmp = "";
+        gCurrent = "";
+    }
+
+}
+
+function svgElDuplicate() {
+
+    if ("" != gGrpTmp) {
+        var grpId = gGrpTmp + "g";
+        var svgElClone = gSvg.select("#" + grpId).clone();
+        gSvg.append(svgElClone);
     }
 
 }
