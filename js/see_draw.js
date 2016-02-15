@@ -64,6 +64,7 @@ var gMenuHeight;
 var gRatioAry = [];
 
 var gContextMenu;
+var gConnectorContextMenu;
 
 "use strict";
 
@@ -4381,6 +4382,17 @@ function registerListener(id) {
             eResize.mousedown(eResizeCustomMouseDown);
         });
 
+    } else if ("connector" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+        svgEl.dblclick(textDblClick);
+
+        var parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
     }
 
     return type;
@@ -4400,6 +4412,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     gContextMenu.addEventListener("mouseout", function () {
         gContextMenu.classList.remove("context-menu--active");
+    });
+
+    gConnectorContextMenu = document.getElementById("context-menu-connector");
+    gConnectorContextMenu.addEventListener("mouseover", function () {
+        gConnectorContextMenu.classList.add("context-menu--active");
+    });
+
+    gConnectorContextMenu.addEventListener("mouseout", function () {
+        gConnectorContextMenu.classList.remove("context-menu--active");
     });
 
     if (!gSvg) {
@@ -4525,6 +4546,9 @@ function svgElDuplicate() {
         var innerHtml = svgEl.node.innerHTML.replaceAll(gGrpTmp, newGrp);
         var g = gSvg.g();
         g.attr("id", newGrpId);
+        if ("" != svgEl.attr("type")) {
+            g.attr("type", svgEl.attr("type"));
+        }
         g.node.innerHTML = innerHtml;
 
         var firstChild = g.select(":first-child");
@@ -4572,6 +4596,15 @@ function svgElDuplicate() {
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
+        } else if ("connector" == type) {
+
+            var myMatrix = new Snap.Matrix();
+            myMatrix.translate(30, 30);
+            g.transform(myMatrix);
+            correctXY(newGrp, firstChild, type);
+
+            reDrawPointByPath(newGrp, firstChild, g, g.attr("type"));
+
         }
 
         gSerialNo++;
@@ -4580,6 +4613,7 @@ function svgElDuplicate() {
     }
 
 }
+
 function svgElToFront() {
 
     if ("" != gGrpTmp) {

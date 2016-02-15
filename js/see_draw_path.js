@@ -26,8 +26,8 @@ function addConnector(type) {
 
     //newConn.mouseover(connectorMouseOver);
     //newConn.mouseout(connectorMouseOut);
-    newConn.mousedown(svgElMouseDown);
-    newConn.node.addEventListener("contextmenu", connectorContextMenu);
+    //newConn.mousedown(svgElMouseDown);
+    //newConn.node.addEventListener("contextmenu", showContextMenu);
 
     var bBoxConn = newConn.getBBox();
     var selected = generateSelectedMark(bBoxConn, grp, true);
@@ -39,7 +39,7 @@ function addConnector(type) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    close.mousedown(closeClick);
+    //close.mousedown(closeClick);
 
     var len = newConn.getTotalLength();
     var targetPoint = newConn.getPointAtLength(len / 2);
@@ -49,11 +49,13 @@ function addConnector(type) {
     text.attr("id", textId);
     text.addClass("myLabel");
 
-    newConn.dblclick(textDblClick);
+    //newConn.dblclick(textDblClick);
+    registerListener(connectorId);
 
     var g = gSvg.g(newConn, text, close, selected);
     var grpId = grp + "g";
     g.attr("id", grpId);
+    g.attr("type", type);
 
     reDrawPointByPath(grp, newConn, g, type);
 
@@ -83,23 +85,6 @@ function getElementXYofConn(bBox, elName, targetX, targetY) {
     }
 
     return xy;
-
-}
-
-function connectorContextMenu(e) {
-
-    //e.preventDefault();
-    //
-    //var r = confirm(REMOVE_CONNECTOR_MSG);
-    //if (!r) {
-    //    return;
-    //}
-    //
-    //var grp = getGroupPrefix(this.id);
-    //var grpId = grp + "g";
-    //gSvg.select("#" + grpId).remove();
-
-    return false;
 
 }
 
@@ -378,7 +363,9 @@ function endPointMouseUp(event) {
 
 }
 
-function endPointRemove(id) {
+function endPointRemove() {
+
+    var id = targetMidPointId;
 
     if (id.indexOf("point") < 0) {
         return;
@@ -426,6 +413,11 @@ function endPointRemove(id) {
 
     reDrawPointByPath(grp, conn);
 
+    gConnectorContextMenu.classList.remove("context-menu--active");
+    gGrpTmp = "";
+    //gCurrent = "";
+    targetMidPointId = "";
+
 }
 
 function reDrawPointByPath(grp, conn, g, type) {
@@ -462,9 +454,8 @@ function reDrawPointByPath(grp, conn, g, type) {
         endPoint.addClass("myEndPoint");
         endPoint.addClass("hide");
 
-        //endPoint.mouseover(connectorMouseOver);
-        //endPoint.mouseout(connectorMouseOut);
         endPoint.mousedown(endPointMouseDown);
+        endPoint.node.addEventListener("contextmenu", showConnectorContextMenu);
 
         g.append(endPoint);
 
@@ -483,8 +474,6 @@ function reDrawPointByPath(grp, conn, g, type) {
             midPoint.addClass("myMidPoint");
             midPoint.addClass("hide");
 
-            //midPoint.mouseover(connectorMouseOver);
-            //midPoint.mouseout(connectorMouseOut);
             midPoint.mousedown(endPointMouseDown);
 
             g.append(midPoint);
@@ -515,15 +504,13 @@ function reDrawPointByPath(grp, conn, g, type) {
         arrowPath += " Z";
 
         var arrow = gSvg.path(arrowPath);
-        if ('route' == type) {
+        if ('route' == g.attr("type")) {
             arrow.addClass("myConnector2");
         } else {
             arrow.addClass("myConnector");
         }
         arrow.attr("id", arrowId);
         //arrow.node.style["zIndex"] = -10;
-        //arrow.mouseover(connectorMouseOver);
-        //arrow.mouseout(connectorMouseOut);
 
         var fx1 = parseInt(lastSubPath[0], 10);
         var fy1 = parseInt(lastSubPath[1], 10);
@@ -532,7 +519,6 @@ function reDrawPointByPath(grp, conn, g, type) {
 
         var m = Snap.matrix();
         m.rotate(deg, fx, fy);
-        //arrow.attr("transform", "rotate( " + deg + " " + fx + " " + fy + " )");
         arrow.transform(m);
 
         g.append(arrow);
@@ -561,6 +547,20 @@ function reDrawPointByPath(grp, conn, g, type) {
     close.transform("translate(0 0)");
     close.attr("cx", closeXY[0]);
     close.attr("cy", closeXY[1]);
+
+}
+
+var targetMidPointId;
+function showConnectorContextMenu(e) {
+
+    e.preventDefault();
+
+    targetMidPointId = e.target.id;
+
+    gConnectorContextMenu.classList.add("context-menu--active");
+    gConnectorContextMenu.style["left"] = (e.clientX - gMenuWidth ) + "px";
+    gConnectorContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
+    gGrpTmp = gCurrent;
 
 }
 

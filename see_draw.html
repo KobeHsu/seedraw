@@ -36,6 +36,11 @@
             <path d="M80 20 L75 17 L75 23 Z" class="myConnector"/>
             <text x="15" y="10" class="myLabel">Action</text>
         </svg>
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addConnector('route')">
+            <path d="M0 20 L80 20" class="myConnector"/>
+            <path d="M80 20 L75 17 L75 23 Z" class="myConnector"/>
+            <text x="15" y="10" class="myLabel">Route</text>
+        </svg>
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addEllipse()">
             <ellipse cx="35" cy="20" rx="25" ry="20" class="myEllipse"/>
             <text x="15" y="25" class="myLabel">Group</text>
@@ -78,6 +83,13 @@
                 </li>
                 <li class="context-menu__item">
                     <a href="#" class="context-menu__link" onClick="svgElToBack()">To Back</a>
+                </li>
+            </ul>
+        </nav>
+        <nav id="context-menu-connector" class="context-menu">
+            <ul class="context-menu__items">
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="endPointRemove()">Delete</a>
                 </li>
             </ul>
         </nav>
