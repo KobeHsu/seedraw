@@ -28,6 +28,11 @@
             <path d="M80 20 L75 17 L75 23 Z" class="myConnector"/>
             <text x="15" y="10" class="myLabel">Action</text>
         </svg>
+        <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addConnector('route')">
+            <path d="M0 20 L80 20" class="myConnector"/>
+            <path d="M80 20 L75 17 L75 23 Z" class="myConnector"/>
+            <text x="15" y="10" class="myLabel">Route</text>
+        </svg>
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addEllipse()">
             <ellipse cx="35" cy="20" rx="25" ry="20" class="myEllipse"/>
             <text x="15" y="25" class="myLabel">Group</text>
@@ -51,11 +56,172 @@
                 <path d="M0 0h24v24H0z" fill="none"/>
             </g>
         </svg>
+        <svg width="350" height="150" style="margin: 10px 10px 10px 10px" onclick="addCustom('ClippingSquare')">
+            <path d="M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z" transform="matrix(1,0,0,1,0,0)"
+                  class="myClippingSquare"></path>
+        </svg>
         <input type="file" id="insertImg" name="insertImg" onchange="addImage()" style="display:none"/>
     </div>
     <div id="drawArea" style="width:800px;"><input type="text" id="rectText" style="display:none;"/>
+        <nav id="context-menu" class="context-menu">
+            <ul class="context-menu__items">
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="svgElRemove()">Delete</a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="svgElDuplicate()">Duplicate</a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="svgElToFront()">To Front</a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="svgElToBack()">To Back</a>
+                </li>
+            </ul>
+        </nav>
+        <nav id="context-menu-connector" class="context-menu">
+            <ul class="context-menu__items">
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" onClick="endPointRemove()">Delete</a>
+                </li>
+            </ul>
+        </nav>
         <svg height="600" version="1.1" width="800" xmlns="http://www.w3.org/2000/svg" id="snapSvg">
-            <desc>Created with Snap</desc><defs></defs><g id="group_0000_g" transform="matrix(1,0,0,1,0,0)"><path d="M 162 180 L 212 230 L 192 230 L 252 280 L 202 230 Z" id="group_0000_break" transform="matrix(1,0,0,1,0,0)" class="myBreak"></path></g><g id="group_0001_g" transform="matrix(1,0,0,1,0,0)"><ellipse cx="319" cy="181" rx="90" ry="40" id="group_0001_ellipse" class="myEllipse" transform="matrix(1,0,0,1,0,0)"></ellipse><circle cx="406.36572969271725" cy="143.5" r="5" id="group_0001_close" class="myClose hide" transform="matrix(1,0,0,1,0,0)"></circle><circle cx="318.86572969271725" cy="141" r="5" id="group_0001_nResize" class="myNResize hide" transform="matrix(1,0,0,1,0,0)"></circle><circle cx="318.86572969271725" cy="221" r="5" id="group_0001_sResize" class="mySResize hide" transform="matrix(1,0,0,1,0,0)"></circle><circle cx="228.86572969271725" cy="181" r="5" id="group_0001_wResize" class="myWResize hide" transform="matrix(1,0,0,1,0,0)"></circle><circle cx="408.86572969271725" cy="181" r="5" id="group_0001_eResize" class="myEResize hide" transform="matrix(1,0,0,1,0,0)"></circle><text x="238.86572969271725" y="186" id="group_0001_text" transform="matrix(1,0,0,1,0,0)" class="myLabel">陳先生</text></g><g id="group_0002_g"><rect x="10" y="10" width="120" height="60" rx="5" ry="5" id="group_0002_rect" class="myRect"></rect><circle cx="127.5" cy="12.5" r="5" id="group_0002_close" class="myClose hide"></circle><circle cx="70" cy="10" r="5" id="group_0002_nResize" class="myNResize hide"></circle><circle cx="70" cy="70" r="5" id="group_0002_sResize" class="mySResize hide"></circle><circle cx="10" cy="40" r="5" id="group_0002_wResize" class="myWResize hide"></circle><circle cx="130" cy="40" r="5" id="group_0002_eResize" class="myEResize hide"></circle><text x="20" y="45" id="group_0002_text" class="myLabel">Label</text></g><g id="group_0003_g"><path d="M0 0 L50 50 L30 50 L90 100 L40 50 Z" id="group_0003_break" class="myBreak"></path></g>
+            <desc>Created with Snap</desc>
+            <defs></defs>
+            <g id="group_0000_g" transform="matrix(1,0,0,1,0,0)">
+                <rect x="48" y="279" width="120" height="122" rx="5" ry="5" id="group_0000_rect"
+                      class="myRect myRectDash" transform="matrix(1,0,0,1,0,0)"></rect>
+                <circle cx="165.5" cy="281.5" r="5" id="group_0000_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="108" cy="279" r="5" id="group_0000_nResize" class="myNResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="108" cy="401" r="5" id="group_0000_sResize" class="mySResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="48" cy="340" r="5" id="group_0000_wResize" class="myWResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="168" cy="340" r="5" id="group_0000_eResize" class="myEResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <text x="58" y="345" id="group_0000_text" transform="matrix(1,0,0,1,0,0)" class="myLabel">Label</text>
+                <rect x="48" y="279" width="120" height="122" id="group_0000_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+            </g>
+            <g id="group_0001_g" transform="matrix(1,0,0,1,0,0)">
+                <rect x="177" y="169" width="236" height="119" rx="5" ry="5" id="group_0001_rect" class="myRect"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+                <circle cx="410.5" cy="171.5" r="5" id="group_0001_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="295" cy="169" r="5" id="group_0001_nResize" class="myNResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="295" cy="288" r="5" id="group_0001_sResize" class="mySResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="177" cy="228.5" r="5" id="group_0001_wResize" class="myWResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="413" cy="228.5" r="5" id="group_0001_eResize" class="myEResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <text x="187" y="233.5" id="group_0001_text" transform="matrix(1,0,0,1,0,0)" class="myLabel">Label
+                </text>
+                <rect x="177" y="169" width="236" height="119" id="group_0001_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+            </g>
+            <g id="group_0002_g" type="undefined" transform="matrix(1,0,0,1,0,0)">
+                <path d="M 35 86 L 203 43 L 341 107 " id="group_0002_connector" class="myConnector"
+                      transform="matrix(1,0,0,1,0,0)"></path>
+                <text x="182.68077066726983" y="30.641231317305937" id="group_0002_text" class="myLabel">Label</text>
+                <circle cx="348.5" cy="35.5" r="5" id="group_0002_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <rect x="25" y="33" width="326" height="84" id="group_0002_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+                <circle cx="35" cy="86" r="5" id="group_0002_point_end_0" class="myEndPoint hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="203" cy="43" r="5" id="group_0002_point_end_1" class="myEndPoint hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="119" cy="64" r="5" id="group_0002_point_mid_0" class="myMidPoint hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="341" cy="107" r="5" id="group_0002_point_end_2" class="myEndPoint hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="272" cy="75" r="5" id="group_0002_point_mid_1" class="myMidPoint hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <path d="M 336 107 L 336 104 L 341 107 L 341 108 L 336 110 Z " id="group_0002_arrow"
+                      transform="matrix(0.9072,0.4207,-0.4207,0.9072,76.6664,-133.5364)" class="myConnector"></path>
+            </g>
+            <g id="group_0003_g" transform="matrix(1,0,0,1,0,0)">
+                <ellipse cx="616" cy="217" rx="90" ry="86" id="group_0003_ellipse" class="myEllipse"
+                         transform="matrix(1,0,0,1,0,0)"></ellipse>
+                <circle cx="703.3657296927172" cy="133.5" r="5" id="group_0003_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="615.8657296927172" cy="131" r="5" id="group_0003_nResize" class="myNResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="615.8657296927172" cy="303" r="5" id="group_0003_sResize" class="mySResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="525.8657296927172" cy="217" r="5" id="group_0003_wResize" class="myWResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="705.8657296927172" cy="217" r="5" id="group_0003_eResize" class="myEResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <text x="535.8657296927172" y="222" id="group_0003_text" transform="matrix(1,0,0,1,0,0)"
+                      class="myLabel">Label
+                </text>
+                <rect x="525.8657296927172" y="131" width="180.26854061456552" height="172" id="group_0003_selected"
+                      class="mySelected hide" transform="matrix(1,0,0,1,0,0)"></rect>
+            </g>
+            <g id="group_0004_g" type="route" transform="matrix(1,0,0,1,0,0)">
+                <path d="M 17 170 L 114 179 L 149 107 " id="group_0004_connector" class="myConnector2"
+                      transform="matrix(1,0,0,1,0,0)"></path>
+                <text x="95.34925833554007" y="163.19735386618413" id="group_0004_text" class="myLabel">Label</text>
+                <circle cx="156.5" cy="99.5" r="5" id="group_0004_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <rect x="7" y="97" width="152" height="92" id="group_0004_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+                <circle cx="17" cy="170" r="5" id="group_0004_point_end_0" class="myEndPoint"></circle>
+                <circle cx="114" cy="179" r="5" id="group_0004_point_end_1" class="myEndPoint"></circle>
+                <circle cx="65.5" cy="174.5" r="5" id="group_0004_point_mid_0" class="myMidPoint"></circle>
+                <circle cx="149" cy="107" r="5" id="group_0004_point_end_2" class="myEndPoint"></circle>
+                <circle cx="131.5" cy="143" r="5" id="group_0004_point_mid_1" class="myMidPoint"></circle>
+                <path d="M 144 107 L 144 104 L 149 107 L 149 108 L 144 110 Z" id="group_0004_arrow"
+                      transform="matrix(0.4372,-0.8994,0.8994,0.4372,-12.3741,194.2262)"
+                      class="myConnector2 hide"></path>
+            </g>
+            <g id="group_0005_g" transform="matrix(1,0,0,1,0,0)">
+                <path d="M 310 302 L 400 375 L 363 375 L 472 449 L 381 375 Z" id="group_0005_break"
+                      _ratio="0,0|0.56,0.5|0.33,0.5|1,1|0.44,0.5" transform="matrix(1,0,0,1,0,0)"
+                      class="myBreak"></path>
+                <circle cx="469.5" cy="304.5" r="5" id="group_0005_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="391" cy="302" r="5" id="group_0005_nResize" class="myNResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="391" cy="449" r="5" id="group_0005_sResize" class="mySResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="310" cy="375.5" r="5" id="group_0005_wResize" class="myWResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="472" cy="375.5" r="5" id="group_0005_eResize" class="myEResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <rect x="310" y="302" width="162" height="147" id="group_0005_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+            </g>
+            <g id="group_0006_g" transform="matrix(1,0,0,1,0,0)">
+                <path d="M 464 51 Q 452 51 456 91.25 T 444 131.5 M 464 212 Q 452 212 456 171.75 T 444 131.5"
+                      id="group_0006_brace" dir="left" transform="matrix(1,0,0,1,0,0)" class="myBrace"></path>
+                <circle cx="454" cy="51" r="5" id="group_0006_nResize" class="myNResize toFront hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="454" cy="212" r="5" id="group_0006_sResize" class="mySResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <rect x="444" y="51" width="20" height="161" id="group_0006_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+                <circle cx="461.5" cy="131.5" r="5" id="group_0006_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+            </g>
+            <g id="group_0007_g" transform="matrix(1,0,0,1,0,0)">
+                <path d="M 304 137 Q 316 137 312 115.75 T 324 94.5 M 304 52 Q 316 52 312 73.25 T 324 94.5"
+                      id="group_0007_brace" dir="right" transform="matrix(1,0,0,1,0,0)" class="myBrace"></path>
+                <circle cx="314" cy="52" r="5" id="group_0007_nResize" class="myNResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <circle cx="314" cy="137" r="5" id="group_0007_sResize" class="mySResize hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+                <rect x="304" y="52" width="20" height="85" id="group_0007_selected" class="mySelected hide"
+                      transform="matrix(1,0,0,1,0,0)"></rect>
+                <circle cx="321.5" cy="94.5" r="5" id="group_0007_close" class="myClose hide"
+                        transform="matrix(1,0,0,1,0,0)"></circle>
+            </g>
         </svg>
 
     </div>

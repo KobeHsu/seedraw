@@ -4021,35 +4021,8 @@ function reloadSvg() {
     // dispatch all events
     gSvg.selectAll("rect").forEach(function (newRect) {
 
-        //newRect.mouseover(rectMouseOver);
-        //newRect.mouseout(rectMouseOut);
-        newRect.mousedown(svgElMouseDown);
-
-        newRect.node.addEventListener("contextmenu", showContextMenu);
-
-        // resize event
-        newRect.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
-            //nResize.mouseover(rectMouseOver);
-            //nResize.mouseout(rectMouseOut);
-            nResize.mousedown(nResizeMouseDown);
-        });
-        newRect.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
-            //sResize.mouseover(rectMouseOver);
-            //sResize.mouseout(rectMouseOut);
-            sResize.mousedown(sResizeMouseDown);
-        });
-        newRect.parent().selectAll("[id$='wResize']").forEach(function (wResize) {
-            //wResize.mouseover(rectMouseOver);
-            //wResize.mouseout(rectMouseOut);
-            wResize.mousedown(wResizeMouseDown);
-        });
-        newRect.parent().selectAll("[id$='eResize']").forEach(function (eResize) {
-            //eResize.mouseover(rectMouseOver);
-            //eResize.mouseout(rectMouseOut);
-            eResize.mousedown(eResizeMouseDown);
-        });
-
         var id = newRect.attr("id");
+        registerListener(id);
         var grp = getGroupPrefix(id);
 
         if (grp > initGrp) {
@@ -4057,29 +4030,25 @@ function reloadSvg() {
         }
 
     });
-
-    gSvg.selectAll(".myClose").forEach(function (close) {
-
-        //close.mouseover(rectMouseOver);
-        //close.mouseout(rectMouseOut);
-        close.click(closeClick);
-
-    });
-
-    gSvg.selectAll("text").forEach(function (text) {
-
-        text.dblclick(textDblClick);
-
-    });
+    //
+    //gSvg.selectAll(".myClose").forEach(function (close) {
+    //
+    //    //close.mouseover(rectMouseOver);
+    //    //close.mouseout(rectMouseOut);
+    //    close.click(closeClick);
+    //
+    //});
+    //
+    //gSvg.selectAll("text").forEach(function (text) {
+    //
+    //    text.dblclick(textDblClick);
+    //
+    //});
 
     gSvg.selectAll("[id$='connector']").forEach(function (newConn) {
 
-        //newConn.mouseover(connectorMouseOver);
-        //newConn.mouseout(connectorMouseOut);
-        newConn.mousedown(svgElMouseDown);
-        newConn.node.addEventListener("contextmenu", connectorContextMenu);
-
         var id = newConn.attr("id");
+        registerListener(id);
         var grp = getGroupPrefix(id);
 
         if (grp > initGrp) {
@@ -4096,35 +4065,8 @@ function reloadSvg() {
 
     gSvg.selectAll("ellipse").forEach(function (newEllipse) {
 
-        //newEllipse.mouseover(rectMouseOver);
-        //newEllipse.mouseout(rectMouseOut);
-        newEllipse.mousedown(svgElMouseDown);
-
-        newEllipse.node.addEventListener("contextmenu", ellipseContextMenu);
-
-        // resize event
-        newEllipse.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
-            //nResize.mouseover(rectMouseOver);
-            //nResize.mouseout(rectMouseOut);
-            nResize.mousedown(nResizeEllipseMouseDown);
-        });
-        newEllipse.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
-            //sResize.mouseover(rectMouseOver);
-            //sResize.mouseout(rectMouseOut);
-            sResize.mousedown(sResizeEllipseMouseDown);
-        });
-        newEllipse.parent().selectAll("[id$='wResize']").forEach(function (wResize) {
-            //wResize.mouseover(rectMouseOver);
-            //wResize.mouseout(rectMouseOut);
-            wResize.mousedown(wResizeEllipseMouseDown);
-        });
-        newEllipse.parent().selectAll("[id$='eResize']").forEach(function (eResize) {
-            //eResize.mouseover(rectMouseOver);
-            //eResize.mouseout(rectMouseOut);
-            eResize.mousedown(eResizeEllipseMouseDown);
-        });
-
         var id = newEllipse.attr("id");
+        registerListener(id);
         var grp = getGroupPrefix(id);
 
         if (grp > initGrp) {
@@ -4135,25 +4077,8 @@ function reloadSvg() {
 
     gSvg.selectAll("[id$='_brace']").forEach(function (newBrace) {
 
-        //newBrace.mouseover(rectMouseOver);
-        //newBrace.mouseout(rectMouseOut);
-        newBrace.mousedown(svgElMouseDown);
-
-        newBrace.node.addEventListener("contextmenu", braceContextMenu);
-
-        // resize event
-        newBrace.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
-            //nResize.mouseover(rectMouseOver);
-            //nResize.mouseout(rectMouseOut);
-            nResize.mousedown(nResizeBraceMouseDown);
-        });
-        newBrace.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
-            //sResize.mouseover(rectMouseOver);
-            //sResize.mouseout(rectMouseOut);
-            sResize.mousedown(sResizeBraceMouseDown);
-        });
-
         var id = newBrace.attr("id");
+        registerListener(id);
         var grp = getGroupPrefix(id);
 
         if (grp > initGrp) {
@@ -4164,13 +4089,8 @@ function reloadSvg() {
 
     gSvg.selectAll("[id$='_break']").forEach(function (newBreak) {
 
-        //newBreak.mouseover(rectMouseOver);
-        //newBreak.mouseout(rectMouseOut);
-        newBreak.mousedown(svgElMouseDown);
-
-        newBreak.node.addEventListener("contextmenu", breakContextMenu);
-
         var id = newBreak.attr("id");
+        registerListener(id);
         var grp = getGroupPrefix(id);
 
         if (grp > initGrp) {
@@ -4181,35 +4101,20 @@ function reloadSvg() {
 
     gSvg.selectAll("image").forEach(function (newImage) {
 
-        //newImage.mouseover(rectMouseOver);
-        //newImage.mouseout(rectMouseOut);
-        newImage.mousedown(svgElMouseDown);
-
-        newImage.node.addEventListener("contextmenu", imageContextMenu);
-
-        // resize event
-        newImage.parent().selectAll("[id$='nResize']").forEach(function (nResize) {
-            //nResize.mouseover(rectMouseOver);
-            //nResize.mouseout(rectMouseOut);
-            nResize.mousedown(nResizeImageMouseDown);
-        });
-        newImage.parent().selectAll("[id$='sResize']").forEach(function (sResize) {
-            //sResize.mouseover(rectMouseOver);
-            //sResize.mouseout(rectMouseOut);
-            sResize.mousedown(sResizeImageMouseDown);
-        });
-        newImage.parent().selectAll("[id$='wResize']").forEach(function (wResize) {
-            //wResize.mouseover(rectMouseOver);
-            //wResize.mouseout(rectMouseOut);
-            wResize.mousedown(wResizeImageMouseDown);
-        });
-        newImage.parent().selectAll("[id$='eResize']").forEach(function (eResize) {
-            //eResize.mouseover(rectMouseOver);
-            //eResize.mouseout(rectMouseOut);
-            eResize.mousedown(eResizeImageMouseDown);
-        });
-
         var id = newImage.attr("id");
+        registerListener(id);
+        var grp = getGroupPrefix(id);
+
+        if (grp > initGrp) {
+            initGrp = grp;
+        }
+
+    });
+
+    gSvg.selectAll("[id$='_custom']").forEach(function (newCustom) {
+
+        var id = newCustom.attr("id");
+        registerListener(id);
         var grp = getGroupPrefix(id);
 
         if (grp > initGrp) {
