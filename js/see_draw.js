@@ -3225,7 +3225,7 @@ function eResizeImageMouseUp() {
 
 //region Custom
 var CUSTOM_DEF = {
-  "ClippingSquare": {path:"M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z", clsName: "myClippingSquare" }
+    "ClippingSquare": {path: "M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z", clsName: "myClippingSquare"}
 };
 
 function addCustom(customDef) {
@@ -3262,7 +3262,7 @@ function addCustom(customDef) {
         var ratioX = (lineToX - bBoxCustom.x) / bBoxCustom.width;
         var ratioY = (lineToY - bBoxCustom.y) / bBoxCustom.height;
 
-        ratioStr += ((i>0)?"|":"") + roundByDigits(ratioX, 2) + "," + roundByDigits(ratioY, 2);
+        ratioStr += ((i > 0) ? "|" : "") + roundByDigits(ratioX, 2) + "," + roundByDigits(ratioY, 2);
 
     }
     newCustom.attr("_ratio", ratioStr);
@@ -4219,12 +4219,12 @@ document.addEventListener("DOMContentLoaded", function () {
     gSvg = Snap.select("#snapSvg");
     gDrawArea = document.getElementById("drawArea");
     gContextMenu = document.getElementById("context-menu");
-    gContextMenu.addEventListener("mouseover", function () {console.log(gCurrent);
+    gContextMenu.addEventListener("mouseover", function () {
         gContextMenu.classList.add("context-menu--active");
     });
 
-    gContextMenu.addEventListener("mouseout", function() {console.log(gCurrent);
-        gContextMenu.classList.remove( "context-menu--active" );
+    gContextMenu.addEventListener("mouseout", function () {
+        gContextMenu.classList.remove("context-menu--active");
     });
 
     if (!gSvg) {
@@ -4309,7 +4309,7 @@ function showContextMenu(e) {
 
     e.preventDefault();
 
-    gContextMenu.classList.add( "context-menu--active" );
+    gContextMenu.classList.add("context-menu--active");
     gContextMenu.style["left"] = (e.clientX - gMenuWidth ) + "px";
     gContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
     gGrpTmp = gCurrent;
@@ -4323,7 +4323,7 @@ function svgElRemove() {
         return;
     }
 
-    if (""!=gGrpTmp) {
+    if ("" != gGrpTmp) {
         var grpId = gGrpTmp + "g";
         gSvg.select("#" + grpId).remove();
         gContextMenu.classList.remove("context-menu--active");
