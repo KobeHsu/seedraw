@@ -1,6 +1,6 @@
 //var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 //var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
-var __DEBUG_OUTPUT = true;
+var __DEBUG_OUTPUT = false;
 
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
@@ -4439,8 +4439,8 @@ document.addEventListener("DOMContentLoaded", function () {
     gMenuHeight = mainAreaBound.top;
     //$(gSvg.node).position().top;
 
-    gTextEditContextMenu.style["left"] = (gMenuWidth +100) + "px";
-    gTextEditContextMenu.style["top"] = (gMenuHeight +100) + "px";
+    gTextEditContextMenu.style["left"] = (gMenuWidth + 100) + "px";
+    gTextEditContextMenu.style["top"] = (gMenuHeight + 100) + "px";
 
 });
 
@@ -4899,7 +4899,7 @@ function labelRemove() {
 
 function textEdit(func, value) {
 
-    console.log(gEditingItem);
+    log(gEditingItem);
     if (!gEditingItem) {
         return;
     }
