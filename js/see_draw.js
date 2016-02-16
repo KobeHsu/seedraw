@@ -204,22 +204,21 @@ function addRect(type) {
     //eResize.mouseout(rectMouseOut);
     //eResize.mousedown(eResizeMouseDown);
 
-    var textId = grp + "text";
-    var textXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "text", rectId);
-    var text = gSvg.text(textXY[0], textXY[1], "Label");
-    text.attr("id", textId);
-    text.addClass("myLabel");
-    if ("noLabel" == type) {
-        text.addClass("hide");
-    }
+    //var textId = grp + "text";
+    //var textXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "text", rectId);
+    //var text = gSvg.text(textXY[0], textXY[1], "Label");
+    //text.attr("id", textId);
+    //text.addClass("myLabel");
+    //if ("noLabel" == type) {
+    //    text.addClass("hide");
+    //}
 
-    var txt = Snap.fragment("<foreignObject width='100' height='50' style='text-align:right'><div contenteditable='true' onfocus='alert(\"aa\");'>TEST</div><div><ul ><li>aa</li></ul></div><div contenteditable='true'>TEST3</div></foreignObject>");
-    //gSvg.append(txt);
+    var label = initLabelForElment(bBoxRect, grp);
 
     //newRect.dblclick(textDblClick);
     registerListener(rectId);
 
-    var g = gSvg.g(newRect, close, nResize, sResize, wResize, eResize, text, selected, txt);
+    var g = gSvg.g(newRect, close, nResize, sResize, wResize, eResize, selected, label);
     g.attr("id", grpId);
 
     gSerialNo++;
@@ -269,26 +268,32 @@ function closeClick(e) {
 }
 
 function textDblClick(event) {
-    log("textDblClick, id=" + this.attr("id"));
-    log("gCurrent=" + gCurrent);
-    gTextEditing = true;
-    event.stopPropagation();
-    //
-    //var grp = getGroupPrefix(this.attr("id"));
-    //gCurrent = grp;
-    var text = gSvg.select("#" + gCurrent + "text");
 
-    var textBBox = text.node.getBoundingClientRect();
-    text.addClass("hide");
+    var grp =getGroupPrefix( event.target.id);
+    var label = gSvg.select("#" + grp + "label");
 
-    var input = document.getElementById("rectText");
-    input.value = text.innerSVG();
-    input.style["left"] = (textBBox.left - gMenuWidth) + "px";
-    input.style["top"] = (textBBox.top - gMenuHeight) + "px";
-    input.style["display"] = "";
-    input.focus();
+    /*
+     log("textDblClick, id=" + this.attr("id"));
+     log("gCurrent=" + gCurrent);
+     gTextEditing = true;
+     event.stopPropagation();
+     //
+     //var grp = getGroupPrefix(this.attr("id"));
+     //gCurrent = grp;
+     var text = gSvg.select("#" + gCurrent + "text");
 
-    input.addEventListener("blur", inputBlur);
+     var textBBox = text.node.getBoundingClientRect();
+     text.addClass("hide");
+
+     var input = document.getElementById("rectText");
+     input.value = text.innerSVG();
+     input.style["left"] = (textBBox.left - gMenuWidth) + "px";
+     input.style["top"] = (textBBox.top - gMenuHeight) + "px";
+     input.style["display"] = "";
+     input.focus();
+
+     input.addEventListener("blur", inputBlur);
+     */
 }
 
 function inputBlur(event) {
@@ -392,12 +397,18 @@ function correctRectXY(grp, rect) {
     eResize.attr("cx", eResizeXY[0]);
     eResize.attr("cy", eResizeXY[1]);
 
-    var text = gSvg.select("#" + grp + "text");
-    var textXY = getElementXYofRect(bBoxX, bBoxY, "text", rectId);
+    //var text = gSvg.select("#" + grp + "text");
+    //var textXY = getElementXYofRect(bBoxX, bBoxY, "text", rectId);
+    //
+    //text.transform("translate(0 0)");
+    //text.attr("x", textXY[0]);
+    //text.attr("y", textXY[1]);
 
-    text.transform("translate(0 0)");
-    text.attr("x", textXY[0]);
-    text.attr("y", textXY[1]);
+    var label = g.select("#" + grp + "label");
+    var labelXY = getElementXYofBBox(bBox, "label");
+    label.transform("translate(0 0)");
+    label.attr("x", labelXY[0]);
+    label.attr("y", labelXY[1]);
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofRect(bBoxX, bBoxY, "selected", rectId);
@@ -4679,8 +4690,10 @@ function getElementXYofBBox(bBox, elName) {
 
     } else if ("label" == elName) {
 
-        xy.push(bBoxX + 10);
-        xy.push(bBoxY + height / 2 + 5);
+        xy.push(bBoxX);
+        xy.push(bBoxY + height / 2 - 6);
+        xy.push(width);
+        xy.push(height);
         //myDiv.clientHeight;
         //myDiv.scrollHeight; *
         //myDiv.offsetHeight;
@@ -4688,6 +4701,22 @@ function getElementXYofBBox(bBox, elName) {
     }
 
     return xy;
+
+}
+
+function initLabelForElment(bBox, grp) {
+
+    var w = bBox.width;
+    var h = bBox.height;
+    var x = bBox.x;
+    var y = bBox.y + bBox.height / 2 - 6; //  default size of font: 12px
+    var labelId = grp + "label";
+
+    var fragmentStr = "<foreignObject width='" + w + "' height='" + h + "' x='" + x + "' y='" + y + "' id='" + labelId + "'>";
+    fragmentStr += "<div contenteditable='true' style='width:" + (w-10) + "px'>label</div>";
+    fragmentStr += "</foreignObject>";
+
+    return Snap.fragment(fragmentStr);
 
 }
 //endregion

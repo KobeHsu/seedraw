@@ -462,4 +462,8 @@ input[type="text"].focus {
 
 foreignobject>div {
     font: 12px sans-serif;
+    color: #444;
+    padding: 0 5px 0 5px;
+    position: fixed;
+    white-space: nowrap;
 }
