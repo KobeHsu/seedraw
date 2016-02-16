@@ -87,7 +87,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
 }
 
 .myRectDash {
@@ -229,7 +229,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -252,7 +252,7 @@ input[type="text"].focus {
     stroke-dasharray: 10, 10;
     fill: none;
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -267,7 +267,7 @@ input[type="text"].focus {
     fill: #FF0000;
     cursor: move;
     z-index: 15;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -285,7 +285,7 @@ input[type="text"].focus {
     stroke: #000000;
     stroke-width: 10px;
     fill: none;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -312,7 +312,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
 }
 
 .myRect3 {
@@ -334,7 +334,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
 }
 
 .myConnector2 {
@@ -343,7 +343,7 @@ input[type="text"].focus {
     stroke-width: 4;
     fill: none;
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -366,7 +366,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -389,7 +389,7 @@ input[type="text"].focus {
     overflow: auto;
     /*padding: 5px 5px 5px 5px;*/
     cursor: move;
-    pointer-events:all;
+    pointer-events: all;
     position: absolute;
 }
 
@@ -422,7 +422,7 @@ input[type="text"].focus {
     display: none;
     position: absolute;
     z-index: 30;
-    padding: 12px 0;
+    padding: 0;
     width: 150px;
     background-color: #fff;
     border: solid 1px #dfdfdf;
@@ -453,6 +453,7 @@ input[type="text"].focus {
     padding: 4px 12px;
     color: #0066aa;
     text-decoration: none;
+    font: 12px sans-serif;
 }
 
 .context-menu__link:hover {
@@ -460,12 +461,12 @@ input[type="text"].focus {
     background-color: #0066aa;
 }
 
-foreignobject>div {
+foreignobject > div {
     font: 12px sans-serif;
     color: #444;
     padding: 0 5px 0 5px;
     padding: 0 5px 0 5px;
-    position:fixed;
+    position: fixed;
     white-space: nowrap;
     display: block;
 }

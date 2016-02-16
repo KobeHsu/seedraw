@@ -1,6 +1,6 @@
 //var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 //var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
-var __DEBUG_OUTPUT = false;
+var __DEBUG_OUTPUT = true;
 
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
@@ -54,7 +54,7 @@ var gStartX;
 var gStartY;
 var gCurrent;
 var gDragType;
-var gTextEditing;
+var gEditingItem;
 var gGrpTmp;
 
 var gMenuWidth;
@@ -65,6 +65,7 @@ var gRatioAry = [];
 var gContextMenu;
 var gConnectorContextMenu;
 var gLabelContextMenu;
+var gTextEditContextMenu;
 
 "use strict";
 
@@ -222,7 +223,7 @@ function addRect(type) {
             item.addEventListener("contextmenu", showLabelContextMenu);
             item.addEventListener("keypress", labelItemEnterPress);
             item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemFocus);
+            item.addEventListener("blur", labelItemBlur);
         }
     });
 
@@ -865,7 +866,7 @@ function addEllipse(type) {
             item.addEventListener("contextmenu", showLabelContextMenu);
             item.addEventListener("keypress", labelItemEnterPress);
             item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemFocus);
+            item.addEventListener("blur", labelItemBlur);
         }
     });
 
@@ -3370,7 +3371,7 @@ function addCustom(customDef) {
             item.addEventListener("contextmenu", showLabelContextMenu);
             item.addEventListener("keypress", labelItemEnterPress);
             item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemFocus);
+            item.addEventListener("blur", labelItemBlur);
         }
     });
 
@@ -3929,7 +3930,6 @@ function eResizeCustomMouseUp() {
 
 //endregion
 
-
 // region Common
 function svgElMouseDown(event) {
     log("svgElMouseDown");
@@ -4401,6 +4401,13 @@ document.addEventListener("DOMContentLoaded", function () {
         gLabelContextMenu.classList.remove("context-menu--active");
     });
 
+    gTextEditContextMenu = document.getElementById("context-menu-textedit");
+    gTextEditContextMenu.classList.add("context-menu--active");
+
+    //gTextEditContextMenu.addEventListener("mouseover", function () {
+    //    gTextEditContextMenu.classList.add("context-menu--active");
+    //});
+
     if (!gSvg) {
         gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
         gSvg.attr("id", "snapSvg");
@@ -4415,7 +4422,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (gContextMenu.classList.contains("context-menu--active")) {
             return;
         }
-        if (gCurrent != "" && !gTextEditing) {
+
+        if (gCurrent != "") {
             clearSelected(gCurrent);
             gCurrent = "";
         }
@@ -4431,6 +4439,8 @@ document.addEventListener("DOMContentLoaded", function () {
     gMenuHeight = mainAreaBound.top;
     //$(gSvg.node).position().top;
 
+    gTextEditContextMenu.style["left"] = (gMenuWidth +100) + "px";
+    gTextEditContextMenu.style["top"] = (gMenuHeight +100) + "px";
 
 });
 
@@ -4804,7 +4814,7 @@ function labelItemEnterPress(e) {
         div.addEventListener("contextmenu", showLabelContextMenu);
         div.addEventListener("keypress", labelItemEnterPress);
         div.addEventListener("focus", labelItemFocus);
-        div.addEventListener("blur", labelItemFocus);
+        div.addEventListener("blur", labelItemBlur);
 
         e.target.parentNode.appendChild(div);
         e.preventDefault();
@@ -4818,11 +4828,29 @@ function labelItemEnterPress(e) {
 
 function labelItemFocus(e) {
 
+    e.stopPropagation();
+    e.preventDefault();
+
+    gEditingItem = e.target;
+
     var label = e.target.parentNode.parentNode;
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
     }
+
+    //gTextEditContextMenu.classList.add("context-menu--active");
+}
+
+function labelItemBlur(e) {
+
+    var label = e.target.parentNode.parentNode;
+    if (label) {
+        gCurrent = getGroupPrefix(label.id);
+        setSelected(gCurrent);
+    }
+
+    //gTextEditContextMenu.classList.remove("context-menu--active");
 
 }
 
@@ -4868,6 +4896,27 @@ function labelRemove() {
     gLabelContextMenu.classList.remove("context-menu--active");
     gGrpTmp = "";
 }
+
+function textEdit(func, value) {
+
+    console.log(gEditingItem);
+    if (!gEditingItem) {
+        return;
+    }
+
+    if ("size" == func) {
+        gEditingItem.style["font-size"] = value;
+    } else if ("family" == func) {
+        gEditingItem.style["fontFamily"] = value;
+    } else if ("weight" == func) {
+        gEditingItem.style["font-weight"] = value;
+    } else if ("align" == func) {
+        gEditingItem.style["text-align"] = value;
+    }
+    gEditingItem.dispatchEvent(new Event("focus"));
+}
+
+
 //endregion
 
 function addDiamond() {
