@@ -459,3 +459,7 @@ input[type="text"].focus {
     color: #fff;
     background-color: #0066aa;
 }
+
+foreignobject>div {
+    font: 12px sans-serif;
+}

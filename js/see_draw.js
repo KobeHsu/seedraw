@@ -213,10 +213,13 @@ function addRect(type) {
         text.addClass("hide");
     }
 
+    var txt = Snap.fragment("<foreignObject width='100' height='50' style='text-align:right'><div contenteditable='true' onfocus='alert(\"aa\");'>TEST</div><div><ul ><li>aa</li></ul></div><div contenteditable='true'>TEST3</div></foreignObject>");
+    //gSvg.append(txt);
+
     //newRect.dblclick(textDblClick);
     registerListener(rectId);
 
-    var g = gSvg.g(newRect, close, nResize, sResize, wResize, eResize, text, selected);
+    var g = gSvg.g(newRect, close, nResize, sResize, wResize, eResize, text, selected, txt);
     g.attr("id", grpId);
 
     gSerialNo++;
@@ -4673,6 +4676,14 @@ function getElementXYofBBox(bBox, elName) {
 
         xy.push(bBoxX + 10);
         xy.push(bBoxY + height / 2 + 5);
+
+    } else if ("label" == elName) {
+
+        xy.push(bBoxX + 10);
+        xy.push(bBoxY + height / 2 + 5);
+        //myDiv.clientHeight;
+        //myDiv.scrollHeight; *
+        //myDiv.offsetHeight;
 
     }
 
