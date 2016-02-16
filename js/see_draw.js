@@ -65,6 +65,7 @@ var gRatioAry = [];
 
 var gContextMenu;
 var gConnectorContextMenu;
+var gLabelContextMenu;
 
 "use strict";
 
@@ -213,7 +214,14 @@ function addRect(type) {
     //    text.addClass("hide");
     //}
 
-    var label = initLabelForElment(bBoxRect, grp);
+    var label = initLabelForElement(bBoxRect, grp);
+    var labelItems = label.select("div").node.childNodes;
+    [].forEach.call(labelItems, function (item) {
+        if (item) {
+            item.addEventListener("contextmenu", showLabelContextMenu);
+            item.addEventListener("keypress", labelItemEnterPress);
+        }
+    });
 
     //newRect.dblclick(textDblClick);
     registerListener(rectId);
@@ -269,9 +277,12 @@ function closeClick(e) {
 
 function textDblClick(event) {
 
-    var grp =getGroupPrefix( event.target.id);
+    var grp = getGroupPrefix(event.target.id);
     var label = gSvg.select("#" + grp + "label");
-
+    var input = label.select(":first-child");
+    if (input) {
+        input.node.dispatchEvent(new MouseEvent('mousedown'));
+    }
     /*
      log("textDblClick, id=" + this.attr("id"));
      log("gCurrent=" + gCurrent);
@@ -4342,6 +4353,15 @@ document.addEventListener("DOMContentLoaded", function () {
         gConnectorContextMenu.classList.remove("context-menu--active");
     });
 
+    gLabelContextMenu = document.getElementById("context-menu-label");
+    gLabelContextMenu.addEventListener("mouseover", function () {
+        gLabelContextMenu.classList.add("context-menu--active");
+    });
+
+    gLabelContextMenu.addEventListener("mouseout", function () {
+        gLabelContextMenu.classList.remove("context-menu--active");
+    });
+
     if (!gSvg) {
         gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
         gSvg.attr("id", "snapSvg");
@@ -4691,7 +4711,16 @@ function getElementXYofBBox(bBox, elName) {
     } else if ("label" == elName) {
 
         xy.push(bBoxX);
-        xy.push(bBoxY + height / 2 - 6);
+
+        var newY = bBoxY + height / 2;
+        if (gCurrent) {
+            var grp = gCurrent;
+            var itemsHeight = gSvg.select("#" + grp + "label").node.childNodes[0].scrollHeight;
+            newY = newY - itemsHeight / 2;
+        }
+
+        xy.push(newY);
+
         xy.push(width);
         xy.push(height);
         //myDiv.clientHeight;
@@ -4704,7 +4733,7 @@ function getElementXYofBBox(bBox, elName) {
 
 }
 
-function initLabelForElment(bBox, grp) {
+function initLabelForElement(bBox, grp) {
 
     var w = bBox.width;
     var h = bBox.height;
@@ -4712,12 +4741,79 @@ function initLabelForElment(bBox, grp) {
     var y = bBox.y + bBox.height / 2 - 6; //  default size of font: 12px
     var labelId = grp + "label";
 
-    var fragmentStr = "<foreignObject width='" + w + "' height='" + h + "' x='" + x + "' y='" + y + "' id='" + labelId + "'>";
-    fragmentStr += "<div contenteditable='true' style='width:" + (w-10) + "px'>label</div>";
-    fragmentStr += "</foreignObject>";
+    var fragmentStr = "<foreignObject width='" + w + "' x='" + x + "' y='" + y + "' id='" + labelId + "'>";
+    fragmentStr += "<div>";
+    fragmentStr += "<div contenteditable='true' style='width:" + (w - 10) + "px'>label</div>";
+    fragmentStr += "</div></foreignObject>";
 
     return Snap.fragment(fragmentStr);
 
+}
+
+function labelItemEnterPress(e) {
+
+    e.stopPropagation();
+
+    if (13 == e.keyCode) {
+
+        var div = document.createElement("div");
+        div.style.width = e.target.style.width;
+        div.setAttribute("contentEditable", true);
+        div.innerHTML = "label";
+
+        div.addEventListener("contextmenu", showLabelContextMenu);
+        div.addEventListener("keypress", labelItemEnterPress);
+
+        e.target.parentNode.appendChild(div);
+        e.preventDefault();
+
+        adjustLabelItemPosition(e.target);
+
+        return false;
+    }
+
+}
+
+function adjustLabelItemPosition(labelItem) {
+
+    var label = labelItem.parentNode.parentNode;
+    if (label) {
+        var grp = getGroupPrefix(label.id);
+        var svgEl = gSvg.select("#" + grp + "g").select(":first-child");
+        var type = getTypeById(svgEl.attr("id"));
+        gCurrent = grp; // fix for empty
+        correctXY(grp, svgEl, type);
+    }
+
+}
+
+function showLabelContextMenu(e) {
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    gLabelContextMenu.classList.add("context-menu--active");
+    gLabelContextMenu.style["left"] = (e.clientX - gMenuWidth ) + "px";
+    gLabelContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
+    gGrpTmp = e.target;
+
+}
+
+function labelRemove() {
+
+    var labelItem = gGrpTmp;
+    if (labelItem) {
+
+        var childCount = labelItem.parentNode.childNodes.length;
+        if (childCount > 1) {
+            var parentDiv = labelItem.parentNode;
+            parentDiv.removeChild(labelItem);
+            adjustLabelItemPosition(parentDiv.childNodes[0]);
+        }
+
+    }
+    gLabelContextMenu.classList.remove("context-menu--active");
+    gGrpTmp = "";
 }
 //endregion
 
