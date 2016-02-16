@@ -1,6 +1,5 @@
-var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
-var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
-
+//var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
+//var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
 var __DEBUG_OUTPUT = false;
 
 var CANVAS_WIDTH = 800;
@@ -10,9 +9,9 @@ var SEPARATOR = "_";
 var GROUP_PREFIX = "group";
 
 var RECT_WIDTH = 120;
-var RECT_WIDTH_HALF = RECT_WIDTH / 2;
+//var RECT_WIDTH_HALF = RECT_WIDTH / 2;
 var RECT_HEIGHT = 60;
-var RECT_HEIGHT_HALF = RECT_HEIGHT / 2;
+//var RECT_HEIGHT_HALF = RECT_HEIGHT / 2;
 
 var RECT_WIDTH_SM = 80;
 var RECT_HEIGHT_SM = 40;
@@ -29,7 +28,7 @@ var CIRCLE_RY = 40;
 var XS_CIRCLE_RX = 20;
 var XS_CIRCLE_RY = 20;
 
-var LINE_WIDTH = 80;
+//var LINE_WIDTH = 80;
 
 var BRACE_WIDTH = 20;
 var BRACE_Q = 0.6;
@@ -38,7 +37,7 @@ var PATH_BBOX_ADD = 10;
 
 var REMOVE_CONFIRM_MSG = "Are you sure to remove this?";
 
-var REMOVE_CONNECTOR_MSG = "Remove this connection ?";
+//var REMOVE_CONNECTOR_MSG = "Remove this connection ?";
 var REMOVE_ENDOPOINT_MSG = "Remove this node ?";
 
 var REMOVE_LINE_MSG = "Remove this boundary ?";
@@ -124,14 +123,16 @@ function addRect(type) {
     var grp = getGroupPrefix(gSerialNo);
     var grpId = grp + "g";
     var rectId = grp + "rect";
+    var newRect;
+
     if ('small' == type) {
-        var newRect = gSvg.rect(10, 10, RECT_WIDTH_SM, RECT_HEIGHT_SM, 5, 5);
+        newRect = gSvg.rect(10, 10, RECT_WIDTH_SM, RECT_HEIGHT_SM, 5, 5);
         newRect.addClass("myRect2");
     } else if ('noLabel' == type) {
-        var newRect = gSvg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
+        newRect = gSvg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
         newRect.addClass("myRect3");
     } else {
-        var newRect = gSvg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
+        newRect = gSvg.rect(10, 10, RECT_WIDTH, RECT_HEIGHT, 5, 5);
         newRect.addClass("myRect");
     }
     if ("dash" == type) {
@@ -220,6 +221,8 @@ function addRect(type) {
         if (item) {
             item.addEventListener("contextmenu", showLabelContextMenu);
             item.addEventListener("keypress", labelItemEnterPress);
+            item.addEventListener("focus", labelItemFocus);
+            item.addEventListener("blur", labelItemFocus);
         }
     });
 
@@ -307,40 +310,42 @@ function textDblClick(event) {
      */
 }
 
-function inputBlur(event) {
-    log("inputBlur");
-    log("gCurrent=" + gCurrent);
-    gTextEditing = false;
-    event.stopPropagation();
+/*
+ function inputBlur(event) {
+ log("inputBlur");
+ log("gCurrent=" + gCurrent);
+ gTextEditing = false;
+ event.stopPropagation();
 
-    var grp = gCurrent;
-    var textId = grp + "text";
-    var text = gSvg.select("#" + textId);
+ var grp = gCurrent;
+ var textId = grp + "text";
+ var text = gSvg.select("#" + textId);
 
-    if (this.value != "") {
-        text.attr("text", this.value);
-    } else {
-        text.attr("text", "N/A");
-    }
-    text.removeClass("hide");
-    this.style["display"] = "none";
+ if (this.value != "") {
+ text.attr("text", this.value);
+ } else {
+ text.attr("text", "N/A");
+ }
+ text.removeClass("hide");
+ this.style["display"] = "none";
 
-    //gCurrent = "";
-    this.removeEventListener("blur", inputBlur);
+ //gCurrent = "";
+ this.removeEventListener("blur", inputBlur);
 
-    var grp = getGroupPrefix(textId);
-    var line = gSvg.select("#" + grp + "line");
-    if (line) {
+ var grp = getGroupPrefix(textId);
+ var line = gSvg.select("#" + grp + "line");
+ if (line) {
 
-        var textBBox = text.getBBox();
-        var textWidth = textBBox.width;
+ var textBBox = text.getBBox();
+ var textWidth = textBBox.width;
 
-        text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
-        //text.attr("y", textXY[1]);
+ text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
+ //text.attr("y", textXY[1]);
 
-    }
+ }
 
-}
+ }
+ */
 
 function correctRectXY(grp, rect) {
 
@@ -770,12 +775,14 @@ function addEllipse(type) {
     var grp = getGroupPrefix(gSerialNo);
     var grpId = grp + "g";
     var ellipseId = grp + "ellipse";
+    var newEllipse;
+
     if (type === 'circle') {
-        var newEllipse = gSvg.ellipse(CIRCLE_RX + 10, CIRCLE_RY + 10, CIRCLE_RX, CIRCLE_RY);
+        newEllipse = gSvg.ellipse(CIRCLE_RX + 10, CIRCLE_RY + 10, CIRCLE_RX, CIRCLE_RY);
     } else if (type === 'xs-circle') {
-        var newEllipse = gSvg.ellipse(XS_CIRCLE_RX + 10, XS_CIRCLE_RY + 10, XS_CIRCLE_RX, XS_CIRCLE_RY);
+        newEllipse = gSvg.ellipse(XS_CIRCLE_RX + 10, XS_CIRCLE_RY + 10, XS_CIRCLE_RX, XS_CIRCLE_RY);
     } else {
-        var newEllipse = gSvg.ellipse(ELLIPSE_RX + 10, ELLIPSE_RY + 10, ELLIPSE_RX, ELLIPSE_RY);
+        newEllipse = gSvg.ellipse(ELLIPSE_RX + 10, ELLIPSE_RY + 10, ELLIPSE_RX, ELLIPSE_RY);
     }
     newEllipse.addClass("myEllipse");
     newEllipse.attr("id", ellipseId);
@@ -845,16 +852,27 @@ function addEllipse(type) {
     //eResize.mousedown(eResizeEllipseMouseDown);
 
 
-    var textId = grp + "text";
-    var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
-    var text = gSvg.text(textXY[0], textXY[1], "Label");
-    text.attr("id", textId);
-    text.addClass("myLabel");
+    //var textId = grp + "text";
+    //var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
+    //var text = gSvg.text(textXY[0], textXY[1], "Label");
+    //text.attr("id", textId);
+    //text.addClass("myLabel");
+
+    var label = initLabelForElement(bBoxEllipse, grp);
+    var labelItems = label.select("div").node.childNodes;
+    [].forEach.call(labelItems, function (item) {
+        if (item) {
+            item.addEventListener("contextmenu", showLabelContextMenu);
+            item.addEventListener("keypress", labelItemEnterPress);
+            item.addEventListener("focus", labelItemFocus);
+            item.addEventListener("blur", labelItemFocus);
+        }
+    });
 
     //newEllipse.dblclick(textDblClick);
     registerListener(ellipseId);
 
-    var g = gSvg.g(newEllipse, close, nResize, sResize, wResize, eResize, text, selected);
+    var g = gSvg.g(newEllipse, close, nResize, sResize, wResize, eResize, selected, label);
     g.attr("id", grpId);
 
     gSerialNo++;
@@ -976,12 +994,17 @@ function correctEllipseXY(grp, ellipse) {
     eResize.attr("cx", eResizeXY[0]);
     eResize.attr("cy", eResizeXY[1]);
 
-    var text = gSvg.select("#" + grp + "text");
-    var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
-
-    text.transform("translate(0 0)");
-    text.attr("x", textXY[0]);
-    text.attr("y", textXY[1]);
+    //var text = gSvg.select("#" + grp + "text");
+    //var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
+    //
+    //text.transform("translate(0 0)");
+    //text.attr("x", textXY[0]);
+    //text.attr("y", textXY[1]);
+    var label = g.select("#" + grp + "label");
+    var labelXY = getElementXYofBBox(bBoxEllipse, "label");
+    label.transform("translate(0 0)");
+    label.attr("x", labelXY[0]);
+    label.attr("y", labelXY[1]);
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "selected", ellipseId);
@@ -2718,7 +2741,7 @@ function addImage() {
     fReader.onload = function (event) {
 
         var grp = getGroupPrefix(gSerialNo);
-        var grpId = grp + "g";
+        //var grpId = grp + "g";
         var imageId = grp + "image";
 
         var newImage = gSvg.image(event.target.result);
@@ -3335,15 +3358,26 @@ function addCustom(customDef) {
 
     //eResize.mousedown(eResizeCustomMouseDown);
 
-    var textId = grp + "text";
-    var textXY = getElementXYofBBox(bBoxCustom, "text");
-    var text = gSvg.text(textXY[0], textXY[1], "Label");
-    text.attr("id", textId);
-    text.addClass("myLabel");
+    //var textId = grp + "text";
+    //var textXY = getElementXYofBBox(bBoxCustom, "text");
+    //var text = gSvg.text(textXY[0], textXY[1], "Label");
+    //text.attr("id", textId);
+    //text.addClass("myLabel");
+    var label = initLabelForElement(bBoxCustom, grp);
+    var labelItems = label.select("div").node.childNodes;
+    [].forEach.call(labelItems, function (item) {
+        if (item) {
+            item.addEventListener("contextmenu", showLabelContextMenu);
+            item.addEventListener("keypress", labelItemEnterPress);
+            item.addEventListener("focus", labelItemFocus);
+            item.addEventListener("blur", labelItemFocus);
+        }
+    });
+
 
     registerListener(customId);
 
-    var g = gSvg.g(newCustom, close, nResize, sResize, wResize, eResize, text, selected);
+    var g = gSvg.g(newCustom, close, nResize, sResize, wResize, eResize, selected, label);
     var grpId = grp + "g";
     g.attr("id", grpId);
 
@@ -3433,12 +3467,17 @@ function correctCustomXY(grp, conn) {
     eResize.attr("cx", eResizeXY[0]);
     eResize.attr("cy", eResizeXY[1]);
 
-    var text = gSvg.select("#" + grp + "text");
-    var textXY = getElementXYofBBox(bBoxConn, "text");
-
-    text.transform("translate(0 0)");
-    text.attr("x", textXY[0]);
-    text.attr("y", textXY[1]);
+    //var text = gSvg.select("#" + grp + "text");
+    //var textXY = getElementXYofBBox(bBoxConn, "text");
+    //
+    //text.transform("translate(0 0)");
+    //text.attr("x", textXY[0]);
+    //text.attr("y", textXY[1]);
+    var label = g.select("#" + grp + "label");
+    var labelXY = getElementXYofBBox(bBoxConn, "label");
+    label.transform("translate(0 0)");
+    label.attr("x", labelXY[0]);
+    label.attr("y", labelXY[1]);
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofBBox(bBoxConn, "selected");
@@ -4164,8 +4203,7 @@ function getTypeById(id) {
         return "";
     }
 
-    var type = idSplit[2];
-    return type;
+    return idSplit[2];
 }
 
 function registerListener(id) {
@@ -4176,6 +4214,7 @@ function registerListener(id) {
     }
 
     var svgEl = Snap("#" + id);
+    var parentG;
 
     if ("rect" == type) {
 
@@ -4183,7 +4222,7 @@ function registerListener(id) {
         svgEl.node.addEventListener("contextmenu", showContextMenu);
         svgEl.dblclick(textDblClick);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4207,7 +4246,7 @@ function registerListener(id) {
         svgEl.node.addEventListener("contextmenu", showContextMenu);
         svgEl.dblclick(textDblClick);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4230,7 +4269,7 @@ function registerListener(id) {
         svgEl.mousedown(svgElMouseDown);
         svgEl.node.addEventListener("contextmenu", showContextMenu);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4247,7 +4286,7 @@ function registerListener(id) {
         svgEl.mousedown(svgElMouseDown);
         svgEl.node.addEventListener("contextmenu", showContextMenu);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4270,7 +4309,7 @@ function registerListener(id) {
         svgEl.mousedown(svgElMouseDown);
         svgEl.node.addEventListener("contextmenu", showContextMenu);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4294,7 +4333,7 @@ function registerListener(id) {
         svgEl.node.addEventListener("contextmenu", showContextMenu);
         svgEl.dblclick(textDblClick);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4318,7 +4357,7 @@ function registerListener(id) {
         svgEl.node.addEventListener("contextmenu", showContextMenu);
         svgEl.dblclick(textDblClick);
 
-        var parentG = svgEl.parent();
+        parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
@@ -4492,52 +4531,53 @@ function svgElDuplicate() {
 
         var firstChild = g.select(":first-child");
         var type = registerListener(firstChild.attr("id"));
+        var myMatrix;
 
         if ("rect" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
         } else if ("ellipse" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
         } else if ("brace" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
         } else if ("break" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
         } else if ("image" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
         } else if ("custom" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
 
         } else if ("connector" == type) {
 
-            var myMatrix = new Snap.Matrix();
+            myMatrix = new Snap.Matrix();
             myMatrix.translate(30, 30);
             g.transform(myMatrix);
             correctXY(newGrp, firstChild, type);
@@ -4736,7 +4776,7 @@ function getElementXYofBBox(bBox, elName) {
 function initLabelForElement(bBox, grp) {
 
     var w = bBox.width;
-    var h = bBox.height;
+    //var h = bBox.height;
     var x = bBox.x;
     var y = bBox.y + bBox.height / 2 - 6; //  default size of font: 12px
     var labelId = grp + "label";
@@ -4758,11 +4798,13 @@ function labelItemEnterPress(e) {
 
         var div = document.createElement("div");
         div.style.width = e.target.style.width;
-        div.setAttribute("contentEditable", true);
+        div.setAttribute("contentEditable", "true");
         div.innerHTML = "label";
 
         div.addEventListener("contextmenu", showLabelContextMenu);
         div.addEventListener("keypress", labelItemEnterPress);
+        div.addEventListener("focus", labelItemFocus);
+        div.addEventListener("blur", labelItemFocus);
 
         e.target.parentNode.appendChild(div);
         e.preventDefault();
@@ -4770,6 +4812,16 @@ function labelItemEnterPress(e) {
         adjustLabelItemPosition(e.target);
 
         return false;
+    }
+
+}
+
+function labelItemFocus(e) {
+
+    var label = e.target.parentNode.parentNode;
+    if (label) {
+        gCurrent = getGroupPrefix(label.id);
+        setSelected(gCurrent);
     }
 
 }
@@ -4809,6 +4861,7 @@ function labelRemove() {
             var parentDiv = labelItem.parentNode;
             parentDiv.removeChild(labelItem);
             adjustLabelItemPosition(parentDiv.childNodes[0]);
+            setSelected(gCurrent);
         }
 
     }
