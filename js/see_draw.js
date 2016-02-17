@@ -426,6 +426,9 @@ function correctRectXY(grp, rect) {
     label.transform("translate(0 0)");
     label.attr("x", labelXY[0]);
     label.attr("y", labelXY[1]);
+    label.selectAll("div>div").forEach(function (item) {
+        item.node.style.width = labelXY[2] - 10 + "px";
+    });
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofRect(bBoxX, bBoxY, "selected", rectId);
@@ -1006,6 +1009,9 @@ function correctEllipseXY(grp, ellipse) {
     label.transform("translate(0 0)");
     label.attr("x", labelXY[0]);
     label.attr("y", labelXY[1]);
+    label.selectAll("div>div").forEach(function (item) {
+        item.node.style.width = labelXY[2] - 10 + "px";
+    });
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "selected", ellipseId);
@@ -3479,6 +3485,9 @@ function correctCustomXY(grp, conn) {
     label.transform("translate(0 0)");
     label.attr("x", labelXY[0]);
     label.attr("y", labelXY[1]);
+    label.selectAll("div>div").forEach(function (item) {
+        item.node.style.width = labelXY[2] - 10 + "px";
+    });
 
     var selected = gSvg.select("#" + grp + "selected");
     var selectedXY = getElementXYofBBox(bBoxConn, "selected");
@@ -4806,20 +4815,32 @@ function labelItemEnterPress(e) {
 
     if (13 == e.keyCode) {
 
-        var div = document.createElement("div");
-        div.style.width = e.target.style.width;
-        div.setAttribute("contentEditable", "true");
-        div.innerHTML = "label";
+        if (e.shiftKey) {
 
-        div.addEventListener("contextmenu", showLabelContextMenu);
-        div.addEventListener("keypress", labelItemEnterPress);
-        div.addEventListener("focus", labelItemFocus);
-        div.addEventListener("blur", labelItemBlur);
+            var div = document.createElement("div");
+            div.style.width = e.target.style.width;
+            div.setAttribute("contentEditable", "true");
+            div.innerHTML = "label";
 
-        e.target.parentNode.appendChild(div);
+            div.addEventListener("contextmenu", showLabelContextMenu);
+            div.addEventListener("keypress", labelItemEnterPress);
+            div.addEventListener("focus", labelItemFocus);
+            div.addEventListener("blur", labelItemBlur);
+
+            e.target.parentNode.appendChild(div);
+
+            adjustLabelItemPosition(e.target);
+
+        } else {
+
+            if (e.target.nextSibling) {
+                console.log(e.target.nextSibling);
+                e.target.nextSibling.dispatchEvent(new Event("focus"));
+            }
+
+        }
+
         e.preventDefault();
-
-        adjustLabelItemPosition(e.target);
 
         return false;
     }
@@ -4851,6 +4872,7 @@ function labelItemBlur(e) {
     }
 
     //gTextEditContextMenu.classList.remove("context-menu--active");
+    gLabelContextMenu.classList.remove("context-menu--active");
 
 }
 
