@@ -143,12 +143,6 @@ function addRect(type) {
     }
     newRect.attr("id", rectId);
 
-    //newRect.mouseover(rectMouseOver);
-    //newRect.mouseout(rectMouseOut);
-    //newRect.mousedown(svgElMouseDown);
-
-    //newRect.node.addEventListener("contextmenu", showContextMenu);
-
     var bBoxRect = newRect.getBBox();
     var selected = generateSelectedMark(bBoxRect, grp);
 
@@ -159,20 +153,12 @@ function addRect(type) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    //close.mouseover(rectMouseOver);
-    //close.mouseout(rectMouseOut);
-    //close.mousedown(closeClick);
-
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "nResize", rectId);
     var nResize = gSvg.circle(nResizeXY[0], nResizeXY[1], CIRCLE_R);
     nResize.addClass("myNResize");
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
-
-    //nResize.mouseover(rectMouseOver);
-    //nResize.mouseout(rectMouseOut);
-    //nResize.mousedown(nResizeMouseDown);
 
     var sResizeId = grp + "sResize";
     var sResizeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "sResize", rectId);
@@ -181,20 +167,12 @@ function addRect(type) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    //sResize.mouseover(rectMouseOver);
-    //sResize.mouseout(rectMouseOut);
-    //sResize.mousedown(sResizeMouseDown);
-
     var wResizeId = grp + "wResize";
     var wResizeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "wResize", rectId);
     var wResize = gSvg.circle(wResizeXY[0], wResizeXY[1], CIRCLE_R);
     wResize.addClass("myWResize");
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
-
-    //wResize.mouseover(rectMouseOver);
-    //wResize.mouseout(rectMouseOut);
-    //wResize.mousedown(wResizeMouseDown);
 
     var eResizeId = grp + "eResize";
     var eResizeXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "eResize", rectId);
@@ -203,35 +181,21 @@ function addRect(type) {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    //eResize.mouseover(rectMouseOver);
-    //eResize.mouseout(rectMouseOut);
-    //eResize.mousedown(eResizeMouseDown);
-
-    //var textId = grp + "text";
-    //var textXY = getElementXYofRect(bBoxRect.x, bBoxRect.y, "text", rectId);
-    //var text = gSvg.text(textXY[0], textXY[1], "Label");
-    //text.attr("id", textId);
-    //text.addClass("myLabel");
-    //if ("noLabel" == type) {
-    //    text.addClass("hide");
-    //}
-
     var label = initLabelForElement(bBoxRect, grp);
-    var labelItems = label.select("div").node.childNodes;
-    [].forEach.call(labelItems, function (item) {
-        if (item) {
-            item.addEventListener("contextmenu", showLabelContextMenu);
-            item.addEventListener("keypress", labelItemEnterPress);
-            item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemBlur);
-        }
-    });
-
-    //newRect.dblclick(textDblClick);
-    registerListener(rectId);
+    //var labelItems = label.select("div").node.childNodes;
+    //[].forEach.call(labelItems, function (item) {
+    //    if (item) {
+    //        item.addEventListener("contextmenu", showLabelContextMenu);
+    //        item.addEventListener("keypress", labelItemEnterPress);
+    //        item.addEventListener("focus", labelItemFocus);
+    //        item.addEventListener("blur", labelItemBlur);
+    //    }
+    //});
 
     var g = gSvg.g(newRect, close, nResize, sResize, wResize, eResize, selected, label);
     g.attr("id", grpId);
+
+    registerListener(rectId);
 
     gSerialNo++;
 
@@ -283,9 +247,9 @@ function textDblClick(event) {
 
     var grp = getGroupPrefix(event.target.id);
     var label = gSvg.select("#" + grp + "label");
-    var input = label.select(":first-child");
+    var input = label.select("div>div");
     if (input) {
-        input.node.dispatchEvent(new MouseEvent('mousedown'));
+        input.node.focus();
     }
     /*
      log("textDblClick, id=" + this.attr("id"));
@@ -791,12 +755,6 @@ function addEllipse(type) {
     newEllipse.addClass("myEllipse");
     newEllipse.attr("id", ellipseId);
 
-    //newEllipse.mouseover(rectMouseOver);
-    //newEllipse.mouseout(rectMouseOut);
-    //newEllipse.mousedown(svgElMouseDown);
-
-    //newEllipse.node.addEventListener("contextmenu", showContextMenu);
-
     var bBoxEllipse = newEllipse.getBBox();
     var selected = generateSelectedMark(bBoxEllipse, grp);
 
@@ -807,20 +765,12 @@ function addEllipse(type) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    //close.mouseover(rectMouseOver);
-    //close.mouseout(rectMouseOut);
-    //close.mousedown(closeClick);
-
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "nResize", ellipseId);
     var nResize = gSvg.circle(nResizeXY[0], nResizeXY[1], CIRCLE_R);
     nResize.addClass("myNResize");
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
-
-    //nResize.mouseover(rectMouseOver);
-    //nResize.mouseout(rectMouseOut);
-    //nResize.mousedown(nResizeEllipseMouseDown);
 
     var sResizeId = grp + "sResize";
     var sResizeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "sResize", ellipseId);
@@ -829,20 +779,12 @@ function addEllipse(type) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    //sResize.mouseover(rectMouseOver);
-    //sResize.mouseout(rectMouseOut);
-    //sResize.mousedown(sResizeEllipseMouseDown);
-
     var wResizeId = grp + "wResize";
     var wResizeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "wResize", ellipseId);
     var wResize = gSvg.circle(wResizeXY[0], wResizeXY[1], CIRCLE_R);
     wResize.addClass("myWResize");
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
-
-    //wResize.mouseover(rectMouseOver);
-    //wResize.mouseout(rectMouseOut);
-    //wResize.mousedown(wResizeEllipseMouseDown);
 
     var eResizeId = grp + "eResize";
     var eResizeXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "eResize", ellipseId);
@@ -851,33 +793,21 @@ function addEllipse(type) {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    //eResize.mouseover(rectMouseOver);
-    //eResize.mouseout(rectMouseOut);
-    //eResize.mousedown(eResizeEllipseMouseDown);
-
-
-    //var textId = grp + "text";
-    //var textXY = getElementXYofEllipse(bBoxEllipse.x, bBoxEllipse.y, "text", ellipseId);
-    //var text = gSvg.text(textXY[0], textXY[1], "Label");
-    //text.attr("id", textId);
-    //text.addClass("myLabel");
-
     var label = initLabelForElement(bBoxEllipse, grp);
-    var labelItems = label.select("div").node.childNodes;
-    [].forEach.call(labelItems, function (item) {
-        if (item) {
-            item.addEventListener("contextmenu", showLabelContextMenu);
-            item.addEventListener("keypress", labelItemEnterPress);
-            item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemBlur);
-        }
-    });
-
-    //newEllipse.dblclick(textDblClick);
-    registerListener(ellipseId);
+    //var labelItems = label.select("div").node.childNodes;
+    //[].forEach.call(labelItems, function (item) {
+    //    if (item) {
+    //        item.addEventListener("contextmenu", showLabelContextMenu);
+    //        item.addEventListener("keypress", labelItemEnterPress);
+    //        item.addEventListener("focus", labelItemFocus);
+    //        item.addEventListener("blur", labelItemBlur);
+    //    }
+    //});
 
     var g = gSvg.g(newEllipse, close, nResize, sResize, wResize, eResize, selected, label);
     g.attr("id", grpId);
+
+    registerListener(ellipseId);
 
     gSerialNo++;
 
@@ -3289,10 +3219,6 @@ function addCustom(customDef) {
     newCustom.addClass(CUSTOM_DEF[customDef].clsName);
     newCustom.attr("id", customId);
 
-    //newCustom.mousedown(svgElMouseDown);
-
-    //newCustom.node.addEventListener("contextmenu", showContextMenu);
-
     var pathAry = Snap.parsePathString(pathStr);
     var pathLen = pathAry.length;
     var ratioStr = "";
@@ -3327,16 +3253,12 @@ function addCustom(customDef) {
     close.addClass("hide");
     close.attr("id", closeId);
 
-    //close.mousedown(closeClick);
-
     var nResizeId = grp + "nResize";
     var nResizeXY = getElementXYofBBox(bBoxCustom, "nResize");
     var nResize = gSvg.circle(nResizeXY[0], nResizeXY[1], CIRCLE_R);
     nResize.addClass("myNResize");
     nResize.addClass("hide");
     nResize.attr("id", nResizeId);
-
-    //nResize.mousedown(nResizeCustomMouseDown);
 
     var sResizeId = grp + "sResize";
     var sResizeXY = getElementXYofBBox(bBoxCustom, "sResize");
@@ -3345,16 +3267,12 @@ function addCustom(customDef) {
     sResize.addClass("hide");
     sResize.attr("id", sResizeId);
 
-    //sResize.mousedown(sResizeCustomMouseDown);
-
     var wResizeId = grp + "wResize";
     var wResizeXY = getElementXYofBBox(bBoxCustom, "wResize");
     var wResize = gSvg.circle(wResizeXY[0], wResizeXY[1], CIRCLE_R);
     wResize.addClass("myWResize");
     wResize.addClass("hide");
     wResize.attr("id", wResizeId);
-
-    //wResize.mousedown(wResizeCustomMouseDown);
 
     var eResizeId = grp + "eResize";
     var eResizeXY = getElementXYofBBox(bBoxCustom, "eResize");
@@ -3363,30 +3281,22 @@ function addCustom(customDef) {
     eResize.addClass("hide");
     eResize.attr("id", eResizeId);
 
-    //eResize.mousedown(eResizeCustomMouseDown);
-
-    //var textId = grp + "text";
-    //var textXY = getElementXYofBBox(bBoxCustom, "text");
-    //var text = gSvg.text(textXY[0], textXY[1], "Label");
-    //text.attr("id", textId);
-    //text.addClass("myLabel");
     var label = initLabelForElement(bBoxCustom, grp);
-    var labelItems = label.select("div").node.childNodes;
-    [].forEach.call(labelItems, function (item) {
-        if (item) {
-            item.addEventListener("contextmenu", showLabelContextMenu);
-            item.addEventListener("keypress", labelItemEnterPress);
-            item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemBlur);
-        }
-    });
-
-
-    registerListener(customId);
+    //var labelItems = label.select("div").node.childNodes;
+    //[].forEach.call(labelItems, function (item) {
+    //    if (item) {
+    //        item.addEventListener("contextmenu", showLabelContextMenu);
+    //        item.addEventListener("keypress", labelItemEnterPress);
+    //        item.addEventListener("focus", labelItemFocus);
+    //        item.addEventListener("blur", labelItemBlur);
+    //    }
+    //});
 
     var g = gSvg.g(newCustom, close, nResize, sResize, wResize, eResize, selected, label);
     var grpId = grp + "g";
     g.attr("id", grpId);
+
+    registerListener(customId);
 
     gSerialNo++;
 
@@ -4224,6 +4134,7 @@ function registerListener(id) {
 
     var svgEl = Snap("#" + id);
     var parentG;
+    var label;
 
     if ("rect" == type) {
 
@@ -4249,6 +4160,19 @@ function registerListener(id) {
             eResize.mousedown(eResizeMouseDown);
         });
 
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+
     } else if ("ellipse" == type) {
 
         svgEl.mousedown(svgElMouseDown);
@@ -4272,6 +4196,19 @@ function registerListener(id) {
         parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
             eResize.mousedown(eResizeEllipseMouseDown);
         });
+
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
 
     } else if ("brace" == type) {
 
@@ -4360,11 +4297,24 @@ function registerListener(id) {
             eResize.mousedown(eResizeCustomMouseDown);
         });
 
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+
     } else if ("connector" == type) {
 
         svgEl.mousedown(svgElMouseDown);
         svgEl.node.addEventListener("contextmenu", showContextMenu);
-        svgEl.dblclick(textDblClick);
+        //svgEl.dblclick(textDblClick);
 
         parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
@@ -4437,6 +4387,11 @@ document.addEventListener("DOMContentLoaded", function () {
             gCurrent = "";
         }
     }
+
+    gDrawArea.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
 
     var bound = gSvg.node.getBoundingClientRect();
     gStartX = bound.left;//gSvg.node).position().left;
@@ -4802,7 +4757,7 @@ function initLabelForElement(bBox, grp) {
 
     var fragmentStr = "<foreignObject width='" + w + "' x='" + x + "' y='" + y + "' id='" + labelId + "'>";
     fragmentStr += "<div>";
-    fragmentStr += "<div contenteditable='true' style='width:" + (w - 10) + "px'>label</div>";
+    fragmentStr += "<div contenteditable='true' style='width:" + (w - 10) + "px' placeholder='label'></div>";
     fragmentStr += "</div></foreignObject>";
 
     return Snap.fragment(fragmentStr);
@@ -4820,7 +4775,8 @@ function labelItemEnterPress(e) {
             var div = document.createElement("div");
             div.style.width = e.target.style.width;
             div.setAttribute("contentEditable", "true");
-            div.innerHTML = "label";
+            //div.innerHTML = "";
+            div.setAttribute("placeholder", "label");
 
             div.addEventListener("contextmenu", showLabelContextMenu);
             div.addEventListener("keypress", labelItemEnterPress);
@@ -4834,8 +4790,7 @@ function labelItemEnterPress(e) {
         } else {
 
             if (e.target.nextSibling) {
-                console.log(e.target.nextSibling);
-                e.target.nextSibling.dispatchEvent(new Event("focus"));
+                e.target.nextSibling.focus();
             }
 
         }
@@ -4853,6 +4808,7 @@ function labelItemFocus(e) {
     e.preventDefault();
 
     gEditingItem = e.target;
+    gEditingItem.setAttribute("placeholder", "label");
 
     var label = e.target.parentNode.parentNode;
     if (label) {
@@ -4864,6 +4820,8 @@ function labelItemFocus(e) {
 }
 
 function labelItemBlur(e) {
+
+    e.target.removeAttribute("placeholder");
 
     var label = e.target.parentNode.parentNode;
     if (label) {

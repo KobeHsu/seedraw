@@ -470,3 +470,9 @@ foreignobject > div {
     white-space: nowrap;
     display: block;
 }
+
+[contenteditable=true]:empty:before{
+    content: attr(placeholder);
+    color: grey;
+    display: block; /* For Firefox */
+}
