@@ -46,6 +46,9 @@ var REMOVE_LINE_MSG = "Remove this boundary ?";
 //var REMOVE_BRACE_MSG = "Remove this brace ?";
 //var REMOVE_IMAGE_MSG = "Remove this image ?";
 
+var TEXT_EDIT_MENU_LEFT = 180;
+var TEXT_EDIT_MENU_TOP = 0;
+
 var gSerialNo = 0;
 
 var gDrawArea;
@@ -4362,9 +4365,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     gTextEditContextMenu = document.getElementById("context-menu-textedit");
     gTextEditContextMenu.classList.add("context-menu--active");
+    gTextEditContextMenu.style["left"] = TEXT_EDIT_MENU_LEFT + "px";
+    gTextEditContextMenu.style["top"] = TEXT_EDIT_MENU_TOP + "px";
 
     //gTextEditContextMenu.addEventListener("mouseover", function () {
     //    gTextEditContextMenu.classList.add("context-menu--active");
+    //});
+    //gTextEditContextMenu.addEventListener("mouseout", function () {
+    //    gTextEditContextMenu.classList.remove("context-menu--active");
     //});
 
     if (!gSvg) {
@@ -4402,9 +4410,6 @@ document.addEventListener("DOMContentLoaded", function () {
     gMenuWidth = mainAreaBound.left;
     gMenuHeight = mainAreaBound.top;
     //$(gSvg.node).position().top;
-
-    gTextEditContextMenu.style["left"] = (gMenuWidth + 100) + "px";
-    gTextEditContextMenu.style["top"] = (gMenuHeight + 100) + "px";
 
 });
 
@@ -4802,6 +4807,63 @@ function labelItemEnterPress(e) {
 
 }
 
+function setTextEditMenuState(labelItem) {
+
+    if (!labelItem) {
+        return;
+    }
+
+    var textEditFontFamily = document.getElementById("textEditFontFamily");
+    var textEditFontSize = document.getElementById("textEditFontSize");
+
+    var textEditFontBold = document.getElementById("textEditFontBold");
+    var textEditFontItalic = document.getElementById("textEditFontItalic");
+
+    var textEditAlignLeft = document.getElementById("textEditAlignLeft");
+    var textEditAlignCenter = document.getElementById("textEditAlignCenter");
+    var textEditAlignRight = document.getElementById("textEditAlignRight");
+
+    var textEditBulleted = document.getElementById("textEditBulleted");
+    var textEditNumbered = document.getElementById("textEditNumbered");
+
+    if ("" != labelItem.style["font-family"]) {
+        textEditFontFamily.value = labelItem.style["font-family"];
+    }
+    if ("" != labelItem.style["font-size"]) {
+        textEditFontSize.value = labelItem.style["font-size"].replace("px", "");
+    }
+
+    if ("bold" == labelItem.style["font-weight"]) {
+        textEditFontBold.classList.add("text-edit-icon-active");
+    } else {
+        textEditFontBold.classList.remove("text-edit-icon-active");
+    }
+
+    if ("italic" == labelItem.style["font-style"]) {
+        textEditFontItalic.classList.add("text-edit-icon-active");
+    } else {
+        textEditFontItalic.classList.remove("text-edit-icon-active");
+    }
+
+    if ("left" == labelItem.style["text-align"]) {
+        textEditAlignLeft.classList.add("text-edit-icon-active");
+    } else {
+        textEditAlignLeft.classList.remove("text-edit-icon-active");
+    }
+
+    if ("center" == labelItem.style["text-align"]) {
+        textEditAlignCenter.classList.add("text-edit-icon-active");
+    } else {
+        textEditAlignCenter.classList.remove("text-edit-icon-active");
+    }
+
+    if ("right" == labelItem.style["text-align"]) {
+        textEditAlignRight.classList.add("text-edit-icon-active");
+    } else {
+        textEditAlignRight.classList.remove("text-edit-icon-active");
+    }
+}
+
 function labelItemFocus(e) {
 
     e.stopPropagation();
@@ -4810,10 +4872,17 @@ function labelItemFocus(e) {
     gEditingItem = e.target;
     gEditingItem.setAttribute("placeholder", "label");
 
+    setTextEditMenuState(gEditingItem);
+
     var label = e.target.parentNode.parentNode;
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
+        //gSvg.select("#" + label.id).selectAll("div>div").forEach(function (el) {
+        //    if (el) {
+        //        el.addClass("myLabelFocused");
+        //    }
+        //});
     }
 
     //gTextEditContextMenu.classList.add("context-menu--active");
@@ -4827,6 +4896,11 @@ function labelItemBlur(e) {
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
+        //gSvg.select("#" + label.id).selectAll("div>div").forEach(function (el) {
+        //    if (el) {
+        //        el.removeClass("myLabelFocused");
+        //    }
+        //});
     }
 
     //gTextEditContextMenu.classList.remove("context-menu--active");
@@ -4885,15 +4959,27 @@ function textEdit(func, value) {
     }
 
     if ("size" == func) {
-        gEditingItem.style["font-size"] = value;
+        gEditingItem.style["font-size"] = document.getElementById("textEditFontSize").value + "px";
     } else if ("family" == func) {
-        gEditingItem.style["fontFamily"] = value;
+        gEditingItem.style["font-family"] = document.getElementById("textEditFontFamily").value;
     } else if ("weight" == func) {
-        gEditingItem.style["font-weight"] = value;
+        if ("bold"==gEditingItem.style["font-weight"]) {
+            gEditingItem.style["font-weight"] = "normal";
+        } else {
+            gEditingItem.style["font-weight"] = "bold";
+        }
+    } else if ("style" == func) {
+        if ("italic"==gEditingItem.style["font-style"]) {
+            gEditingItem.style["font-style"] = "normal";
+        } else {
+            gEditingItem.style["font-style"] = "italic";
+        }
     } else if ("align" == func) {
         gEditingItem.style["text-align"] = value;
     }
-    gEditingItem.dispatchEvent(new Event("focus"));
+
+    gEditingItem.focus();
+    adjustLabelItemPosition(gEditingItem);
 }
 
 

@@ -188,6 +188,10 @@ input[type="text"].focus {
     pointer-events: none;
 }
 
+.myLabelFocused {
+    border: 1px dotted #6c8ebf;
+}
+
 .hide {
     display: none;
 }
@@ -471,8 +475,22 @@ foreignobject > div {
     display: block;
 }
 
-[contenteditable=true]:empty:before{
+[contenteditable=true]:empty:before {
     content: attr(placeholder);
     color: grey;
     display: block; /* For Firefox */
+}
+
+.context-menu > div {
+    display: inline-block;
+    #margin-right: 1px;
+    #padding: 0 0 0 0;
+    height: 24px;
+    border: 1px solid grey;
+    border-radius: 3px;
+    #background-color: lightblue;
+}
+
+.text-edit-icon-active {
+    background-color: lightblue;
 }

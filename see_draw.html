@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>SEE DRAW</title>
     <link href="css/see_draw.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -65,7 +67,8 @@
             </g>
         </svg>
         <svg width="350" height="150" style="margin: 10px 10px 10px 10px" onclick="addCustom('ClippingSquare')">
-            <path d="M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z" transform="matrix(1,0,0,1,0,0)" class="myClippingSquare"></path>
+            <path d="M 143 47 L 243 47 L 243 107 L 123 107 L 123 67 Z" transform="matrix(1,0,0,1,0,0)"
+                  class="myClippingSquare"></path>
         </svg>
         <input type="file" id="insertImg" name="insertImg" onchange="addImage()" style="display:none"/>
     </div>
@@ -100,36 +103,34 @@
                 </li>
             </ul>
         </nav>
-        <nav id="context-menu-textedit" class="context-menu">
-            <ul class="context-menu__items">
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('size', '14px')">Size14</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('size', '10px')">Size10</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('family', 'sans-serif')">sans-serif</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('family', 'monospace')">monospace</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('family', 'Arial')">Arial</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('weight', 'bold')">Bold</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('align', 'left')">Left</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('align', 'center')">Center</a>
-                </li>
-                <li class="context-menu__item">
-                    <a href="#" class="context-menu__link" onClick="textEdit('align', 'right')">Right</a>
-                </li>
-            </ul>
+        <nav id="context-menu-textedit" class="context-menu" style="width: auto;">
+            <div><select id="textEditFontFamily" onchange="textEdit('family')">
+                <option value=""></option>
+                <option value="Arial"><span style="font-family:Arial">Arial</span></option>
+                <option value="Arial Black"><span style="font-family:Arial Black">Arial Black</span></option>
+                <option value="Comic Sans MS"><span style="font-family:Comic Sans MS">Comic Sans MS</span></option>
+                <option value="Courier New"><span style="font-family:Courier New">Courier New</span></option>
+                <option value="Helvetica"><span style="font-family:Helvetica">Helvetica</span></option>
+                <option value="Impact"><span style="font-family:Impact">Impact</span></option>
+                <option value="Tahoma"><span style="font-family:Tahoma">Tahoma</span></option>
+                <option value="Times New Roman"><span style="font-family:Times New Roman">Times New Roman</span>
+                </option>
+                <option value="Verdana"><span style="font-family:Verdana">Verdana</span></option>
+            </select></div>
+            <div><select id="textEditFontSize" onchange="textEdit('size')">
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+            </select>
+            </div>
+            <!--<div><i class="material-icons">format_color_text</i></div>-->
+            <div id="textEditFontBold" onclick="textEdit('weight', 'bold')"><i class="material-icons">format_bold</i></div>
+            <div id="textEditFontItalic" onclick="textEdit('style', 'italic')"><i class="material-icons">format_italic</i></div>
+            <div id="textEditAlignLeft" onclick="textEdit('align', 'left')"><i class="material-icons">format_align_left</i></div>
+            <div id="textEditAlignCenter" onclick="textEdit('align', 'center')"><i class="material-icons">format_align_center</i></div>
+            <div id="textEditAlignRight" onclick="textEdit('align', 'right')"><i class="material-icons">format_align_right</i></div>
+            <div id="textEditBulleted"><i class="material-icons">format_list_bulleted</i></div>
+            <div id="textEditNumbered"><i class="material-icons">format_list_numbered</i></div>
         </nav>
     </div>
 </section>
