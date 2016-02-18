@@ -4775,7 +4775,7 @@ function labelItemEnterPress(e) {
 
     if (13 == e.keyCode) {
 
-        if (e.shiftKey) {
+        if (!e.shiftKey) {
 
             var div = document.createElement("div");
             div.style.width = e.target.style.width;
@@ -4792,15 +4792,16 @@ function labelItemEnterPress(e) {
 
             adjustLabelItemPosition(e.target);
 
-        } else {
-
             if (e.target.nextSibling) {
                 e.target.nextSibling.focus();
             }
 
-        }
+            e.preventDefault();
 
-        e.preventDefault();
+        } else {
+
+
+        }
 
         return false;
     }
@@ -4870,7 +4871,15 @@ function labelItemFocus(e) {
     e.preventDefault();
 
     gEditingItem = e.target;
-    gEditingItem.setAttribute("placeholder", "label");
+    //gEditingItem.setAttribute("placeholder", "label");
+    if (gEditingItem.parentNode) {
+        var labelItems = gEditingItem.parentNode.childNodes;
+        [].forEach.call(labelItems, function (item) {
+            if (item) {
+                item.setAttribute("placeholder", "label");
+            }
+        });
+    }
 
     setTextEditMenuState(gEditingItem);
 
@@ -4890,7 +4899,15 @@ function labelItemFocus(e) {
 
 function labelItemBlur(e) {
 
-    e.target.removeAttribute("placeholder");
+    //e.target.removeAttribute("placeholder");
+    if (e.target.parentNode) {
+        var labelItems = e.target.parentNode.childNodes;
+        [].forEach.call(labelItems, function (item) {
+            if (item) {
+                item.removeAttribute("placeholder", "label");
+            }
+        });
+    }
 
     var label = e.target.parentNode.parentNode;
     if (label) {
