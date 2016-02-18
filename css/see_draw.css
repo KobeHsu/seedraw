@@ -197,11 +197,11 @@ input[type="text"].focus {
 }
 
 .toFront {
-    z-index: 99;
+    #z-index: 99;
 }
 
 .toBack {
-    z-index: 0;
+    #z-index: 0;
 }
 
 .myGroup {
@@ -425,7 +425,7 @@ input[type="text"].focus {
 .context-menu {
     display: none;
     position: absolute;
-    z-index: 30;
+    z-index: 99;
     padding: 0;
     width: 150px;
     background-color: #fff;
