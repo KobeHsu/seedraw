@@ -4963,13 +4963,13 @@ function textEdit(func, value) {
     } else if ("family" == func) {
         gEditingItem.style["font-family"] = document.getElementById("textEditFontFamily").value;
     } else if ("weight" == func) {
-        if ("bold"==gEditingItem.style["font-weight"]) {
+        if ("bold" == gEditingItem.style["font-weight"]) {
             gEditingItem.style["font-weight"] = "normal";
         } else {
             gEditingItem.style["font-weight"] = "bold";
         }
     } else if ("style" == func) {
-        if ("italic"==gEditingItem.style["font-style"]) {
+        if ("italic" == gEditingItem.style["font-style"]) {
             gEditingItem.style["font-style"] = "normal";
         } else {
             gEditingItem.style["font-style"] = "italic";
