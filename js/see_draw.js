@@ -4777,18 +4777,18 @@ function labelItemEnterPress(e) {
 
         if (!e.shiftKey) {
 
-            var div = document.createElement("div");
-            div.style.width = e.target.style.width;
-            div.setAttribute("contentEditable", "true");
+            var item = document.createElement(e.target.tagName);
+            item.style.width = e.target.style.width;
+            item.setAttribute("contentEditable", "true");
             //div.innerHTML = "";
-            div.setAttribute("placeholder", "label");
+            item.setAttribute("placeholder", "label");
 
-            div.addEventListener("contextmenu", showLabelContextMenu);
-            div.addEventListener("keypress", labelItemEnterPress);
-            div.addEventListener("focus", labelItemFocus);
-            div.addEventListener("blur", labelItemBlur);
+            item.addEventListener("contextmenu", showLabelContextMenu);
+            item.addEventListener("keypress", labelItemEnterPress);
+            item.addEventListener("focus", labelItemFocus);
+            item.addEventListener("blur", labelItemBlur);
 
-            e.target.parentNode.appendChild(div);
+            e.target.parentNode.appendChild(item);
 
             adjustLabelItemPosition(e.target);
 
@@ -4862,6 +4862,33 @@ function setTextEditMenuState(labelItem) {
     } else {
         textEditAlignRight.classList.remove("text-edit-icon-active");
     }
+
+    var parentNode = labelItem.parentNode;
+    if (parentNode && "ul" == parentNode.tagName.toLowerCase()) {
+        textEditBulleted.classList.add("text-edit-icon-active");
+        textEditNumbered.classList.remove("text-edit-icon-active");
+    } else if (parentNode && "ol" == parentNode.tagName.toLowerCase()) {
+        textEditBulleted.classList.remove("text-edit-icon-active");
+        textEditNumbered.classList.add("text-edit-icon-active");
+    } else {
+        textEditBulleted.classList.remove("text-edit-icon-active");
+        textEditNumbered.classList.remove("text-edit-icon-active");
+    }
+
+}
+
+function getParentByTag(el, tagName) {
+
+    if (el) {
+        if (tagName.toLowerCase() == el.tagName.toLowerCase()) {
+            return el;
+        } else {
+            return getParentByTag(el.parentNode, tagName);
+        }
+    } else {
+        return null;
+    }
+
 }
 
 function labelItemFocus(e) {
@@ -4882,7 +4909,7 @@ function labelItemFocus(e) {
 
     setTextEditMenuState(gEditingItem);
 
-    var label = e.target.parentNode.parentNode;
+    var label = getParentByTag(e.target, "foreignobject");
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
@@ -4908,7 +4935,7 @@ function labelItemBlur(e) {
         });
     }
 
-    var label = e.target.parentNode.parentNode;
+    var label = getParentByTag(e.target, "foreignobject");
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
@@ -4926,13 +4953,21 @@ function labelItemBlur(e) {
 
 function adjustLabelItemPosition(labelItem) {
 
-    var label = labelItem.parentNode.parentNode;
+    var label = getParentByTag(labelItem, "foreignobject");
+    //if ("DIV" == labelItem.tagName.toUpperCase()) {
+    //    label = labelItem.parentNode.parentNode;
+    //} else {
+    //    label = labelItem.parentNode.parentNode.parentNode;
+    //}
+
     if (label) {
         var grp = getGroupPrefix(label.id);
         var svgEl = gSvg.select("#" + grp + "g").select(":first-child");
         var type = getTypeById(svgEl.attr("id"));
         gCurrent = grp; // fix for empty
         correctXY(grp, svgEl, type);
+        setSelected(gCurrent);
+        gEditingItem = "";
     }
 
 }
@@ -4992,12 +5027,108 @@ function textEdit(func, value) {
         }
     } else if ("align" == func) {
         gEditingItem.style["text-align"] = value;
+    } else if ("list" == func) {
+
+        if ("div" == gEditingItem.tagName.toLowerCase()) {
+
+            var listType = "";
+            if ("bulleted" == value) {
+                listType = "ul";
+            } else if ("numbered" == value) {
+                listType = "ol";
+            }
+
+            var list = document.createElement(listType);
+            var content = gEditingItem.innerHTML;
+
+            if ("" != content) {
+                content.split(/\<br\/?\>/i).forEach(function (itemStr) {
+                    var listItem = document.createElement("li");
+                    listItem.innerHTML = itemStr;
+                    listItem.setAttribute("contenteditable", "true");
+
+                    listItem.addEventListener("contextmenu", showLabelContextMenu);
+                    listItem.addEventListener("keypress", labelItemEnterPress);
+                    listItem.addEventListener("focus", labelItemFocus);
+                    listItem.addEventListener("blur", labelItemBlur);
+
+                    list.appendChild(listItem);
+                });
+
+                var parentDiv = gEditingItem.parentNode;
+                if (gEditingItem.nextSibling) {
+                    parentDiv.insertBefore(list, gEditingItem.nextSibling);
+                } else {
+                    parentDiv.appendChild(list);
+                }
+                parentDiv.removeChild(gEditingItem);
+
+                gEditingItem = list.childNodes[0];
+
+            }
+
+        } else {
+
+            var list = gEditingItem.parentNode;
+            var html = "";
+
+            if (list) {
+
+                var itemAry = [];
+                var listItems = list.childNodes;
+                [].forEach.call(listItems, function (item) {
+                    if (item) {
+                        itemAry.push(item.innerHTML);
+                    }
+                });
+                html = itemAry.join("<br>");
+
+                var div = document.createElement("div");
+                div.innerHTML = html;
+                div.setAttribute("contenteditable", "true");
+
+                div.addEventListener("contextmenu", showLabelContextMenu);
+                div.addEventListener("keypress", labelItemEnterPress);
+                div.addEventListener("focus", labelItemFocus);
+                div.addEventListener("blur", labelItemBlur);
+
+                var parentDiv = list.parentNode;
+                if (list.nextSibling) {
+                    parentDiv.insertBefore(div, list.nextSibling);
+                } else {
+                    parentDiv.appendChild(div);
+                }
+                parentDiv.removeChild(list);
+
+            }
+
+
+        }
+
     }
 
     gEditingItem.focus();
     adjustLabelItemPosition(gEditingItem);
+    event.stopPropagation();
 }
 
+function getCaretCharacterOffsetWithin(element) {
+    var caretOffset = 0;
+    if (typeof window.getSelection != "undefined") {
+        var range = window.getSelection().getRangeAt(0);
+        var preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        caretOffset = preCaretRange.toString().length;
+    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+        var textRange = document.selection.createRange();
+        var preCaretTextRange = document.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
 
 //endregion
 
