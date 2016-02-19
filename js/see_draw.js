@@ -48,6 +48,7 @@ var REMOVE_LINE_MSG = "Remove this boundary ?";
 
 var TEXT_EDIT_MENU_LEFT = 180;
 var TEXT_EDIT_MENU_TOP = 0;
+var DIAGRAM_NAME = "";
 
 var gSerialNo = 0;
 
@@ -4411,6 +4412,9 @@ document.addEventListener("DOMContentLoaded", function () {
     gMenuHeight = mainAreaBound.top;
     //$(gSvg.node).position().top;
 
+    var pathArray = window.location.pathname.split('/');
+    DIAGRAM_NAME = pathArray[pathArray.length - 1];
+
 });
 
 function setSelected(grp, grpOld) {
@@ -4604,8 +4608,15 @@ function newDraw() {
 }
 
 function loadDraw() {
-    document.getElementById("loadSvg").value = "";
-    document.getElementById("loadSvg").click();
+
+    var html = localStorage.getItem("DIAGRAM_NAME");
+    if (!html) {
+        return;
+    }
+    gSvg.node.innerHTML = html;
+    reloadSvg();
+    //document.getElementById("loadSvg").value = "";
+    //document.getElementById("loadSvg").click();
 }
 
 function performLoadSvg() {
@@ -4635,8 +4646,13 @@ function performLoadSvg() {
 
 }
 
+function saveDraw() {
+    localStorage.setItem("DIAGRAM_NAME", gSvg.node.innerHTML);
+}
+
 function deleteDraw() {
-    gSvg.node.innerHTML = "";
+    localStorage.removeItem("DIAGRAM_NAME");
+    newDraw();
 }
 
 function log(msg) {
