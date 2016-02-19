@@ -4407,7 +4407,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gStartY = bound.top;
 
     var mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
-    //var mainAreaBound = document.getElementById("drawArea").getBoundingClientRect();
+    //var mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); // TODO: For remote site
     gMenuWidth = mainAreaBound.left;
     gMenuHeight = mainAreaBound.top;
     //$(gSvg.node).position().top;
@@ -4611,6 +4611,7 @@ function loadDraw() {
 
     var html = localStorage.getItem("DIAGRAM_NAME");
     if (!html) {
+        alert("No data!")
         return;
     }
     gSvg.node.innerHTML = html;
