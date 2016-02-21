@@ -57,6 +57,7 @@ var gSvg;
 var gStartX;
 var gStartY;
 var gCurrent;
+var gDragAnchor;
 var gDragType;
 var gEditingItem;
 var gGrpTmp;
@@ -223,90 +224,6 @@ function rectMouseOut() {
 
 }
 
-function closeClick(e) {
-    log("closeClick");
-    e.stopPropagation();
-
-    var r = confirm(REMOVE_CONFIRM_MSG);
-    if (!r) {
-        return;
-    }
-
-    var grp = getGroupPrefix(this.attr("id"));
-    var grpId = grp + "g";
-    gSvg.select("#" + grpId).remove();
-
-}
-
-function textDblClick(event) {
-
-    var grp = getGroupPrefix(event.target.id);
-    var label = gSvg.select("#" + grp + "label");
-    var input = label.select("div>div");
-    if (input) {
-        input.node.focus();
-    }
-    /*
-     log("textDblClick, id=" + this.attr("id"));
-     log("gCurrent=" + gCurrent);
-     gTextEditing = true;
-     event.stopPropagation();
-     //
-     //var grp = getGroupPrefix(this.attr("id"));
-     //gCurrent = grp;
-     var text = gSvg.select("#" + gCurrent + "text");
-
-     var textBBox = text.node.getBoundingClientRect();
-     text.addClass("hide");
-
-     var input = document.getElementById("rectText");
-     input.value = text.innerSVG();
-     input.style["left"] = (textBBox.left - gMenuWidth) + "px";
-     input.style["top"] = (textBBox.top - gMenuHeight) + "px";
-     input.style["display"] = "";
-     input.focus();
-
-     input.addEventListener("blur", inputBlur);
-     */
-}
-
-/*
- function inputBlur(event) {
- log("inputBlur");
- log("gCurrent=" + gCurrent);
- gTextEditing = false;
- event.stopPropagation();
-
- var grp = gCurrent;
- var textId = grp + "text";
- var text = gSvg.select("#" + textId);
-
- if (this.value != "") {
- text.attr("text", this.value);
- } else {
- text.attr("text", "N/A");
- }
- text.removeClass("hide");
- this.style["display"] = "none";
-
- //gCurrent = "";
- this.removeEventListener("blur", inputBlur);
-
- var grp = getGroupPrefix(textId);
- var line = gSvg.select("#" + grp + "line");
- if (line) {
-
- var textBBox = text.getBBox();
- var textWidth = textBBox.width;
-
- text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
- //text.attr("y", textXY[1]);
-
- }
-
- }
- */
-
 function correctRectXY(grp, rect) {
 
     var g = gSvg.select("#" + grp + "g");
@@ -405,15 +322,23 @@ function nResizeMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "nResize";
+    gDragAnchor = "nResize";
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    var type = getTypeById(grpEl.attr("id"));
+    gDragType = type;
+
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var rect = gSvg.select("#" + grp + "rect");
-
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(rect.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(rect.attr("width"), 10));
+    eventTarget.data("mousedown-x", event.clientX);
+    eventTarget.data("mousedown-y", event.clientY);
+    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
+    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
+    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
+    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
+    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
+    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
 
     gDrawArea.onmousemove = nResizeMouseMove;
     gDrawArea.onmouseup = nResizeMouseUp;
@@ -428,13 +353,17 @@ function nResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var x = toInteger(eventTarget.data('mousedown-x'), 0);
+    var y = toInteger(eventTarget.data('mousedown-y'), 0);
+    var h = toInteger(eventTarget.data('mousedown-h'), 0);
+    var w = toInteger(eventTarget.data('mousedown-w'), 0);
 
+    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
+    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
+    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
+    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
@@ -447,11 +376,11 @@ function nResizeMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var rect = gSvg.select("#" + gCurrent + "rect");
-    rect.attr("y", event.clientY - gStartY);
-    rect.attr("height", newHeight);
+    var svgEl = gSvg.select("#" + gCurrent + gDragType);
+    svgEl.attr("y", event.clientY - gStartY);
+    svgEl.attr("height", newHeight);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("y", event.clientY - gStartY);
@@ -464,17 +393,16 @@ function nResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
 
-        var rect = gSvg.select("#" + gCurrent + "rect");
-        correctXY(grp, rect, "rect");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
+    gDragAnchor = "";
     gDragType = "";
 }
 
@@ -486,8 +414,8 @@ function sResizeMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var rect = gSvg.select("#" + grp + "rect");
 
@@ -509,7 +437,7 @@ function sResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -543,7 +471,7 @@ function sResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var rect = gSvg.select("#" + gCurrent + "rect");
         correctXY(grp, rect, "rect");
@@ -554,7 +482,7 @@ function sResizeMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function wResizeMouseDown(event) {
@@ -565,8 +493,8 @@ function wResizeMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var rect = gSvg.select("#" + grp + "rect");
 
@@ -588,7 +516,7 @@ function wResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -624,7 +552,7 @@ function wResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var rect = gSvg.select("#" + gCurrent + "rect");
         correctXY(grp, rect, "rect");
@@ -635,7 +563,7 @@ function wResizeMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function eResizeMouseDown(event) {
@@ -646,8 +574,8 @@ function eResizeMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var rect = gSvg.select("#" + grp + "rect");
 
@@ -669,7 +597,7 @@ function eResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -703,7 +631,7 @@ function eResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var rect = gSvg.select("#" + gCurrent + "rect");
         correctXY(grp, rect, "rect");
@@ -714,7 +642,7 @@ function eResizeMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 
@@ -934,7 +862,7 @@ function correctEllipseXY(grp, ellipse) {
 
 }
 
-function nResizeEllipseMouseDown() {
+function nResizeEllipseMouseDown(event) {
 
     event.stopPropagation();
 
@@ -942,8 +870,8 @@ function nResizeEllipseMouseDown() {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "nResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var ellipse = gSvg.select("#" + grp + "ellipse");
 
@@ -967,7 +895,7 @@ function nResizeEllipseMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1005,7 +933,7 @@ function nResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1016,7 +944,7 @@ function nResizeEllipseMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function sResizeEllipseMouseDown() {
@@ -1027,8 +955,8 @@ function sResizeEllipseMouseDown() {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var ellipse = gSvg.select("#" + grp + "ellipse");
 
@@ -1052,7 +980,7 @@ function sResizeEllipseMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1090,7 +1018,7 @@ function sResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1101,7 +1029,7 @@ function sResizeEllipseMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function wResizeEllipseMouseDown() {
@@ -1112,8 +1040,8 @@ function wResizeEllipseMouseDown() {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var ellipse = gSvg.select("#" + grp + "ellipse");
 
@@ -1137,7 +1065,7 @@ function wResizeEllipseMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1176,7 +1104,7 @@ function wResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1187,7 +1115,7 @@ function wResizeEllipseMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function eResizeEllipseMouseDown() {
@@ -1198,8 +1126,8 @@ function eResizeEllipseMouseDown() {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var ellipse = gSvg.select("#" + grp + "ellipse");
 
@@ -1223,7 +1151,7 @@ function eResizeEllipseMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1261,7 +1189,7 @@ function eResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1272,7 +1200,7 @@ function eResizeEllipseMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 //endregion
 
@@ -1451,8 +1379,8 @@ function wResizeLineMouseDown() {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var line = gSvg.select("#" + grp + "line");
 
@@ -1476,7 +1404,7 @@ function wResizeLineMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1508,7 +1436,7 @@ function wResizeLineMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var line = gSvg.select("#" + gCurrent + "line");
         correctXY(grp, line, "line");
@@ -1519,7 +1447,7 @@ function wResizeLineMouseUp() {
     gDrawArea.onmouseup = null;
 
     gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function eResizeLineMouseDown() {
@@ -1528,8 +1456,8 @@ function eResizeLineMouseDown() {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var line = gSvg.select("#" + grp + "line");
 
@@ -1553,7 +1481,7 @@ function eResizeLineMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1585,7 +1513,7 @@ function eResizeLineMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var line = gSvg.select("#" + gCurrent + "line");
         correctXY(grp, line, "line");
@@ -1596,7 +1524,7 @@ function eResizeLineMouseUp() {
     gDrawArea.onmouseup = null;
 
     gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 //endregion
 
@@ -1814,8 +1742,8 @@ function nResizeBraceMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "nResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var brace = gSvg.select("#" + grp + "brace");
     var bBox = brace.getBBox();
@@ -1839,7 +1767,7 @@ function nResizeBraceMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1876,7 +1804,7 @@ function nResizeBraceMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var brace = gSvg.select("#" + gCurrent + "brace");
         correctXY(grp, brace, "brace");
@@ -1887,7 +1815,7 @@ function nResizeBraceMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function sResizeBraceMouseDown(event) {
@@ -1898,8 +1826,8 @@ function sResizeBraceMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var brace = gSvg.select("#" + grp + "brace");
     var bBox = brace.getBBox();
@@ -1924,7 +1852,7 @@ function sResizeBraceMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -1961,7 +1889,7 @@ function sResizeBraceMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var brace = gSvg.select("#" + gCurrent + "brace");
         correctXY(grp, brace, "brace");
@@ -1972,7 +1900,7 @@ function sResizeBraceMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 //endregion
 
@@ -2190,8 +2118,8 @@ function nResizeBreakMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "nResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -2215,7 +2143,7 @@ function nResizeBreakMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -2273,7 +2201,7 @@ function nResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2283,7 +2211,7 @@ function nResizeBreakMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function sResizeBreakMouseDown(event) {
@@ -2294,8 +2222,8 @@ function sResizeBreakMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -2319,7 +2247,7 @@ function sResizeBreakMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -2377,7 +2305,7 @@ function sResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2387,7 +2315,7 @@ function sResizeBreakMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function wResizeBreakMouseDown(event) {
@@ -2398,8 +2326,8 @@ function wResizeBreakMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -2423,7 +2351,7 @@ function wResizeBreakMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -2481,7 +2409,7 @@ function wResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2491,7 +2419,7 @@ function wResizeBreakMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function eResizeBreakMouseDown(event) {
@@ -2502,8 +2430,8 @@ function eResizeBreakMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -2527,7 +2455,7 @@ function eResizeBreakMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -2585,7 +2513,7 @@ function eResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2595,7 +2523,7 @@ function eResizeBreakMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 //endregion
@@ -2825,8 +2753,8 @@ function nResizeImageMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "nResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var image = gSvg.select("#" + grp + "image");
 
@@ -2848,7 +2776,7 @@ function nResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -2884,7 +2812,7 @@ function nResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -2895,7 +2823,7 @@ function nResizeImageMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function sResizeImageMouseDown(event) {
@@ -2906,8 +2834,8 @@ function sResizeImageMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var image = gSvg.select("#" + grp + "image");
 
@@ -2929,7 +2857,7 @@ function sResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -2963,7 +2891,7 @@ function sResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -2974,7 +2902,7 @@ function sResizeImageMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function wResizeImageMouseDown(event) {
@@ -2985,8 +2913,8 @@ function wResizeImageMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var image = gSvg.select("#" + grp + "image");
 
@@ -3008,7 +2936,7 @@ function wResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -3044,7 +2972,7 @@ function wResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -3055,7 +2983,7 @@ function wResizeImageMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function eResizeImageMouseDown(event) {
@@ -3066,8 +2994,8 @@ function eResizeImageMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var image = gSvg.select("#" + grp + "image");
 
@@ -3089,7 +3017,7 @@ function eResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -3123,7 +3051,7 @@ function eResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -3134,7 +3062,7 @@ function eResizeImageMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 // endregion
 
@@ -3361,8 +3289,8 @@ function nResizeCustomMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "nResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -3386,7 +3314,7 @@ function nResizeCustomMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -3444,7 +3372,7 @@ function nResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3454,7 +3382,7 @@ function nResizeCustomMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function sResizeCustomMouseDown(event) {
@@ -3465,8 +3393,8 @@ function sResizeCustomMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "sResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -3490,7 +3418,7 @@ function sResizeCustomMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -3548,7 +3476,7 @@ function sResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3558,7 +3486,7 @@ function sResizeCustomMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function wResizeCustomMouseDown(event) {
@@ -3569,8 +3497,8 @@ function wResizeCustomMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "wResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -3594,7 +3522,7 @@ function wResizeCustomMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -3652,7 +3580,7 @@ function wResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3662,7 +3590,7 @@ function wResizeCustomMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function eResizeCustomMouseDown(event) {
@@ -3673,8 +3601,8 @@ function eResizeCustomMouseDown(event) {
     var grp = getGroupPrefix(id);
     gCurrent = grp;
 
-    gDragType = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    gDragAnchor = "eResize";
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var selected = gSvg.select("#" + grp + "selected");
 
@@ -3698,7 +3626,7 @@ function eResizeCustomMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
     var x = (parseInt(svgEl.data('mousedown-x')) || 0);
     var y = (parseInt(svgEl.data('mousedown-y')) || 0);
@@ -3756,7 +3684,7 @@ function eResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3766,7 +3694,7 @@ function eResizeCustomMouseUp() {
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 //endregion
@@ -4176,7 +4104,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     gConnectorContextMenu = document.getElementById("context-menu-connector");
-    gConnectorContextMenu.addEventListener("mouseover", function () {
+    gConnectorContextMenu.addEventListener("mouseover", function (e) {
         e.stopPropagation();
         gConnectorContextMenu.classList.add("context-menu--active");
     });
@@ -4186,7 +4114,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     gLabelContextMenu = document.getElementById("context-menu-label");
-    gLabelContextMenu.addEventListener("mouseover", function () {
+    gLabelContextMenu.addEventListener("mouseover", function (e) {
         e.stopPropagation();
         gLabelContextMenu.classList.add("context-menu--active");
     });
@@ -4485,6 +4413,15 @@ function log(msg) {
 function roundByDigits(num, digits) {
     var d = Math.pow(10, digits);
     return Math.round(num * d) / d;
+}
+
+function toInteger(str, def) {
+
+    if (str && !isNaN(str)) {
+        return parseInt(str, 10);
+    }
+
+    return (def) ? def : null;
 }
 
 function generateSelectedMark(bBox, grp, isPath) {
@@ -4871,31 +4808,29 @@ function svgElMouseDown(event) {
     gCurrent = grp;
 
     if (id.indexOf("rect") > 0) {
-        gDragType = "rect";
+        gDragAnchor = "rect";
     } else if (id.indexOf("connector") > 0) {
-        gDragType = "connector";
+        gDragAnchor = "connector";
     } else if (id.indexOf("ellipse") > 0) {
-        gDragType = "ellipse";
+        gDragAnchor = "ellipse";
     } else if (id.indexOf("line") > 0) {
-        gDragType = "line";
+        gDragAnchor = "line";
     } else if (id.indexOf("break") > 0) {
-        gDragType = "break";
+        gDragAnchor = "break";
     } else if (id.indexOf("brace") > 0) {
-        gDragType = "brace";
+        gDragAnchor = "brace";
     } else if (id.indexOf("image") > 0) {
-        gDragType = "image";
+        gDragAnchor = "image";
     } else if (id.indexOf("custom") > 0) {
-        gDragType = "custom";
+        gDragAnchor = "custom";
     } else {
-        gDragType = "unknown";
+        gDragAnchor = "unknown";
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-
-    //correctRectXY(grp, rect);
+    eventTarget.data("mousedown-x", event.clientX);
+    eventTarget.data("mousedown-y", event.clientY);
 
     gDrawArea.onmousemove = svgElMouseMove;
     gDrawArea.onmouseup = svgElMouseUp;
@@ -4911,10 +4846,10 @@ function svgElMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
+    var x = toInteger(svgEl.data('mousedown-x'), 0);
+    var y = toInteger(svgEl.data('mousedown-y'), 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
@@ -4924,9 +4859,6 @@ function svgElMouseMove(event) {
 
     var grpId = grp + "g";
     gSvg.select("#" + grpId).transform(myMatrix);
-    //gSvg.selectAll("[id^=" + grp).forEach(function (element) {
-    //    element.transform(myMatrix);
-    //});
 
 }
 
@@ -4935,9 +4867,9 @@ function svgElMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        correctXY(grp, svgEl, gDragType);
+        correctXY(grp, svgEl, gDragAnchor);
 
     }
 
@@ -4945,7 +4877,7 @@ function svgElMouseUp() {
     gDrawArea.onmouseup = null;
 
     //gCurrent = "";
-    gDragType = "";
+    gDragAnchor = "";
 }
 
 function showContextMenu(e) {
@@ -4959,6 +4891,90 @@ function showContextMenu(e) {
 
 }
 
+function closeClick(e) {
+    log("closeClick");
+    e.stopPropagation();
+
+    var r = confirm(REMOVE_CONFIRM_MSG);
+    if (!r) {
+        return;
+    }
+
+    var grp = getGroupPrefix(this.attr("id"));
+    var grpId = grp + "g";
+    gSvg.select("#" + grpId).remove();
+
+}
+
+function textDblClick(e) {
+    log("textDblClick");
+    e.stopPropagation();
+
+    var grp = getGroupPrefix(e.target.id);
+    var label = gSvg.select("#" + grp + "label");
+    var input = label.select("div>div");
+    if (input) {
+        input.node.focus();
+    }
+    /*
+     log("textDblClick, id=" + this.attr("id"));
+     log("gCurrent=" + gCurrent);
+     gTextEditing = true;
+     event.stopPropagation();
+     //
+     //var grp = getGroupPrefix(this.attr("id"));
+     //gCurrent = grp;
+     var text = gSvg.select("#" + gCurrent + "text");
+
+     var textBBox = text.node.getBoundingClientRect();
+     text.addClass("hide");
+
+     var input = document.getElementById("rectText");
+     input.value = text.innerSVG();
+     input.style["left"] = (textBBox.left - gMenuWidth) + "px";
+     input.style["top"] = (textBBox.top - gMenuHeight) + "px";
+     input.style["display"] = "";
+     input.focus();
+
+     input.addEventListener("blur", inputBlur);
+     */
+}
+/*
+ function inputBlur(event) {
+ log("inputBlur");
+ log("gCurrent=" + gCurrent);
+ gTextEditing = false;
+ event.stopPropagation();
+
+ var grp = gCurrent;
+ var textId = grp + "text";
+ var text = gSvg.select("#" + textId);
+
+ if (this.value != "") {
+ text.attr("text", this.value);
+ } else {
+ text.attr("text", "N/A");
+ }
+ text.removeClass("hide");
+ this.style["display"] = "none";
+
+ //gCurrent = "";
+ this.removeEventListener("blur", inputBlur);
+
+ var grp = getGroupPrefix(textId);
+ var line = gSvg.select("#" + grp + "line");
+ if (line) {
+
+ var textBBox = text.getBBox();
+ var textWidth = textBBox.width;
+
+ text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
+ //text.attr("y", textXY[1]);
+
+ }
+
+ }
+ */
 function labelItemEnterPress(e) {
     log("labelItemEnterPress");
     e.stopPropagation();
