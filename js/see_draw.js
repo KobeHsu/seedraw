@@ -8,9 +8,9 @@ var CANVAS_HEIGHT = 600;
 var SEPARATOR = "_";
 var GROUP_PREFIX = "group";
 
-var RECT_WIDTH = 120;
+var RECT_WIDTH = 60;
 //var RECT_WIDTH_HALF = RECT_WIDTH / 2;
-var RECT_HEIGHT = 60;
+var RECT_HEIGHT = 30;
 //var RECT_HEIGHT_HALF = RECT_HEIGHT / 2;
 
 var RECT_WIDTH_SM = 80;
@@ -19,8 +19,8 @@ var RECT_HEIGHT_SM = 40;
 var CIRCLE_R = 5;
 var CIRCLE_R_HALF = CIRCLE_R / 2;
 
-var ELLIPSE_RX = 90;
-var ELLIPSE_RY = 40;
+var ELLIPSE_RX = 20;
+var ELLIPSE_RY = 20;
 
 var CIRCLE_RX = 40;
 var CIRCLE_RY = 40;
@@ -28,6 +28,8 @@ var CIRCLE_RY = 40;
 var XS_CIRCLE_RX = 20;
 var XS_CIRCLE_RY = 20;
 
+var BREAK_WIDTH = 90;
+var BREAK_HEIGHT = 100;
 //var LINE_WIDTH = 80;
 
 var BRACE_WIDTH = 20;
@@ -2155,7 +2157,7 @@ function nResizeBreakMouseMove(event) {
     var dy = event.clientY - y;
 
     var newHeight = h - dy;
-    if (newHeight < RECT_HEIGHT) {
+    if (newHeight < BREAK_HEIGHT) {
         return;
     }
 
@@ -2259,7 +2261,7 @@ function sResizeBreakMouseMove(event) {
     var dy = event.clientY - y;
 
     var newHeight = h + dy;
-    if (newHeight < RECT_HEIGHT) {
+    if (newHeight < BREAK_HEIGHT) {
         return;
     }
 
@@ -2363,7 +2365,7 @@ function wResizeBreakMouseMove(event) {
     var dy = event.clientY - y;
 
     var newWidth = w - dx;
-    if (newWidth < RECT_WIDTH) {
+    if (newWidth < BREAK_WIDTH) {
         return;
     }
 
@@ -2467,7 +2469,7 @@ function eResizeBreakMouseMove(event) {
     var dy = event.clientY - y;
 
     var newWidth = w + dx;
-    if (newWidth < RECT_WIDTH) {
+    if (newWidth < BREAK_WIDTH) {
         return;
     }
 
