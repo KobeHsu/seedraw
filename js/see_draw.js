@@ -4077,25 +4077,25 @@ function registerListener(id) {
 
         svgEl.mousedown(svgElMouseDown);
         svgEl.node.addEventListener("contextmenu", showContextMenu);
-        //svgEl.dblclick(textDblClick);
+        svgEl.dblclick(textDblClick);
 
         parentG = svgEl.parent();
         parentG.selectAll("[id$='close']").forEach(function (close) {
             close.mousedown(closeClick);
         });
 
-        //label = parentG.selectAll("[id$='label']")[0];
-        //if (label) {
-        //    var labelItems = label.select("div").node.childNodes;
-        //    [].forEach.call(labelItems, function (item) {
-        //        if (item) {
-        //            item.addEventListener("contextmenu", showLabelContextMenu);
-        //            item.addEventListener("keypress", labelItemEnterPress);
-        //            item.addEventListener("focus", labelItemFocus);
-        //            item.addEventListener("blur", labelItemBlur);
-        //        }
-        //    });
-        //}
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
 
     }
 

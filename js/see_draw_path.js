@@ -52,7 +52,6 @@ function addConnector(type) {
     var label = initLabelForElement(bBoxConn, grp, labelXY[0], labelXY[1]);
 
     //newConn.dblclick(textDblClick);
-    registerListener(connectorId);
 
     var g = gSvg.g(newConn, close, selected, label);
     var grpId = grp + "g";
@@ -60,6 +59,8 @@ function addConnector(type) {
     g.attr("type", type);
 
     reDrawPointByPath(grp, newConn, g, type);
+
+    registerListener(connectorId);
 
     gSerialNo++;
 
