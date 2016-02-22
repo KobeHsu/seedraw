@@ -43,16 +43,18 @@ function addConnector(type) {
 
     var len = newConn.getTotalLength();
     var targetPoint = newConn.getPointAtLength(len / 2);
-    var textId = grp + "text";
-    var textXY = getElementXYofConn(selected.getBBox(), "text", targetPoint.x - 20, targetPoint.y - 20);
-    var text = gSvg.text(textXY[0], textXY[1], "Label");
-    text.attr("id", textId);
-    text.addClass("myLabel");
+    //var textId = grp + "text";
+    //var textXY = getElementXYofConn(selected.getBBox(), "text", targetPoint.x - 20, targetPoint.y - 20);
+    //var text = gSvg.text(textXY[0], textXY[1], "Label");
+    //text.attr("id", textId);
+    //text.addClass("myLabel");
+    var labelXY = getElementXYofConn(selected.getBBox(), "text", targetPoint.x - 20, targetPoint.y - 20);
+    var label = initLabelForElement(bBoxConn, grp, labelXY[0], labelXY[1]);
 
     //newConn.dblclick(textDblClick);
     registerListener(connectorId);
 
-    var g = gSvg.g(newConn, text, close, selected);
+    var g = gSvg.g(newConn, close, selected, label);
     var grpId = grp + "g";
     g.attr("id", grpId);
     g.attr("type", type);
@@ -174,12 +176,15 @@ function correctConnectorXY(grp, conn) {
 
     var len = conn.getTotalLength();
     var targetPoint = conn.getPointAtLength(len / 2);
-    var text = gSvg.select("[id^='" + grp + "text']");
-    var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
-    text.attr("x", textXY[0]);
-    text.attr("y", textXY[1]);
-
-    text.dblclick(textDblClick);
+    //var text = gSvg.select("[id^='" + grp + "text']");
+    //var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    //text.attr("x", textXY[0]);
+    //text.attr("y", textXY[1]);
+    var labelXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    var label = gSvg.select("[id^='" + grp + "label']");
+    label.attr("x", labelXY[0]);
+    label.attr("y", labelXY[1]);
+    //text.dblclick(textDblClick);
 
     var arrow = gSvg.select("[id^='" + grp + "arrow']");
 
@@ -527,10 +532,14 @@ function reDrawPointByPath(grp, conn, g, type) {
 
     var connLen = conn.getTotalLength();
     var targetPoint = conn.getPointAtLength(connLen / 2);
-    var text = gSvg.select("[id^='" + grp + "text']");
-    var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
-    text.attr("x", textXY[0]);
-    text.attr("y", textXY[1]);
+    //var text = gSvg.select("[id^='" + grp + "text']");
+    //var textXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    //text.attr("x", textXY[0]);
+    //text.attr("y", textXY[1]);
+    var labelXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
+    var label = gSvg.select("[id^='" + grp + "label']");
+    label.attr("x", labelXY[0]);
+    label.attr("y", labelXY[1]);
 
     var selected = gSvg.select("#" + grp + "selected");
     var bBoxConn = conn.getBBox();

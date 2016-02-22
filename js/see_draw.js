@@ -4084,6 +4084,19 @@ function registerListener(id) {
             close.mousedown(closeClick);
         });
 
+        //label = parentG.selectAll("[id$='label']")[0];
+        //if (label) {
+        //    var labelItems = label.select("div").node.childNodes;
+        //    [].forEach.call(labelItems, function (item) {
+        //        if (item) {
+        //            item.addEventListener("contextmenu", showLabelContextMenu);
+        //            item.addEventListener("keypress", labelItemEnterPress);
+        //            item.addEventListener("focus", labelItemFocus);
+        //            item.addEventListener("blur", labelItemBlur);
+        //        }
+        //    });
+        //}
+
     }
 
     return type;
@@ -4528,13 +4541,20 @@ function getElementXYofBBox(bBox, elName) {
 
 }
 
-function initLabelForElement(bBox, grp) {
+function initLabelForElement(bBox, grp, initX, initY) {
 
     var w = bBox.width;
     //var h = bBox.height;
     var x = bBox.x;
     var y = bBox.y + bBox.height / 2 - 6; //  default size of font: 12px
     var labelId = grp + "label";
+
+    if (initX) {
+        x = initX;
+    }
+    if (initY) {
+        y = initY;
+    }
 
     var fragmentStr = "<foreignObject width='" + w + "' x='" + x + "' y='" + y + "' id='" + labelId + "'>";
     fragmentStr += "<div>";
@@ -4941,42 +4961,43 @@ function textDblClick(e) {
      input.addEventListener("blur", inputBlur);
      */
 }
+
 /*
- function inputBlur(event) {
- log("inputBlur");
- log("gCurrent=" + gCurrent);
- gTextEditing = false;
- event.stopPropagation();
+function inputBlur(event) {
+    log("inputBlur");
+    log("gCurrent=" + gCurrent);
+    event.stopPropagation();
 
- var grp = gCurrent;
- var textId = grp + "text";
- var text = gSvg.select("#" + textId);
+    var grp = gCurrent;
+    var textId = grp + "text";
+    var text = gSvg.select("#" + textId);
 
- if (this.value != "") {
- text.attr("text", this.value);
- } else {
- text.attr("text", "N/A");
- }
- text.removeClass("hide");
- this.style["display"] = "none";
+    if (this.value != "") {
+        text.attr("text", this.value);
+    } else {
+        text.attr("text", "N/A");
+    }
+    text.removeClass("hide");
+    this.style["display"] = "none";
 
- //gCurrent = "";
- this.removeEventListener("blur", inputBlur);
+    //gCurrent = "";
+    this.removeEventListener("blur", inputBlur);
 
- var grp = getGroupPrefix(textId);
- var line = gSvg.select("#" + grp + "line");
- if (line) {
+    var grp = getGroupPrefix(textId);
+    var line = gSvg.select("#" + grp + "line");
+    if (line) {
 
- var textBBox = text.getBBox();
- var textWidth = textBBox.width;
+        var textBBox = text.getBBox();
+        var textWidth = textBBox.width;
 
- text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
- //text.attr("y", textXY[1]);
+        text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
+        //text.attr("y", textXY[1]);
 
- }
+    }
 
- }
- */
+}
+*/
+
 function labelItemEnterPress(e) {
     log("labelItemEnterPress");
     e.stopPropagation();
