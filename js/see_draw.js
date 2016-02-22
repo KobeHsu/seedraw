@@ -4206,6 +4206,10 @@ function deleteDraw() {
     newDraw();
 }
 
+function undo() {
+
+}
+
 function log(msg) {
     if (__DEBUG_OUTPUT) {
         console.log(msg);
