@@ -711,7 +711,7 @@ function addEllipse(type) {
     //[].forEach.call(labelItems, function (item) {
     //    if (item) {
     //        item.addEventListener("contextmenu", showLabelContextMenu);
-    //        item.addEventListener("keypress", labelItemEnterPress);
+    //        item.addEventListener("keydown", labelItemKeyDown);
     //        item.addEventListener("focus", labelItemFocus);
     //        item.addEventListener("blur", labelItemBlur);
     //    }
@@ -3150,7 +3150,7 @@ function addCustom(customDef) {
     //[].forEach.call(labelItems, function (item) {
     //    if (item) {
     //        item.addEventListener("contextmenu", showLabelContextMenu);
-    //        item.addEventListener("keypress", labelItemEnterPress);
+    //        item.addEventListener("keydown", labelItemKeyDown);
     //        item.addEventListener("focus", labelItemFocus);
     //        item.addEventListener("blur", labelItemBlur);
     //    }
@@ -3929,7 +3929,7 @@ function registerListener(id) {
             [].forEach.call(labelItems, function (item) {
                 if (item) {
                     item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("keydown", labelItemKeyDown);
                     item.addEventListener("focus", labelItemFocus);
                     item.addEventListener("blur", labelItemBlur);
                 }
@@ -3966,7 +3966,7 @@ function registerListener(id) {
             [].forEach.call(labelItems, function (item) {
                 if (item) {
                     item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("keydown", labelItemKeyDown);
                     item.addEventListener("focus", labelItemFocus);
                     item.addEventListener("blur", labelItemBlur);
                 }
@@ -4066,7 +4066,7 @@ function registerListener(id) {
             [].forEach.call(labelItems, function (item) {
                 if (item) {
                     item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("keydown", labelItemKeyDown);
                     item.addEventListener("focus", labelItemFocus);
                     item.addEventListener("blur", labelItemBlur);
                 }
@@ -4090,7 +4090,7 @@ function registerListener(id) {
             [].forEach.call(labelItems, function (item) {
                 if (item) {
                     item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keypress", labelItemEnterPress);
+                    item.addEventListener("keydown", labelItemKeyDown);
                     item.addEventListener("focus", labelItemFocus);
                     item.addEventListener("blur", labelItemBlur);
                 }
@@ -4681,6 +4681,7 @@ function labelRemove() {
             parentDiv.removeChild(labelItem);
             adjustLabelItemPosition(parentDiv.childNodes[0]);
             setSelected(gCurrent);
+            parentDiv.childNodes[0].focus();
         }
 
     }
@@ -4734,7 +4735,7 @@ function textEdit(func, value) {
                     listItem.setAttribute("contenteditable", "true");
 
                     listItem.addEventListener("contextmenu", showLabelContextMenu);
-                    listItem.addEventListener("keypress", labelItemEnterPress);
+                    listItem.addEventListener("keydown", labelItemKeyDown);
                     listItem.addEventListener("focus", labelItemFocus);
                     listItem.addEventListener("blur", labelItemBlur);
 
@@ -4774,7 +4775,7 @@ function textEdit(func, value) {
                 div.setAttribute("contenteditable", "true");
 
                 div.addEventListener("contextmenu", showLabelContextMenu);
-                div.addEventListener("keypress", labelItemEnterPress);
+                div.addEventListener("keydown", labelItemKeyDown);
                 div.addEventListener("focus", labelItemFocus);
                 div.addEventListener("blur", labelItemBlur);
 
@@ -4963,43 +4964,43 @@ function textDblClick(e) {
 }
 
 /*
-function inputBlur(event) {
-    log("inputBlur");
-    log("gCurrent=" + gCurrent);
-    event.stopPropagation();
+ function inputBlur(event) {
+ log("inputBlur");
+ log("gCurrent=" + gCurrent);
+ event.stopPropagation();
 
-    var grp = gCurrent;
-    var textId = grp + "text";
-    var text = gSvg.select("#" + textId);
+ var grp = gCurrent;
+ var textId = grp + "text";
+ var text = gSvg.select("#" + textId);
 
-    if (this.value != "") {
-        text.attr("text", this.value);
-    } else {
-        text.attr("text", "N/A");
-    }
-    text.removeClass("hide");
-    this.style["display"] = "none";
+ if (this.value != "") {
+ text.attr("text", this.value);
+ } else {
+ text.attr("text", "N/A");
+ }
+ text.removeClass("hide");
+ this.style["display"] = "none";
 
-    //gCurrent = "";
-    this.removeEventListener("blur", inputBlur);
+ //gCurrent = "";
+ this.removeEventListener("blur", inputBlur);
 
-    var grp = getGroupPrefix(textId);
-    var line = gSvg.select("#" + grp + "line");
-    if (line) {
+ var grp = getGroupPrefix(textId);
+ var line = gSvg.select("#" + grp + "line");
+ if (line) {
 
-        var textBBox = text.getBBox();
-        var textWidth = textBBox.width;
+ var textBBox = text.getBBox();
+ var textWidth = textBBox.width;
 
-        text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
-        //text.attr("y", textXY[1]);
+ text.attr("x", parseInt(line.attr("x1"), 10) - textWidth - 10);
+ //text.attr("y", textXY[1]);
 
-    }
+ }
 
-}
-*/
+ }
+ */
 
-function labelItemEnterPress(e) {
-    log("labelItemEnterPress");
+function labelItemKeyDown(e) {
+    log("labelItemKeyDown");
     e.stopPropagation();
 
     if (13 == e.keyCode) {
@@ -5013,7 +5014,7 @@ function labelItemEnterPress(e) {
             item.setAttribute("placeholder", "label");
 
             item.addEventListener("contextmenu", showLabelContextMenu);
-            item.addEventListener("keypress", labelItemEnterPress);
+            item.addEventListener("keydown", labelItemKeyDown);
             item.addEventListener("focus", labelItemFocus);
             item.addEventListener("blur", labelItemBlur);
 
@@ -5032,6 +5033,12 @@ function labelItemEnterPress(e) {
         }
 
         return false;
+    } else if (8 == e.keyCode) {
+
+        if ("" == e.target.innerHTML) {
+            gGrpTmp = e.target;
+            labelRemove();
+        }
     }
 
 }
