@@ -52,6 +52,8 @@ var TEXT_EDIT_MENU_LEFT = 180;
 var TEXT_EDIT_MENU_TOP = 0;
 var DIAGRAM_NAME = "";
 
+var EL_TYPES = ["rect", "connector", "ellipse", "line", "break", "brace", "image", "custom"];
+
 var gSerialNo = 0;
 
 var gDrawArea;
@@ -3888,221 +3890,6 @@ function getTypeById(id) {
     return idSplit[2];
 }
 
-function registerListener(id) {
-
-    var type = getTypeById(id);
-    if ("" == type) {
-        return;
-    }
-
-    var svgEl = Snap("#" + id);
-    var parentG;
-    var label;
-
-    if ("rect" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-        svgEl.dblclick(textDblClick);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeMouseDown);
-        });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeMouseDown);
-        });
-
-        label = parentG.selectAll("[id$='label']")[0];
-        if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
-                }
-            });
-        }
-
-    } else if ("ellipse" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-        svgEl.dblclick(textDblClick);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeEllipseMouseDown);
-        });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeEllipseMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeEllipseMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeEllipseMouseDown);
-        });
-
-        label = parentG.selectAll("[id$='label']")[0];
-        if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
-                }
-            });
-        }
-
-    } else if ("brace" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeBraceMouseDown);
-        });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeBraceMouseDown);
-        });
-
-    } else if ("break" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeBreakMouseDown);
-        });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeBreakMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeBreakMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeBreakMouseDown);
-        });
-
-    } else if ("image" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeImageMouseDown);
-        });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeImageMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeImageMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeImageMouseDown);
-        });
-
-    } else if ("custom" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-        svgEl.dblclick(textDblClick);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeCustomMouseDown);
-        });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeCustomMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeCustomMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeCustomMouseDown);
-        });
-
-        label = parentG.selectAll("[id$='label']")[0];
-        if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
-                }
-            });
-        }
-
-    } else if ("connector" == type) {
-
-        svgEl.mousedown(svgElMouseDown);
-        svgEl.node.addEventListener("contextmenu", showContextMenu);
-        svgEl.dblclick(textDblClick);
-
-        parentG = svgEl.parent();
-        parentG.selectAll("[id$='close']").forEach(function (close) {
-            close.mousedown(closeClick);
-        });
-
-        label = parentG.selectAll("[id$='label']")[0];
-        if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
-                }
-            });
-        }
-
-    }
-
-    return type;
-
-}
-
 // document ready
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -4817,6 +4604,222 @@ function getCaretCharacterOffsetWithin(element) {
     return caretOffset;
 }
 
+function registerListener(id) {
+
+    var type = getTypeById(id);
+    if ("" == type) {
+        return;
+    }
+
+    var svgEl = Snap("#" + id);
+    var parentG;
+    var label;
+
+    if ("rect" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+        svgEl.dblclick(textDblClick);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeMouseDown);
+        });
+
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keydown", labelItemKeyDown);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+
+    } else if ("ellipse" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+        svgEl.dblclick(textDblClick);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeEllipseMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeEllipseMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeEllipseMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeEllipseMouseDown);
+        });
+
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keydown", labelItemKeyDown);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+
+    } else if ("brace" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeBraceMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeBraceMouseDown);
+        });
+
+    } else if ("break" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeBreakMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeBreakMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeBreakMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeBreakMouseDown);
+        });
+
+    } else if ("image" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeImageMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeImageMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeImageMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeImageMouseDown);
+        });
+
+    } else if ("custom" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+        svgEl.dblclick(textDblClick);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
+            nResize.mousedown(nResizeCustomMouseDown);
+        });
+        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+            sResize.mousedown(sResizeCustomMouseDown);
+        });
+        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+            wResize.mousedown(wResizeCustomMouseDown);
+        });
+        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+            eResize.mousedown(eResizeCustomMouseDown);
+        });
+
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keydown", labelItemKeyDown);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+
+    } else if ("connector" == type) {
+
+        svgEl.mousedown(svgElMouseDown);
+        svgEl.node.addEventListener("contextmenu", showContextMenu);
+        svgEl.dblclick(textDblClick);
+
+        parentG = svgEl.parent();
+        parentG.selectAll("[id$='close']").forEach(function (close) {
+            close.mousedown(closeClick);
+        });
+
+        label = parentG.selectAll("[id$='label']")[0];
+        if (label) {
+            label.mousedown(labelMouseDown);
+            var labelItems = label.select("div").node.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.addEventListener("contextmenu", showLabelContextMenu);
+                    item.addEventListener("keydown", labelItemKeyDown);
+                    item.addEventListener("focus", labelItemFocus);
+                    item.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+
+    }
+
+    return type;
+
+}
+
 //endregion
 
 //region Events
@@ -4830,25 +4833,32 @@ function svgElMouseDown(event) {
     setSelected(grp, gCurrent);
     gCurrent = grp;
 
-    if (id.indexOf("rect") > 0) {
-        gDragAnchor = "rect";
-    } else if (id.indexOf("connector") > 0) {
-        gDragAnchor = "connector";
-    } else if (id.indexOf("ellipse") > 0) {
-        gDragAnchor = "ellipse";
-    } else if (id.indexOf("line") > 0) {
-        gDragAnchor = "line";
-    } else if (id.indexOf("break") > 0) {
-        gDragAnchor = "break";
-    } else if (id.indexOf("brace") > 0) {
-        gDragAnchor = "brace";
-    } else if (id.indexOf("image") > 0) {
-        gDragAnchor = "image";
-    } else if (id.indexOf("custom") > 0) {
-        gDragAnchor = "custom";
+    var type = getTypeById(id);
+
+    if (EL_TYPES.indexOf(type) >= 0) {
+        gDragAnchor = type;
     } else {
         gDragAnchor = "unknown";
     }
+    //if (id.indexOf("rect") > 0) {
+    //    gDragAnchor = "rect";
+    //} else if (id.indexOf("connector") > 0) {
+    //    gDragAnchor = "connector";
+    //} else if (id.indexOf("ellipse") > 0) {
+    //    gDragAnchor = "ellipse";
+    //} else if (id.indexOf("line") > 0) {
+    //    gDragAnchor = "line";
+    //} else if (id.indexOf("break") > 0) {
+    //    gDragAnchor = "break";
+    //} else if (id.indexOf("brace") > 0) {
+    //    gDragAnchor = "brace";
+    //} else if (id.indexOf("image") > 0) {
+    //    gDragAnchor = "image";
+    //} else if (id.indexOf("custom") > 0) {
+    //    gDragAnchor = "custom";
+    //} else {
+    //    gDragAnchor = "unknown";
+    //}
 
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
@@ -5113,6 +5123,86 @@ function showLabelContextMenu(e) {
     gLabelContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
     gGrpTmp = e.target;
 
+}
+
+function labelMouseDown(event) {
+    log("labelMouseDown");
+    event.stopPropagation();
+
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
+    setSelected(grp, gCurrent);
+    gCurrent = grp;
+
+    var type = getTypeById(id);
+
+    if ("label" != type) {
+        return;
+    } else {
+        gDragAnchor = "label";
+    }
+
+    var eventTarget = gSvg.select("#" + id);
+
+    eventTarget.data("mousedown-x", event.clientX);
+    eventTarget.data("mousedown-y", event.clientY);
+
+    gDrawArea.onmousemove = labelMouseMove;
+    gDrawArea.onmouseup = labelMouseUp;
+
+}
+
+function labelMouseMove(event) {
+
+    var grp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
+    } else {
+        return;
+    }
+
+    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+
+    var x = toInteger(svgEl.data('mousedown-x'), 0);
+    var y = toInteger(svgEl.data('mousedown-y'), 0);
+
+    var dx = event.clientX - x;
+    var dy = event.clientY - y;
+
+    var myMatrix = new Snap.Matrix();
+    myMatrix.translate(dx, dy);
+    svgEl.transform(myMatrix);
+
+}
+
+function labelMouseUp() {
+    log("labelMouseUp");
+
+    var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+    var tStrAry = Snap.parseTransformString(svgEl.attr("transform"));
+
+    var nowX = toInteger(svgEl.attr("x"), 0);
+    var nowY = toInteger(svgEl.attr("y"), 0);
+
+    if (tStrAry.length != 0) {
+
+        var x = toInteger(tStrAry[0][1], 0);
+        var y = toInteger(tStrAry[0][2], 0);
+
+        x += nowX;
+        y += nowY;
+
+        svgEl.transform("translate(0 0)");
+        svgEl.attr("x", x);
+        svgEl.attr("y", y);
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    //gCurrent = "";
+    gDragAnchor = "";
 }
 
 //endregion
