@@ -539,24 +539,32 @@ function reDrawPointByPath(grp, conn, g, type) {
     //text.attr("y", textXY[1]);
     var labelXY = getElementXYofRect(targetPoint.x - 20, targetPoint.y - 20, "text");
     var label = gSvg.select("[id^='" + grp + "label']");
-    label.attr("x", labelXY[0]);
-    label.attr("y", labelXY[1]);
+
+    if (label) {
+        label.attr("x", labelXY[0]);
+        label.attr("y", labelXY[1]);
+    }
 
     var selected = gSvg.select("#" + grp + "selected");
     var bBoxConn = conn.getBBox();
 
-    selected.transform("translate(0 0)");
-    selected.attr("x", bBoxConn.x - PATH_BBOX_ADD);
-    selected.attr("y", bBoxConn.y - PATH_BBOX_ADD);
-    selected.attr("width", bBoxConn.width + PATH_BBOX_ADD * 2);
-    selected.attr("height", bBoxConn.height + PATH_BBOX_ADD * 2);
+    if (selected) {
+        selected.transform("translate(0 0)");
+        selected.attr("x", bBoxConn.x - PATH_BBOX_ADD);
+        selected.attr("y", bBoxConn.y - PATH_BBOX_ADD);
+        selected.attr("width", bBoxConn.width + PATH_BBOX_ADD * 2);
+        selected.attr("height", bBoxConn.height + PATH_BBOX_ADD * 2);
 
-    var close = gSvg.select("#" + grp + "close");
-    var closeXY = getElementXYofConn(selected.getBBox(), "close");
+        var close = gSvg.select("#" + grp + "close");
+        var closeXY = getElementXYofConn(selected.getBBox(), "close");
 
-    close.transform("translate(0 0)");
-    close.attr("cx", closeXY[0]);
-    close.attr("cy", closeXY[1]);
+        if (close) {
+            close.transform("translate(0 0)");
+            close.attr("cx", closeXY[0]);
+            close.attr("cy", closeXY[1]);
+        }
+    }
+
 
 }
 
