@@ -3970,14 +3970,19 @@ document.addEventListener("DOMContentLoaded", function () {
     gStartX = bound.left;//gSvg.node).position().left;
     gStartY = bound.top;
 
-    var mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
-    //var mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); // TODO: For remote site
+    var pathArray = window.location.pathname.split('/');
+    DIAGRAM_NAME = pathArray[pathArray.length - 1];
+    localStorage.removeItem(DIAGRAM_NAME + "_TMP");
+
+    var mainAreaBound;
+    if (DIAGRAM_NAME.match(/\.html?$/i)) {
+        mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
+    } else {
+        mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); //   For remote site
+    }
     gMenuWidth = mainAreaBound.left;
     gMenuHeight = mainAreaBound.top;
     //$(gSvg.node).position().top;
-
-    var pathArray = window.location.pathname.split('/');
-    DIAGRAM_NAME = pathArray[pathArray.length - 1];
 
     initSelectionFonts();
     initSelectionFontSizes();
@@ -4191,7 +4196,7 @@ function newDraw() {
 
 function loadDraw() {
 
-    var html = localStorage.getItem("DIAGRAM_NAME");
+    var html = localStorage.getItem(DIAGRAM_NAME);
     if (!html) {
         alert("No data!")
         return;
@@ -4230,12 +4235,16 @@ function performLoadSvg() {
 }
 
 function saveDraw() {
-    localStorage.setItem("DIAGRAM_NAME", gSvg.node.innerHTML);
+    localStorage.setItem(DIAGRAM_NAME, gSvg.node.innerHTML);
 }
 
 function deleteDraw() {
-    localStorage.removeItem("DIAGRAM_NAME");
+    localStorage.removeItem(DIAGRAM_NAME);
     newDraw();
+}
+
+function backupSvgCurrent(svgEl) {
+    localStorage.setItem(DIAGRAM_NAME + "_TMP", svgEl.node.outerHTML);
 }
 
 function undo() {
