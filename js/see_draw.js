@@ -54,6 +54,9 @@ var DIAGRAM_NAME = "";
 
 var EL_TYPES = ["rect", "connector", "ellipse", "line", "break", "brace", "image", "custom"];
 
+var SUPPORTTED_FONTS = [["", ""], ["Microsoft JhengHei", "微軟正黑體"], ["Arial", "Arial"], ["Arial Black", "Arial Black"], ["Comic Sans MS", "Comic Sans MS"], ["Courier New", "Courier New"], ["Helvetica", "Helvetica"], ["Impact", "Impact"], ["serif", "serif"], ["sans-serif", "sans-serif"], ["Tahoma", "Tahoma"], ["Times New Roman", "Times New Roman"], ["Verdana", "Verdana"], ["PMingLiU", "新細明體"], ["DFKai-sb", "標楷體"]];
+var SUPPORTTED_FONT_SIZES = [12, 14, 18, 22];
+
 var gSerialNo = 0;
 
 var gDrawArea;
@@ -3976,7 +3979,36 @@ document.addEventListener("DOMContentLoaded", function () {
     var pathArray = window.location.pathname.split('/');
     DIAGRAM_NAME = pathArray[pathArray.length - 1];
 
+    initSelectionFonts();
+    initSelectionFontSizes();
+
 });
+
+function initSelectionFonts() {
+    var textEditFontFamily = document.querySelector("#textEditFontFamily");
+    textEditFontFamily.innerHTML = "";
+    if (textEditFontFamily) {
+        SUPPORTTED_FONTS.forEach(function (fontAry) {
+            var opt = document.createElement("option");
+            opt.value = fontAry[0];
+            opt.innerHTML = "<span style='font-family:" + fontAry[0] + "'>" + fontAry[1] + "</span>";
+            textEditFontFamily.appendChild(opt);
+        });
+    }
+}
+
+function initSelectionFontSizes() {
+    var textEditFontSize = document.querySelector("#textEditFontSize");
+    textEditFontSize.innerHTML = "";
+    if (textEditFontSize) {
+        SUPPORTTED_FONT_SIZES.forEach(function (sizeAry) {
+            var opt = document.createElement("option");
+            opt.value = sizeAry;
+            opt.innerHTML = sizeAry;
+            textEditFontSize.appendChild(opt);
+        });
+    }
+}
 
 function setSelected(grp, grpOld) {
 
@@ -4456,7 +4488,7 @@ function adjustLabelItemPosition(labelItem) {
         gCurrent = grp; // fix for empty
         correctXY(grp, svgEl, type);
         setSelected(gCurrent);
-        gEditingItem = "";
+        //gEditingItem = "";
     }
 
 }
@@ -4585,8 +4617,10 @@ function textEdit(func, value) {
 
     }
 
-    gEditingItem.focus();
     adjustLabelItemPosition(gEditingItem);
+    if (gEditingItem) {
+        gEditingItem.focus();
+    }
     event.stopPropagation();
 }
 

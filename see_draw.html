@@ -24,7 +24,7 @@
         <button onclick="loadDraw()">load</button>
         <button onclick="saveDraw()">save</button>
         <button onclick="deleteDraw()">delete</button>
-        <button onclick="undo()">delete</button>
+        <button onclick="undo()">undo</button>
         <input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect('dash')">
             <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect myRectDash"/>
@@ -106,22 +106,6 @@
         </nav>
         <nav id="context-menu-textedit" class="context-menu" style="width: auto;">
             <div><select id="textEditFontFamily" onchange="textEdit('family')">
-                <option value=""></option>
-                <option value="Arial"><span style="font-family:Arial">Arial</span></option>
-                <option value="Arial Black"><span style="font-family:Arial Black">Arial Black</span></option>
-                <option value="Comic Sans MS"><span style="font-family:Comic Sans MS">Comic Sans MS</span></option>
-                <option value="Courier New"><span style="font-family:Courier New">Courier New</span></option>
-                <option value="Helvetica"><span style="font-family:Helvetica">Helvetica</span></option>
-                <option value="Impact"><span style="font-family:Impact">Impact</span></option>
-                <option value="serif"><span style="font-family:serif">serif</span></option>
-                <option value="sans-serif"><span style="font-family:sans-serif">sans-serif</span></option>
-                <option value="Tahoma"><span style="font-family:Tahoma">Tahoma</span></option>
-                <option value="Times New Roman"><span style="font-family:Times New Roman">Times New Roman</span>
-                </option>
-                <option value="Verdana"><span style="font-family:Verdana">Verdana</span></option>
-                <option value="PMingLiU"><span style="font-family:PMingLiU">新細明體</span></option>
-                <option value="Microsoft JhengHei"><span style="font-family:Microsoft JhengHei">微軟正黑體</span></option>
-                <option value="DFKai-sb"><span style="font-family:DFKai-sb">標楷體</span></option>
             </select></div>
             <div><select id="textEditFontSize" onchange="textEdit('size')">
                 <option value="12">12</option>
