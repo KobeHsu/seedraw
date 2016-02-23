@@ -4390,7 +4390,7 @@ function initLabelForElement(bBox, grp, initX, initY) {
 
     var fragmentStr = "<foreignObject width='" + w + "' x='" + x + "' y='" + y + "' id='" + labelId + "'>";
     fragmentStr += "<div>";
-    fragmentStr += "<div contenteditable='true' style='width:" + (w - 10) + "px' placeholder='label'></div>";
+    fragmentStr += "<div contenteditable='true' style='width:" + (w - 10) + "px; text-align:center' placeholder='label'></div>";
     fragmentStr += "</div></foreignObject>";
 
     return Snap.fragment(fragmentStr);
@@ -5069,7 +5069,7 @@ function labelItemKeyDown(e) {
             item.setAttribute("contentEditable", "true");
             //div.innerHTML = "";
             item.setAttribute("placeholder", "label");
-
+            item.style["text-align"] = "center";
             item.addEventListener("contextmenu", showLabelContextMenu);
             item.addEventListener("keydown", labelItemKeyDown);
             item.addEventListener("focus", labelItemFocus);
