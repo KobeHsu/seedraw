@@ -3899,8 +3899,61 @@ function getTypeById(id) {
 // document ready
 document.addEventListener("DOMContentLoaded", function () {
 
+    var reload = false;
     gSvg = Snap.select("#snapSvg");
     gDrawArea = document.getElementById("drawArea");
+
+    if (!gSvg) {
+        gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
+        gSvg.attr("id", "snapSvg");
+        gSvg.appendTo(gDrawArea);
+    } else {
+        reload = true;
+    }
+
+    gDrawArea.onmousedown = function () {
+        log("gDrawArea onmousedown");
+        if (gContextMenu.classList.contains("context-menu--active")) {
+            return;
+        }
+
+        if (gCurrent != "") {
+            clearSelected(gCurrent);
+            gCurrent = "";
+        }
+    }
+
+    gDrawArea.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    var bound = gSvg.node.getBoundingClientRect();
+    gStartX = bound.left;//gSvg.node).position().left;
+    gStartY = bound.top;
+
+    var pathArray = window.location.pathname.split('/');
+    DIAGRAM_NAME = pathArray[pathArray.length - 1];
+    localStorage.removeItem(DIAGRAM_NAME + "_TMP");
+
+    var mainAreaBound;
+    if (DIAGRAM_NAME.match(/\.html?$/i)) {
+        mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
+        CONTEXT_MENU_SHIFT_X = 0;
+        CONTEXT_MENU_SHIFT_Y = 0;
+        gMenuWidth = mainAreaBound.left;
+        gMenuHeight = mainAreaBound.top;
+    } else {
+        mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); //   For remote site
+        TEXT_EDIT_MENU_LEFT = mainAreaBound.left + 200;
+        TEXT_EDIT_MENU_TOP = mainAreaBound.top + 10;
+        gMenuWidth = 0;
+        gMenuHeight = 0;
+    }
+
+    //$(gSvg.node).position().top;
+
+    // context menu
     gContextMenu = document.getElementById("context-menu");
     gContextMenu.addEventListener("mouseover", function (e) {
         e.stopPropagation();
@@ -3943,57 +3996,13 @@ document.addEventListener("DOMContentLoaded", function () {
     //    gTextEditContextMenu.classList.remove("context-menu--active");
     //});
 
-    if (!gSvg) {
-        gSvg = Snap(CANVAS_WIDTH, CANVAS_HEIGHT);
-        gSvg.attr("id", "snapSvg");
-        gSvg.appendTo(gDrawArea);
-    } else {
+    initSelectionFonts();
+    initSelectionFontSizes();
+
+    if (reload) {
         reloadSvg();
 
     }
-
-    gDrawArea.onmousedown = function () {
-        log("gDrawArea onmousedown");
-        if (gContextMenu.classList.contains("context-menu--active")) {
-            return;
-        }
-
-        if (gCurrent != "") {
-            clearSelected(gCurrent);
-            gCurrent = "";
-        }
-    }
-
-    gDrawArea.addEventListener("contextmenu", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    });
-
-    var bound = gSvg.node.getBoundingClientRect();
-    gStartX = bound.left;//gSvg.node).position().left;
-    gStartY = bound.top;
-
-    var pathArray = window.location.pathname.split('/');
-    DIAGRAM_NAME = pathArray[pathArray.length - 1];
-    localStorage.removeItem(DIAGRAM_NAME + "_TMP");
-
-    var mainAreaBound;
-    if (DIAGRAM_NAME.match(/\.html?$/i)) {
-        mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
-        CONTEXT_MENU_SHIFT_X = 0;
-        CONTEXT_MENU_SHIFT_Y = 0;
-        gMenuWidth = mainAreaBound.left;
-        gMenuHeight = mainAreaBound.top;
-    } else {
-        //mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); //   For remote site
-        gMenuWidth = 0;
-        gMenuHeight = 0;
-    }
-
-    //$(gSvg.node).position().top;
-
-    initSelectionFonts();
-    initSelectionFontSizes();
 
 });
 
