@@ -28,8 +28,8 @@ var CIRCLE_RY = 40;
 var XS_CIRCLE_RX = 20;
 var XS_CIRCLE_RY = 20;
 
-var BREAK_WIDTH = 90;
-var BREAK_HEIGHT = 100;
+var BREAK_WIDTH = 27;
+var BREAK_HEIGHT = 30;
 //var LINE_WIDTH = 80;
 
 var BRACE_WIDTH = 20;
@@ -4058,6 +4058,26 @@ function setSelected(grp, grpOld) {
         hideElement(element);
     });
 
+    var label = gSvg.select("[id^='" + grp + "label']");
+    if (label) {
+        var parentEl;
+        if (label.select("div").node.childNodes[0].tagName.toLowerCase() == "div") {
+            parentEl = label.select("div").node;
+        } else {
+            parentEl = label.select("div").node.childNodes[0];
+        }
+
+        if (parentEl) {
+            var labelItems = parentEl.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.setAttribute("placeholder", "label");
+                }
+            });
+        }
+
+    }
+
 }
 
 function clearSelected(grp) {
@@ -4081,6 +4101,27 @@ function clearSelected(grp) {
     gSvg.selectAll("[id^='" + grp + "arrow']").forEach(function (element) {
         showElement(element);
     });
+
+
+    var label = gSvg.select("[id^='" + grp + "label']");
+    if (label) {
+        var parentEl;
+        if (label.select("div").node.childNodes[0].tagName.toLowerCase() == "div") {
+            parentEl = label.select("div").node;
+        } else {
+            parentEl = label.select("div").node.childNodes[0];
+        }
+
+        if (parentEl) {
+            var labelItems = parentEl.childNodes;
+            [].forEach.call(labelItems, function (item) {
+                if (item) {
+                    item.removeAttribute("placeholder", "label");
+                }
+            });
+        }
+
+    }
 
 
 }
@@ -5126,20 +5167,21 @@ function labelItemKeyDown(e) {
 }
 
 function labelItemFocus(e) {
+
     log("labelItemFocus");
+
     e.stopPropagation();
     e.preventDefault();
 
     gEditingItem = e.target;
-    //gEditingItem.setAttribute("placeholder", "label");
-    if (gEditingItem.parentNode) {
-        var labelItems = gEditingItem.parentNode.childNodes;
-        [].forEach.call(labelItems, function (item) {
-            if (item) {
-                item.setAttribute("placeholder", "label");
-            }
-        });
-    }
+    //if (gEditingItem.parentNode) {
+    //    var labelItems = gEditingItem.parentNode.childNodes;
+    //    [].forEach.call(labelItems, function (item) {
+    //        if (item) {
+    //            item.setAttribute("placeholder", "label");
+    //        }
+    //    });
+    //}
 
     setTextEditMenuState(gEditingItem);
 
@@ -5147,37 +5189,28 @@ function labelItemFocus(e) {
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
-        //gSvg.select("#" + label.id).selectAll("div>div").forEach(function (el) {
-        //    if (el) {
-        //        el.addClass("myLabelFocused");
-        //    }
-        //});
     }
 
     //gTextEditContextMenu.classList.add("context-menu--active");
 }
 
 function labelItemBlur(e) {
+
     log("labelItemBlur");
-    //e.target.removeAttribute("placeholder");
-    if (e.target.parentNode) {
-        var labelItems = e.target.parentNode.childNodes;
-        [].forEach.call(labelItems, function (item) {
-            if (item) {
-                item.removeAttribute("placeholder", "label");
-            }
-        });
-    }
+
+    //if (e.target.parentNode) {
+    //    var labelItems = e.target.parentNode.childNodes;
+    //    [].forEach.call(labelItems, function (item) {
+    //        if (item) {
+    //            item.removeAttribute("placeholder", "label");
+    //        }
+    //    });
+    //}
 
     var label = getParentByTag(e.target, "foreignobject");
     if (label) {
         gCurrent = getGroupPrefix(label.id);
         setSelected(gCurrent);
-        //gSvg.select("#" + label.id).selectAll("div>div").forEach(function (el) {
-        //    if (el) {
-        //        el.removeClass("myLabelFocused");
-        //    }
-        //});
     }
 
     //gTextEditContextMenu.classList.remove("context-menu--active");
