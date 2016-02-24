@@ -54,8 +54,11 @@ var DIAGRAM_NAME = "";
 
 var EL_TYPES = ["rect", "connector", "ellipse", "line", "break", "brace", "image", "custom"];
 
-var SUPPORTTED_FONTS = [["", ""], ["Microsoft JhengHei", "微軟正黑體"], ["Arial", "Arial"], ["Arial Black", "Arial Black"], ["Comic Sans MS", "Comic Sans MS"], ["Courier New", "Courier New"], ["Helvetica", "Helvetica"], ["Impact", "Impact"], ["serif", "serif"], ["sans-serif", "sans-serif"], ["Tahoma", "Tahoma"], ["Times New Roman", "Times New Roman"], ["Verdana", "Verdana"], ["PMingLiU", "新細明體"], ["DFKai-sb", "標楷體"]];
-var SUPPORTTED_FONT_SIZES = [12, 14, 18, 22];
+var SUPPORTED_FONTS = [["", ""], ["Microsoft JhengHei", "微軟正黑體"], ["Arial", "Arial"], ["Arial Black", "Arial Black"], ["Comic Sans MS", "Comic Sans MS"], ["Courier New", "Courier New"], ["Helvetica", "Helvetica"], ["Impact", "Impact"], ["serif", "serif"], ["sans-serif", "sans-serif"], ["Tahoma", "Tahoma"], ["Times New Roman", "Times New Roman"], ["Verdana", "Verdana"], ["PMingLiU", "新細明體"], ["DFKai-sb", "標楷體"]];
+var SUPPORTED_FONT_SIZES = [12, 14, 18, 22];
+
+var CONTEXT_MENU_SHIFT_X = -5;
+var CONTEXT_MENU_SHIFT_Y = -5;
 
 var gSerialNo = 0;
 
@@ -3977,11 +3980,16 @@ document.addEventListener("DOMContentLoaded", function () {
     var mainAreaBound;
     if (DIAGRAM_NAME.match(/\.html?$/i)) {
         mainAreaBound = document.getElementById("mainArea").parentNode.getBoundingClientRect();
+        CONTEXT_MENU_SHIFT_X = 0;
+        CONTEXT_MENU_SHIFT_Y = 0;
+        gMenuWidth = mainAreaBound.left;
+        gMenuHeight = mainAreaBound.top;
     } else {
-        mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); //   For remote site
+        //mainAreaBound = document.getElementById("drawArea").getBoundingClientRect(); //   For remote site
+        gMenuWidth = 0;
+        gMenuHeight = 0;
     }
-    gMenuWidth = mainAreaBound.left;
-    gMenuHeight = mainAreaBound.top;
+
     //$(gSvg.node).position().top;
 
     initSelectionFonts();
@@ -3990,11 +3998,19 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function initSelectionFonts() {
+
     var textEditFontFamily = document.querySelector("#textEditFontFamily");
     textEditFontFamily.innerHTML = "";
+
     if (textEditFontFamily) {
-        SUPPORTTED_FONTS.forEach(function (fontAry) {
-            var opt = document.createElement("option");
+
+        var opt = document.createElement("option");
+        opt.value = "";
+        opt.innerHTML = "&nbsp;";
+        textEditFontFamily.appendChild(opt);
+
+        SUPPORTED_FONTS.forEach(function (fontAry) {
+            opt = document.createElement("option");
             opt.value = fontAry[0];
             opt.innerHTML = "<span style='font-family:" + fontAry[0] + "'>" + fontAry[1] + "</span>";
             textEditFontFamily.appendChild(opt);
@@ -4006,7 +4022,7 @@ function initSelectionFontSizes() {
     var textEditFontSize = document.querySelector("#textEditFontSize");
     textEditFontSize.innerHTML = "";
     if (textEditFontSize) {
-        SUPPORTTED_FONT_SIZES.forEach(function (sizeAry) {
+        SUPPORTED_FONT_SIZES.forEach(function (sizeAry) {
             var opt = document.createElement("option");
             opt.value = sizeAry;
             opt.innerHTML = sizeAry;
@@ -4965,8 +4981,8 @@ function showContextMenu(e) {
     e.preventDefault();
 
     gContextMenu.classList.add("context-menu--active");
-    gContextMenu.style["left"] = (e.clientX - gMenuWidth ) + "px";
-    gContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
+    gContextMenu.style["left"] = (e.clientX - gMenuWidth ) + CONTEXT_MENU_SHIFT_X + "px";
+    gContextMenu.style["top"] = (e.clientY - gMenuHeight) + CONTEXT_MENU_SHIFT_Y + "px";
     gGrpTmp = gCurrent;
 
 }
@@ -5166,8 +5182,8 @@ function showLabelContextMenu(e) {
     e.preventDefault();
 
     gLabelContextMenu.classList.add("context-menu--active");
-    gLabelContextMenu.style["left"] = (e.clientX - gMenuWidth ) + "px";
-    gLabelContextMenu.style["top"] = (e.clientY - gMenuHeight) + "px";
+    gLabelContextMenu.style["left"] = (e.clientX - gMenuWidth ) + CONTEXT_MENU_SHIFT_X + "px";
+    gLabelContextMenu.style["top"] = (e.clientY - gMenuHeight) + CONTEXT_MENU_SHIFT_Y + "px";
     gGrpTmp = e.target;
 
 }
