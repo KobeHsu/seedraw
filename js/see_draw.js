@@ -715,15 +715,6 @@ function addEllipse(type) {
     eResize.attr("id", eResizeId);
 
     var label = initLabelForElement(bBoxEllipse, grp);
-    //var labelItems = label.select("div").node.childNodes;
-    //[].forEach.call(labelItems, function (item) {
-    //    if (item) {
-    //        item.addEventListener("contextmenu", showLabelContextMenu);
-    //        item.addEventListener("keydown", labelItemKeyDown);
-    //        item.addEventListener("focus", labelItemFocus);
-    //        item.addEventListener("blur", labelItemBlur);
-    //    }
-    //});
 
     var g = gSvg.g(newEllipse, close, nResize, sResize, wResize, eResize, selected, label);
     g.attr("id", grpId);
@@ -3154,15 +3145,6 @@ function addCustom(customDef) {
     eResize.attr("id", eResizeId);
 
     var label = initLabelForElement(bBoxCustom, grp);
-    //var labelItems = label.select("div").node.childNodes;
-    //[].forEach.call(labelItems, function (item) {
-    //    if (item) {
-    //        item.addEventListener("contextmenu", showLabelContextMenu);
-    //        item.addEventListener("keydown", labelItemKeyDown);
-    //        item.addEventListener("focus", labelItemFocus);
-    //        item.addEventListener("blur", labelItemBlur);
-    //    }
-    //});
 
     var g = gSvg.g(newCustom, close, nResize, sResize, wResize, eResize, selected, label);
     var grpId = grp + "g";
@@ -4058,34 +4040,15 @@ function setSelected(grp, grpOld) {
         hideElement(element);
     });
 
-    var label = gSvg.select("[id^='" + grp + "label']");
-    if (label) {
+    var parentDiv = gSvg.select("[id^='" + grp + "label']>div");
+    if (parentDiv) {
 
-        var parentDivs = label.selectAll("div>div");
-        if (parentDivs && parentDivs.length > 0) {
-
-            parentDivs.forEach(function (item) {
-                if (item) {
-                    item.node.setAttribute("placeholder", "label");
-                }
+        var labelItems = parentDiv.selectAll("div,li");
+        if (labelItems && labelItems.length > 0) {
+            labelItems.forEach(function (item) {
+                item.node.setAttribute("placeholder", "label");
             });
-
         }
-
-        var parentUls = label.select("div>ul");
-        if (parentUls && parentUls.length > 0) {
-
-            parentUls.forEach(function () {
-                var subLists = parentUls.childNodes;
-                [].forEach.call(subLists, function (item) {
-                    if (item) {
-                        item.setAttribute("placeholder", "label");
-                    }
-                });
-            });
-
-        }
-
     }
 
 }
@@ -4112,37 +4075,20 @@ function clearSelected(grp) {
         showElement(element);
     });
 
+    if (grp) {
+        var parentDiv = gSvg.select("[id^='" + grp + "label']>div");
+        if (parentDiv) {
 
-    var label = gSvg.select("[id^='" + grp + "label']");
-    if (label) {
-
-        var parentDivs = label.selectAll("div>div");
-        if (parentDivs && parentDivs.length > 0) {
-
-            parentDivs.forEach(function (item) {
-                if (item) {
-                    item.node.setAttribute("placeholder", "label");
-                }
-            });
-
-        }
-
-        var parentUls = label.select("div>ul");
-        if (parentUls && parentUls.length > 0) {
-
-            parentUls.forEach(function () {
-                var subLists = parentUls.childNodes;
-                [].forEach.call(subLists, function (item) {
-                    if (item) {
-                        item.removeAttribute("placeholder", "label");
-                    }
+            var labelItems = parentDiv.selectAll("div,li");
+            if (labelItems && labelItems.length > 0) {
+                labelItems.forEach(function (item) {
+                    item.node.removeAttribute("placeholder", "label");
                 });
-            });
+            }
 
         }
 
     }
-
 
 }
 
@@ -4441,7 +4387,7 @@ function getElementXYofBBox(bBox, elName) {
         var newY = bBoxY + height / 2;
         if (gCurrent) {
             var grp = gCurrent;
-            var itemsHeight = gSvg.select("#" + grp + "label").node.childNodes[0].scrollHeight;
+            var itemsHeight = gSvg.select("#" + grp + "label>div").node.scrollHeight;
             newY = newY - itemsHeight / 2;
         }
 
@@ -4556,7 +4502,7 @@ function setTextEditMenuState(labelItem) {
 function getParentByTag(el, tagName) {
 
     if (el) {
-        if (tagName.toLowerCase() == el.tagName.toLowerCase()) {
+        if (el.tagName && tagName.toLowerCase() == el.tagName.toLowerCase()) {
             return el;
         } else {
             return getParentByTag(el.parentNode, tagName);
@@ -4593,14 +4539,25 @@ function labelRemove() {
     var labelItem = gGrpTmp;
     if (labelItem) {
 
-        var childCount = labelItem.parentNode.childNodes.length;
-        if (childCount > 1) {
-            var parentDiv = labelItem.parentNode;
-            parentDiv.removeChild(labelItem);
-            adjustLabelItemPosition(parentDiv.childNodes[0]);
-            setSelected(gCurrent);
-            parentDiv.childNodes[0].focus();
+        var parentNode = labelItem.parentNode;
+        if (parentNode) {
+            var childCount = parentNode.querySelectorAll("div,li").length;
+            if (childCount > 1) {
+                parentNode.removeChild(labelItem);
+                adjustLabelItemPosition(parentNode);
+                setSelected(gCurrent);
+                parentNode.querySelectorAll("div,li")[0].focus();
+            }
         }
+
+        //var childCount = labelItem.parentNode.childNodes.length;
+        //if (childCount > 1) {
+        //    var parentDiv = labelItem.parentNode;
+        //    parentDiv.removeChild(labelItem);
+        //    adjustLabelItemPosition(parentDiv.childNodes[0]);
+        //    setSelected(gCurrent);
+        //    parentDiv.querySelectorAll("div,li")[0].focus();
+        //}
 
     }
     gLabelContextMenu.classList.remove("context-menu--active");
@@ -4774,15 +4731,22 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
+
+            var parentDiv = label.select("div");
+            if (parentDiv) {
+                var labelItems = parentDiv.selectAll("div, li");
+                if (labelItems && labelItems.length > 0) {
+                    labelItems.forEach(function (item) {
+                        if (item) {
+                            item.node.addEventListener("contextmenu", showLabelContextMenu);
+                            item.node.addEventListener("keydown", labelItemKeyDown);
+                            item.node.addEventListener("focus", labelItemFocus);
+                            item.node.addEventListener("blur", labelItemBlur);
+                        }
+                    });
                 }
-            });
+            }
+
         }
 
     } else if ("ellipse" == type) {
@@ -4811,15 +4775,20 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
+            var parentDiv = label.select("div");
+            if (parentDiv) {
+                var labelItems = parentDiv.selectAll("div, li");
+                if (labelItems && labelItems.length > 0) {
+                    labelItems.forEach(function (item) {
+                        if (item) {
+                            item.node.addEventListener("contextmenu", showLabelContextMenu);
+                            item.node.addEventListener("keydown", labelItemKeyDown);
+                            item.node.addEventListener("focus", labelItemFocus);
+                            item.node.addEventListener("blur", labelItemBlur);
+                        }
+                    });
                 }
-            });
+            }
         }
 
     } else if ("brace" == type) {
@@ -4911,15 +4880,20 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
+            var parentDiv = label.select("div");
+            if (parentDiv) {
+                var labelItems = parentDiv.selectAll("div, li");
+                if (labelItems && labelItems.length > 0) {
+                    labelItems.forEach(function (item) {
+                        if (item) {
+                            item.node.addEventListener("contextmenu", showLabelContextMenu);
+                            item.node.addEventListener("keydown", labelItemKeyDown);
+                            item.node.addEventListener("focus", labelItemFocus);
+                            item.node.addEventListener("blur", labelItemBlur);
+                        }
+                    });
                 }
-            });
+            }
         }
 
     } else if ("connector" == type) {
@@ -4936,15 +4910,20 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             label.mousedown(labelMouseDown);
-            var labelItems = label.select("div").node.childNodes;
-            [].forEach.call(labelItems, function (item) {
-                if (item) {
-                    item.addEventListener("contextmenu", showLabelContextMenu);
-                    item.addEventListener("keydown", labelItemKeyDown);
-                    item.addEventListener("focus", labelItemFocus);
-                    item.addEventListener("blur", labelItemBlur);
+            var parentDiv = label.select("div");
+            if (parentDiv) {
+                var labelItems = parentDiv.selectAll("div, li");
+                if (labelItems && labelItems.length > 0) {
+                    labelItems.forEach(function (item) {
+                        if (item) {
+                            item.node.addEventListener("contextmenu", showLabelContextMenu);
+                            item.node.addEventListener("keydown", labelItemKeyDown);
+                            item.node.addEventListener("focus", labelItemFocus);
+                            item.node.addEventListener("blur", labelItemBlur);
+                        }
+                    });
                 }
-            });
+            }
         }
 
     }
@@ -5165,8 +5144,14 @@ function labelItemKeyDown(e) {
 
             adjustLabelItemPosition(e.target);
 
-            if (e.target.nextSibling) {
-                e.target.nextSibling.focus();
+            for (var next = e.target.nextSibling; next != null;) {
+                if (next.tagName && ["div", "li"].indexOf(next.tagName.toLowerCase()) >= 0) {
+                    next.focus();
+                    break;
+                } else {
+                    next = next.nextSibling;
+                }
+
             }
 
             e.preventDefault();
@@ -5194,14 +5179,6 @@ function labelItemFocus(e) {
     e.preventDefault();
 
     gEditingItem = e.target;
-    //if (gEditingItem.parentNode) {
-    //    var labelItems = gEditingItem.parentNode.childNodes;
-    //    [].forEach.call(labelItems, function (item) {
-    //        if (item) {
-    //            item.setAttribute("placeholder", "label");
-    //        }
-    //    });
-    //}
 
     setTextEditMenuState(gEditingItem);
 
@@ -5217,15 +5194,6 @@ function labelItemFocus(e) {
 function labelItemBlur(e) {
 
     log("labelItemBlur");
-
-    //if (e.target.parentNode) {
-    //    var labelItems = e.target.parentNode.childNodes;
-    //    [].forEach.call(labelItems, function (item) {
-    //        if (item) {
-    //            item.removeAttribute("placeholder", "label");
-    //        }
-    //    });
-    //}
 
     var label = getParentByTag(e.target, "foreignobject");
     if (label) {
