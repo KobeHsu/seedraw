@@ -4060,20 +4060,30 @@ function setSelected(grp, grpOld) {
 
     var label = gSvg.select("[id^='" + grp + "label']");
     if (label) {
-        var parentEl;
-        if (label.select("div").node.childNodes[0].tagName.toLowerCase() == "div") {
-            parentEl = label.select("div").node;
-        } else {
-            parentEl = label.select("div").node.childNodes[0];
-        }
 
-        if (parentEl) {
-            var labelItems = parentEl.childNodes;
-            [].forEach.call(labelItems, function (item) {
+        var parentDivs = label.selectAll("div>div");
+        if (parentDivs && parentDivs.length > 0) {
+
+            parentDivs.forEach(function (item) {
                 if (item) {
-                    item.setAttribute("placeholder", "label");
+                    item.node.setAttribute("placeholder", "label");
                 }
             });
+
+        }
+
+        var parentUls = label.select("div>ul");
+        if (parentUls && parentUls.length > 0) {
+
+            parentUls.forEach(function () {
+                var subLists = parentUls.childNodes;
+                [].forEach.call(subLists, function (item) {
+                    if (item) {
+                        item.setAttribute("placeholder", "label");
+                    }
+                });
+            });
+
         }
 
     }
@@ -4105,20 +4115,30 @@ function clearSelected(grp) {
 
     var label = gSvg.select("[id^='" + grp + "label']");
     if (label) {
-        var parentEl;
-        if (label.select("div").node.childNodes[0].tagName.toLowerCase() == "div") {
-            parentEl = label.select("div").node;
-        } else {
-            parentEl = label.select("div").node.childNodes[0];
-        }
 
-        if (parentEl) {
-            var labelItems = parentEl.childNodes;
-            [].forEach.call(labelItems, function (item) {
+        var parentDivs = label.selectAll("div>div");
+        if (parentDivs && parentDivs.length > 0) {
+
+            parentDivs.forEach(function (item) {
                 if (item) {
-                    item.removeAttribute("placeholder", "label");
+                    item.node.setAttribute("placeholder", "label");
                 }
             });
+
+        }
+
+        var parentUls = label.select("div>ul");
+        if (parentUls && parentUls.length > 0) {
+
+            parentUls.forEach(function () {
+                var subLists = parentUls.childNodes;
+                [].forEach.call(subLists, function (item) {
+                    if (item) {
+                        item.removeAttribute("placeholder", "label");
+                    }
+                });
+            });
+
         }
 
     }
