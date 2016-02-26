@@ -4625,7 +4625,7 @@ function textEdit(func, value) {
                 }
                 parentDiv.removeChild(gEditingItem);
 
-                gEditingItem = list.childNodes[0];
+                gEditingItem = list.querySelectorAll("li")[0];
 
             }
 
@@ -4637,7 +4637,7 @@ function textEdit(func, value) {
             if (list) {
 
                 var itemAry = [];
-                var listItems = list.childNodes;
+                var listItems = list.querySelectorAll("li");
                 [].forEach.call(listItems, function (item) {
                     if (item) {
                         itemAry.push(item.innerHTML);
