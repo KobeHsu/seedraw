@@ -4502,10 +4502,11 @@ function setTextEditMenuState(labelItem) {
 function getParentByTag(el, tagName) {
 
     if (el) {
-        if (el.tagName && tagName.toLowerCase() == el.tagName.toLowerCase()) {
-            return el;
+        var parent = el.parentNode;
+        if (parent && parent.tagName && tagName.toLowerCase() == parent.tagName.toLowerCase()) {
+            return parent;
         } else {
-            return getParentByTag(el.parentNode, tagName);
+            return getParentByTag(parent, tagName);
         }
     } else {
         return null;
@@ -4598,9 +4599,12 @@ function textEdit(func, value) {
             listType = "ol";
         }
 
+        var list
+        var parentDiv;
+
         if ("div" == gEditingItem.tagName.toLowerCase()) {
 
-            var list = document.createElement(listType);
+            list = document.createElement(listType);
             var content = gEditingItem.innerHTML;
 
             if ("" != content) {
@@ -4609,15 +4613,13 @@ function textEdit(func, value) {
                     listItem.innerHTML = itemStr;
                     listItem.setAttribute("contenteditable", "true");
 
-                    listItem.addEventListener("contextmenu", showLabelContextMenu);
-                    listItem.addEventListener("keydown", labelItemKeyDown);
-                    listItem.addEventListener("focus", labelItemFocus);
-                    listItem.addEventListener("blur", labelItemBlur);
-
                     list.appendChild(listItem);
+
+                    registerListenerToLabel(gEditingItem);
+
                 });
 
-                var parentDiv = gEditingItem.parentNode;
+                parentDiv = gEditingItem.parentNode;
                 if (gEditingItem.nextSibling) {
                     parentDiv.insertBefore(list, gEditingItem.nextSibling);
                 } else {
@@ -4632,7 +4634,7 @@ function textEdit(func, value) {
         } else {
 
             var html = "";
-            var list = gEditingItem.parentNode;
+            list = gEditingItem.parentNode;
 
             var tagName = list.tagName.toLowerCase();
             //if ("li"==tagName.toLocaleLowerCase()) {
@@ -4642,17 +4644,14 @@ function textEdit(func, value) {
             if (listType != tagName) {
 
                 var newList = document.createElement(listType);
+                parentDiv = list.parentNode;
                 newList.innerHTML = list.innerHTML;
-                list.parentNode.insertBefore(newList, list);
-                list.parentNode.removeChild(list);
+                parentDiv.insertBefore(newList, list);
+                parentDiv.removeChild(list);
+
                 gEditingItem = newList.querySelectorAll("li")[0];
-                var listItems = newList.querySelectorAll("li");
-                [].forEach.call(listItems, function (listItem) {
-                    listItem.addEventListener("contextmenu", showLabelContextMenu);
-                    listItem.addEventListener("keydown", labelItemKeyDown);
-                    listItem.addEventListener("focus", labelItemFocus);
-                    listItem.addEventListener("blur", labelItemBlur);
-                });
+
+                registerListenerToLabel(parentDiv);
 
             } else {
 
@@ -4671,18 +4670,15 @@ function textEdit(func, value) {
                     div.innerHTML = html;
                     div.setAttribute("contenteditable", "true");
 
-                    div.addEventListener("contextmenu", showLabelContextMenu);
-                    div.addEventListener("keydown", labelItemKeyDown);
-                    div.addEventListener("focus", labelItemFocus);
-                    div.addEventListener("blur", labelItemBlur);
-
-                    var parentDiv = list.parentNode;
+                    parentDiv = list.parentNode;
                     if (list.nextSibling) {
                         parentDiv.insertBefore(div, list.nextSibling);
                     } else {
                         parentDiv.appendChild(div);
                     }
                     parentDiv.removeChild(list);
+
+                    registerListenerToLabel(parentDiv);
 
                 }
 
@@ -4716,6 +4712,33 @@ function getCaretCharacterOffsetWithin(element) {
         caretOffset = preCaretTextRange.text.length;
     }
     return caretOffset;
+}
+
+function registerListenerToLabel(parentDiv) {
+
+
+    if (parentDiv) {
+        var listItems = parentDiv.querySelectorAll("div, li");
+        if (listItems && listItems.length > 0) {
+            [].forEach.call(listItems, function (listItem) {
+                if (listItem) {
+                    listItem.addEventListener("contextmenu", showLabelContextMenu);
+                    listItem.addEventListener("keydown", labelItemKeyDown);
+                    //item.node.addEventListener("mousedown", function(e) {
+                    //    var mousedownEvent = document.createEvent ("MouseEvent");
+                    //    mousedownEvent.initMouseEvent ("mousedown", true, true, window, 0,
+                    //        event.screenX, event.screenY, event.clientX, event.clientY,
+                    //        event.ctrlKey, event.altKey, event.shiftKey, event.metaKey,
+                    //        0, null);
+                    //    svgEl.node.dispatchEvent (mousedownEvent);
+                    //});
+                    listItem.addEventListener("focus", labelItemFocus);
+                    listItem.addEventListener("blur", labelItemBlur);
+                }
+            });
+        }
+    }
+
 }
 
 function registerListener(id) {
@@ -4755,30 +4778,8 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-
             var parentDiv = label.select("div");
-            if (parentDiv) {
-                var labelItems = parentDiv.selectAll("div, li");
-                if (labelItems && labelItems.length > 0) {
-                    labelItems.forEach(function (item) {
-                        if (item) {
-                            item.node.addEventListener("contextmenu", showLabelContextMenu);
-                            item.node.addEventListener("keydown", labelItemKeyDown);
-                            //item.node.addEventListener("mousedown", function(e) {
-                            //    var mousedownEvent = document.createEvent ("MouseEvent");
-                            //    mousedownEvent.initMouseEvent ("mousedown", true, true, window, 0,
-                            //        event.screenX, event.screenY, event.clientX, event.clientY,
-                            //        event.ctrlKey, event.altKey, event.shiftKey, event.metaKey,
-                            //        0, null);
-                            //    svgEl.node.dispatchEvent (mousedownEvent);
-                            //});
-                            item.node.addEventListener("focus", labelItemFocus);
-                            item.node.addEventListener("blur", labelItemBlur);
-                        }
-                    });
-                }
-            }
-
+            registerListenerToLabel(parentDiv.node);
         }
 
     } else if ("ellipse" == type) {
@@ -4808,19 +4809,7 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             var parentDiv = label.select("div");
-            if (parentDiv) {
-                var labelItems = parentDiv.selectAll("div, li");
-                if (labelItems && labelItems.length > 0) {
-                    labelItems.forEach(function (item) {
-                        if (item) {
-                            item.node.addEventListener("contextmenu", showLabelContextMenu);
-                            item.node.addEventListener("keydown", labelItemKeyDown);
-                            item.node.addEventListener("focus", labelItemFocus);
-                            item.node.addEventListener("blur", labelItemBlur);
-                        }
-                    });
-                }
-            }
+            registerListenerToLabel(parentDiv.node);
         }
 
     } else if ("brace" == type) {
@@ -4913,19 +4902,7 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             var parentDiv = label.select("div");
-            if (parentDiv) {
-                var labelItems = parentDiv.selectAll("div, li");
-                if (labelItems && labelItems.length > 0) {
-                    labelItems.forEach(function (item) {
-                        if (item) {
-                            item.node.addEventListener("contextmenu", showLabelContextMenu);
-                            item.node.addEventListener("keydown", labelItemKeyDown);
-                            item.node.addEventListener("focus", labelItemFocus);
-                            item.node.addEventListener("blur", labelItemBlur);
-                        }
-                    });
-                }
-            }
+            registerListenerToLabel(parentDiv.node);
         }
 
     } else if ("connector" == type) {
@@ -4943,19 +4920,7 @@ function registerListener(id) {
         if (label) {
             label.mousedown(labelMouseDown);
             var parentDiv = label.select("div");
-            if (parentDiv) {
-                var labelItems = parentDiv.selectAll("div, li");
-                if (labelItems && labelItems.length > 0) {
-                    labelItems.forEach(function (item) {
-                        if (item) {
-                            item.node.addEventListener("contextmenu", showLabelContextMenu);
-                            item.node.addEventListener("keydown", labelItemKeyDown);
-                            item.node.addEventListener("focus", labelItemFocus);
-                            item.node.addEventListener("blur", labelItemBlur);
-                        }
-                    });
-                }
-            }
+            registerListenerToLabel(parentDiv.node);
         }
 
     }
@@ -5167,12 +5132,10 @@ function labelItemKeyDown(e) {
             //div.innerHTML = "";
             item.setAttribute("placeholder", "label");
             item.style["text-align"] = "center";
-            item.addEventListener("contextmenu", showLabelContextMenu);
-            item.addEventListener("keydown", labelItemKeyDown);
-            item.addEventListener("focus", labelItemFocus);
-            item.addEventListener("blur", labelItemBlur);
 
             e.target.parentNode.appendChild(item);
+            var parentDiv = getParentByTag(e.target, "div");
+            registerListenerToLabel(parentDiv);
 
             adjustLabelItemPosition(e.target);
 
