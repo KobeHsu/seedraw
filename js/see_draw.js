@@ -4591,14 +4591,14 @@ function textEdit(func, value) {
         gEditingItem.style["text-align"] = value;
     } else if ("list" == func) {
 
-        if ("div" == gEditingItem.tagName.toLowerCase()) {
+        var listType = "";
+        if ("bulleted" == value) {
+            listType = "ul";
+        } else if ("numbered" == value) {
+            listType = "ol";
+        }
 
-            var listType = "";
-            if ("bulleted" == value) {
-                listType = "ul";
-            } else if ("numbered" == value) {
-                listType = "ol";
-            }
+        if ("div" == gEditingItem.tagName.toLowerCase()) {
 
             var list = document.createElement(listType);
             var content = gEditingItem.innerHTML;
@@ -4631,36 +4631,60 @@ function textEdit(func, value) {
 
         } else {
 
-            var list = gEditingItem.parentNode;
             var html = "";
+            var list = gEditingItem.parentNode;
 
-            if (list) {
+            var tagName = list.tagName.toLowerCase();
+            //if ("li"==tagName.toLocaleLowerCase()) {
+            //    tagName = gEditingItem.parentNode.tagName;
+            //}
 
-                var itemAry = [];
-                var listItems = list.querySelectorAll("li");
-                [].forEach.call(listItems, function (item) {
-                    if (item) {
-                        itemAry.push(item.innerHTML);
-                    }
+            if (listType != tagName) {
+
+                var newList = document.createElement(listType);
+                newList.innerHTML = list.innerHTML;
+                list.parentNode.insertBefore(newList, list);
+                list.parentNode.removeChild(list);
+                gEditingItem = newList.querySelectorAll("li")[0];
+                var listItems = newList.querySelectorAll("li");
+                [].forEach.call(listItems, function (listItem) {
+                    listItem.addEventListener("contextmenu", showLabelContextMenu);
+                    listItem.addEventListener("keydown", labelItemKeyDown);
+                    listItem.addEventListener("focus", labelItemFocus);
+                    listItem.addEventListener("blur", labelItemBlur);
                 });
-                html = itemAry.join("<br>");
 
-                var div = document.createElement("div");
-                div.innerHTML = html;
-                div.setAttribute("contenteditable", "true");
+            } else {
 
-                div.addEventListener("contextmenu", showLabelContextMenu);
-                div.addEventListener("keydown", labelItemKeyDown);
-                div.addEventListener("focus", labelItemFocus);
-                div.addEventListener("blur", labelItemBlur);
+                if (list) {
 
-                var parentDiv = list.parentNode;
-                if (list.nextSibling) {
-                    parentDiv.insertBefore(div, list.nextSibling);
-                } else {
-                    parentDiv.appendChild(div);
+                    var itemAry = [];
+                    var listItems = list.querySelectorAll("li");
+                    [].forEach.call(listItems, function (item) {
+                        if (item) {
+                            itemAry.push(item.innerHTML);
+                        }
+                    });
+                    html = itemAry.join("<br>");
+
+                    var div = document.createElement("div");
+                    div.innerHTML = html;
+                    div.setAttribute("contenteditable", "true");
+
+                    div.addEventListener("contextmenu", showLabelContextMenu);
+                    div.addEventListener("keydown", labelItemKeyDown);
+                    div.addEventListener("focus", labelItemFocus);
+                    div.addEventListener("blur", labelItemBlur);
+
+                    var parentDiv = list.parentNode;
+                    if (list.nextSibling) {
+                        parentDiv.insertBefore(div, list.nextSibling);
+                    } else {
+                        parentDiv.appendChild(div);
+                    }
+                    parentDiv.removeChild(list);
+
                 }
-                parentDiv.removeChild(list);
 
             }
 
@@ -4740,6 +4764,14 @@ function registerListener(id) {
                         if (item) {
                             item.node.addEventListener("contextmenu", showLabelContextMenu);
                             item.node.addEventListener("keydown", labelItemKeyDown);
+                            //item.node.addEventListener("mousedown", function(e) {
+                            //    var mousedownEvent = document.createEvent ("MouseEvent");
+                            //    mousedownEvent.initMouseEvent ("mousedown", true, true, window, 0,
+                            //        event.screenX, event.screenY, event.clientX, event.clientY,
+                            //        event.ctrlKey, event.altKey, event.shiftKey, event.metaKey,
+                            //        0, null);
+                            //    svgEl.node.dispatchEvent (mousedownEvent);
+                            //});
                             item.node.addEventListener("focus", labelItemFocus);
                             item.node.addEventListener("blur", labelItemBlur);
                         }

@@ -473,6 +473,7 @@ foreignobject > div {
     position: fixed;
     white-space: nowrap;
     display: block;
+    cursor: move;
 }
 
 [contenteditable=true]:empty:before {
