@@ -4714,28 +4714,51 @@ function getCaretCharacterOffsetWithin(element) {
     return caretOffset;
 }
 
-function registerListenerToLabel(parentDiv) {
+function registerListenerToLabel(parentDiv, svgEl) {
 
 
     if (parentDiv) {
+
         var listItems = parentDiv.querySelectorAll("div, li");
         if (listItems && listItems.length > 0) {
+
             [].forEach.call(listItems, function (listItem) {
-                if (listItem) {
-                    listItem.addEventListener("contextmenu", showLabelContextMenu);
-                    listItem.addEventListener("keydown", labelItemKeyDown);
-                    //item.node.addEventListener("mousedown", function(e) {
-                    //    var mousedownEvent = document.createEvent ("MouseEvent");
-                    //    mousedownEvent.initMouseEvent ("mousedown", true, true, window, 0,
-                    //        event.screenX, event.screenY, event.clientX, event.clientY,
-                    //        event.ctrlKey, event.altKey, event.shiftKey, event.metaKey,
-                    //        0, null);
-                    //    svgEl.node.dispatchEvent (mousedownEvent);
-                    //});
-                    listItem.addEventListener("focus", labelItemFocus);
-                    listItem.addEventListener("blur", labelItemBlur);
+
+                    if (listItem) {
+
+                        listItem.addEventListener("contextmenu", showLabelContextMenu);
+                        listItem.addEventListener("keydown", labelItemKeyDown);
+                        listItem.addEventListener("mousedown", function (e) {
+
+                                var mouseDownEvent = document.createEvent("MouseEvent");
+                                mouseDownEvent.initMouseEvent("mousedown", true, true, window, 0,
+                                    event.screenX, event.screenY, event.clientX, event.clientY,
+                                    event.ctrlKey, event.altKey, event.shiftKey, event.metaKey,
+                                    0, null);
+                                if (svgEl) {
+                                    svgEl.node.dispatchEvent(mouseDownEvent);
+                                } else {
+
+                                    var label = getParentByTag(listItem, "foreignobject");
+                                    if (label) {
+                                        // rect, ellipse, path
+                                        var grp = getGroupPrefix(label.id);
+                                        var childNodes = gSvg.select("#" + grp + "g").selectAll("rect,ellipse,path");
+                                        if (childNodes && childNodes.length > 0) {
+                                            childNodes[0].node.dispatchEvent(mouseDownEvent);
+                                        }
+                                    }
+                                }
+                            }
+                        );
+                        listItem.addEventListener("focus", labelItemFocus);
+                        listItem.addEventListener("blur", labelItemBlur);
+
+                    }
+
                 }
-            });
+            );
+
         }
     }
 
@@ -4779,7 +4802,7 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             var parentDiv = label.select("div");
-            registerListenerToLabel(parentDiv.node);
+            registerListenerToLabel(parentDiv.node, svgEl);
         }
 
     } else if ("ellipse" == type) {
@@ -4809,7 +4832,7 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             var parentDiv = label.select("div");
-            registerListenerToLabel(parentDiv.node);
+            registerListenerToLabel(parentDiv.node, svgEl);
         }
 
     } else if ("brace" == type) {
@@ -4902,7 +4925,7 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             var parentDiv = label.select("div");
-            registerListenerToLabel(parentDiv.node);
+            registerListenerToLabel(parentDiv.node, svgEl);
         }
 
     } else if ("connector" == type) {
@@ -4920,7 +4943,7 @@ function registerListener(id) {
         if (label) {
             label.mousedown(labelMouseDown);
             var parentDiv = label.select("div");
-            registerListenerToLabel(parentDiv.node);
+            registerListenerToLabel(parentDiv.node, svgEl);
         }
 
     }
@@ -5053,11 +5076,17 @@ function textDblClick(e) {
     e.stopPropagation();
 
     var grp = getGroupPrefix(e.target.id);
-    var label = gSvg.select("#" + grp + "label");
-    var input = label.select("div>div");
-    if (input) {
-        input.node.focus();
+    var label = gSvg.select("#" + grp + "label>div");
+
+    var items = label.selectAll("div,li");
+    if (items && items.length > 0) {
+        items[0].node.focus();
     }
+
+    //var input = label.select("div>div");
+    //if (input) {
+    //    input.node.focus();
+    //}
     /*
      log("textDblClick, id=" + this.attr("id"));
      log("gCurrent=" + gCurrent);
@@ -5176,6 +5205,7 @@ function labelItemFocus(e) {
     gEditingItem = e.target;
 
     setTextEditMenuState(gEditingItem);
+    gEditingItem.style.cursor = "input";
 
     var label = getParentByTag(e.target, "foreignobject");
     if (label) {
