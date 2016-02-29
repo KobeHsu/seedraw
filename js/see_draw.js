@@ -4267,6 +4267,7 @@ function performLoadSvg() {
 }
 
 function saveDraw() {
+    location.href = "#openModal";
     localStorage.setItem(DIAGRAM_NAME, gSvg.node.innerHTML);
 }
 

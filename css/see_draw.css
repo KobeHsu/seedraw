@@ -498,14 +498,15 @@ foreignobject > div {
 
 .modalDialog {
     position: fixed;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    font-size: 12px;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     z-index: 99999;
-    opacity:0;
+    opacity: 0;
     -webkit-transition: opacity 400ms ease-in;
     -moz-transition: opacity 400ms ease-in;
     transition: opacity 400ms ease-in;
@@ -513,7 +514,7 @@ foreignobject > div {
 }
 
 .modalDialog:target {
-    opacity:1;
+    opacity: 1;
     pointer-events: auto;
 }
 
@@ -548,4 +549,6 @@ foreignobject > div {
     box-shadow: 1px 1px 3px #000;
 }
 
-.close:hover { background: #00d9ff; }
+.close:hover {
+    background: #00d9ff;
+}
