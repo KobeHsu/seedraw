@@ -25,7 +25,8 @@
         <button onclick="saveDraw()">save</button>
         <button onclick="deleteDraw()">delete</button>
         <button onclick="undo()">undo</button>
-        <input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>
+        <a href="#openModal">Open Modal</a>
+        <!--<input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>-->
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect('dash')">
             <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect myRectDash"/>
             <text x="15" y="25" class="myLabel">Place</text>
@@ -511,7 +512,15 @@
     </div>
 </section>
 
-<footer></footer>
+<footer>
+    <div id="openModal" class="modalDialog">
+        <div>
+            <a href="#close" title="Close" class="close">X</a>
+            <h3>Name of model</h3>
+            <p>&nbsp;<input type="text" id="modelName"></p>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>
