@@ -530,6 +530,10 @@ foreignobject > div {
     background: -o-linear-gradient(#fff, #999);
 }
 
+.modalNameList:hover {
+    background: #00d9ff;
+}
+
 .close {
     background: #606061;
     color: #FFFFFF;

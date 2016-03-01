@@ -83,6 +83,8 @@ var gConnectorContextMenu;
 var gLabelContextMenu;
 var gTextEditContextMenu;
 
+var gModelType = "-1";
+
 "use strict";
 
 //region Rect
@@ -4234,7 +4236,7 @@ function loadDraw() {
     var modelMessage = document.getElementById("modelMessage");
     if (modelMessage) {
 
-        var formData = {"type": "1"};
+        var formData = {"type": gModelType};
         $.blockUI({message: '<h4> 模型清單讀取中, 請稍候</h4>'});
 
         $.ajax({
@@ -4262,6 +4264,8 @@ function loadDraw() {
 
                         modelMessage.innerHTML = html;
                         location.href = "#openModal";
+                    } else {
+                        alert("no saved model");
                     }
 
                 } else if (jsonResult.functionStatus == "FAILED") {
@@ -4390,7 +4394,11 @@ function performSave() {
         doSaveOrUpdate = confirm("Overwrite?");
     }
 
-    var formData = {"content": svgHtml, "type": "1", "name": modelName};
+    if (!doSaveOrUpdate) {
+        return;
+    }
+
+    var formData = {"content": svgHtml, "type": gModelType, "name": modelName};
 
     location.href = "#close";
     $.blockUI({message: '<h4> 模型儲存中, 請稍候</h4>'});
