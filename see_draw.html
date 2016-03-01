@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,8 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="js/snap.svg-min.js"></script>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/jquery.blockUI.js"></script>
     <script src="js/see_draw.js"></script>
     <script src="js/see_draw_path.js"></script>
 </head>
@@ -26,7 +28,7 @@
         <button onclick="saveDraw()">save</button>
         <button onclick="deleteDraw()">delete</button>
         <button onclick="undo()">undo</button>
-        <a href="#openModal">Open Modal</a>
+
         <!--<input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>-->
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect('dash')">
             <rect x="0" y="0" rx="5" ry="5" width="80" height="40" class="myRect myRectDash"/>
@@ -517,8 +519,9 @@
     <div id="openModal" class="modalDialog">
         <div>
             <a href="#close" title="Close" class="close">X</a>
-            <h3>Name of model</h3>
-            <p>&nbsp;<input type="text" id="modelName"><button style="float: right">SAVE</button></p>
+            <h3>Model</h3>
+            <p id="modelMessage"></p>
+            <input type="hidden" id="loadedModel"><input type="hidden" id="uuid">
         </div>
     </div>
 </footer>

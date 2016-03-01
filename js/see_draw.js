@@ -47,6 +47,7 @@ var REMOVE_LINE_MSG = "Remove this boundary ?";
 //var REMOVE_BREAK_MSG = "Remove this breakdown ?";
 //var REMOVE_BRACE_MSG = "Remove this brace ?";
 //var REMOVE_IMAGE_MSG = "Remove this image ?";
+var REMOVE_MODEL_MSG = "Remove this model ?";
 
 var TEXT_EDIT_MENU_LEFT = 180;
 var TEXT_EDIT_MENU_TOP = 0;
@@ -4224,56 +4225,259 @@ function svgElToBack() {
 
 function newDraw() {
     gSvg.node.innerHTML = "";
+    document.getElementById("loadedModel").value = "";
+    document.getElementById("uuid").value = "";
 }
 
 function loadDraw() {
 
-    var html = localStorage.getItem(DIAGRAM_NAME);
-    if (!html) {
-        alert("No data!")
-        return;
+    var modelMessage = document.getElementById("modelMessage");
+    if (modelMessage) {
+
+        var formData = {"type": "1"};
+        $.blockUI({message: '<h4> 模型清單讀取中, 請稍候</h4>'});
+
+        $.ajax({
+            url: 'ModelIO/doGetList',
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            success: function (jsonResult, status) {
+                $.unblockUI();
+
+                if (jsonResult.functionStatus == "SUCCESS") {
+
+                    if (jsonResult.uuids && jsonResult.names) {
+
+                        var uuidAry = jsonResult.uuids.split(",");
+                        var nameAry = jsonResult.names.split(",");
+
+                        var html = "<ul>";
+
+                        for (var i = 0; i < uuidAry.length; i++) {
+                            html += "<li style=\"cursor:pointer;\" onclick=\"performLoad('" + uuidAry[i] + "')\">" + nameAry[i] + "</li>";
+                        }
+
+                        html += "</ul>";
+
+                        modelMessage.innerHTML = html;
+                        location.href = "#openModal";
+                    }
+
+                } else if (jsonResult.functionStatus == "FAILED") {
+                    alert(jsonResult.errorMessage);
+                }
+
+            },
+            error: function (xhrInstance, status, xhrException) {
+                $.unblockUI();
+            }
+        });
+
+
     }
-    gSvg.node.innerHTML = html;
-    reloadSvg();
+
+//    var html = localStorage.getItem(DIAGRAM_NAME);
+//    if (!html) {
+//        alert("No data!")
+//        return;
+//    }
+//    gSvg.node.innerHTML = html;
+//    reloadSvg();
     //document.getElementById("loadSvg").value = "";
     //document.getElementById("loadSvg").click();
 }
 
-function performLoadSvg() {
+function performLoad(uuid) {
 
-    var file = document.getElementById("loadSvg").files[0];
+    var formData = {"uuid": uuid};
+    $.blockUI({message: '<h4> 模型讀取中, 請稍候</h4>'});
+    location.href = "#close";
 
-    if (!file) {
+    $.ajax({
+        url: 'ModelIO/doLoad',
+        type: 'POST',
+        dataType: 'json',
+        data: formData,
+        success: function (jsonResult, status) {
+            $.unblockUI();
+
+            if (jsonResult.functionStatus == "SUCCESS") {
+
+                if (jsonResult.content && jsonResult.name) {
+
+                    gSvg.node.innerHTML = jsonResult.content;
+
+                    document.getElementById("loadedModel").value = jsonResult.name;
+                    document.getElementById("uuid").value = uuid;
+
+                    reloadSvg();
+                }
+
+            } else if (jsonResult.functionStatus == "FAILED") {
+                alert(jsonResult.errorMessage);
+            }
+
+        },
+        error: function (xhrInstance, status, xhrException) {
+            $.unblockUI();
+        }
+    });
+
+}
+
+//function performLoadSvg() {
+
+//    var file = document.getElementById("loadSvg").files[0];
+//
+//    if (!file) {
+//        return;
+//    }
+//
+//    var url = window.location.href;
+//var textType = /image.*/;
+//if (!file.type.match(textType)) {
+//    alert("File not supported!");
+//    document.getElementById("insertImg").value = "";
+//    return;
+//}
+
+//    var fReader = new FileReader();
+//    fReader.onload = function (event) {
+//
+//        gSvg.node.innerHTML = event.target.result;
+//        reloadSvg();
+//
+//    };
+//    fReader.readAsText(file);
+
+//}
+
+function saveDraw() {
+
+    var modelMessage = document.getElementById("modelMessage");
+    if (modelMessage) {
+
+        var loadedModel = document.getElementById("loadedModel").value;
+        if (!loadedModel) {
+            loadedModel = "";
+        }
+
+        modelMessage.innerHTML = "&nbsp;<input type='text' id='modelName' value='" + loadedModel + "'><button style='float: right' onclick='performSave()'>SAVE</button>";
+        location.href = "#openModal";
+    }
+//    localStorage.setItem(DIAGRAM_NAME, gSvg.node.innerHTML);
+}
+
+function performSave() {
+
+    var svgHtml = gSvg.node.innerHTML;
+    if (svgHtml && svgHtml.length > 0) {
+        svgHtml = svgHtml.replace(/\r?\n|\r/g, "");
+    } else {
+        alert("no data!");
         return;
     }
 
-    var url = window.location.href;
-    //var textType = /image.*/;
-    //if (!file.type.match(textType)) {
-    //    alert("File not supported!");
-    //    document.getElementById("insertImg").value = "";
-    //    return;
-    //}
+    var modelName = document.getElementById("modelName").value;
+    if (!modelName) {
+        alert("no name!");
+        return;
+    }
 
-    var fReader = new FileReader();
-    fReader.onload = function (event) {
+    var doSaveOrUpdate = true;
+    if (modelName == document.getElementById("loadedModel").value) {
+        doSaveOrUpdate = confirm("Overwrite?");
+    }
 
-        gSvg.node.innerHTML = event.target.result;
-        reloadSvg();
+    var formData = {"content": svgHtml, "type": "1", "name": modelName};
 
-    };
-    fReader.readAsText(file);
+    location.href = "#close";
+    $.blockUI({message: '<h4> 模型儲存中, 請稍候</h4>'});
 
-}
+    $.ajax({
+        url: 'ModelIO/doSave',
+        type: 'POST',
+        dataType: 'json',
+        data: formData,
+        success: function (jsonResult, status) {
+            $.unblockUI();
 
-function saveDraw() {
-    location.href = "#openModal";
-    localStorage.setItem(DIAGRAM_NAME, gSvg.node.innerHTML);
+            if (jsonResult.functionStatus == "SUCCESS") {
+                document.getElementById("loadedModel").value = modelName;
+                document.getElementById("uuid").value = jsonResult.uuid;
+            } else if (jsonResult.functionStatus == "FAILED") {
+                alert(jsonResult.errorMessage);
+            }
+
+        },
+        error: function (xhrInstance, status, xhrException) {
+            $.unblockUI();
+        }
+    });
+
 }
 
 function deleteDraw() {
-    localStorage.removeItem(DIAGRAM_NAME);
-    newDraw();
+
+    var modelMessage = document.getElementById("modelMessage");
+    if (modelMessage) {
+
+        var loadedModel = document.getElementById("loadedModel").value;
+        if (!loadedModel) {
+            loadedModel = "";
+        }
+
+        modelMessage.innerHTML = "&nbsp;" + "[" + loadedModel + "]" + "<button style='float: right' onclick='performDelete()'>DELETE</button>";
+        location.href = "#openModal";
+    }
+
+//    localStorage.removeItem(DIAGRAM_NAME);
+//    newDraw();
+}
+
+function performDelete() {
+
+
+    var uuid = document.getElementById("uuid").value;
+
+    if (!uuid) {
+        alert("no data!");
+        return;
+    }
+
+    var doDelete = confirm(REMOVE_MODEL_MSG);
+    if (!doDelete) {
+        return;
+    }
+
+    var formData = {"uuid": uuid};
+
+    location.href = "#close";
+    $.blockUI({message: '<h4> 模型刪除中, 請稍候</h4>'});
+
+    $.ajax({
+        url: 'ModelIO/doDelete',
+        type: 'POST',
+        dataType: 'json',
+        data: formData,
+        success: function (jsonResult, status) {
+            $.unblockUI();
+
+            if (jsonResult.functionStatus == "SUCCESS") {
+//				document.getElementById("loadedModel").value = "";
+//				document.getElementById("uuid").value = "";
+                newDraw();
+            } else if (jsonResult.functionStatus == "FAILED") {
+                alert(jsonResult.errorMessage);
+            }
+
+        },
+        error: function (xhrInstance, status, xhrException) {
+            $.unblockUI();
+        }
+    });
+
 }
 
 function backupSvgCurrent(svgEl) {
