@@ -4257,7 +4257,7 @@ function loadDraw() {
                         var html = "<ul>";
 
                         for (var i = 0; i < uuidAry.length; i++) {
-                            html += "<li style=\"cursor:pointer;\" onclick=\"performLoad('" + uuidAry[i] + "')\">" + nameAry[i] + "</li>";
+                            html += "<li class=\"modalNameList\" style=\"cursor:pointer;\" onclick=\"performLoad('" + uuidAry[i] + "')\">" + nameAry[i] + "</li>";
                         }
 
                         html += "</ul>";
@@ -4383,7 +4383,9 @@ function saveDraw() {
         myModalHeader.innerHTML = "Enter name to save";
         myModalBody.innerHTML = "<input type='text' id='modelName' value='" + loadedModel + "'>";
         myModalButton.innerHTML = "Save";
+        myModalButton.style.display = "";
         myModalButton.onclick = performSave;
+
         myModal.modal("show");
 
         //modelMessage.innerHTML = "&nbsp;<input type='text' id='modelName' value='" + loadedModel + "'><button style='float: right' onclick='performSave()'>SAVE</button>";
@@ -4459,9 +4461,10 @@ function deleteDraw() {
         var myModalBody = document.getElementById("myModalBody");
         var myModalButton = document.getElementById("myModalButton");
 
-        myModalHeader.innerHTML = "The mpdel to delete";
+        myModalHeader.innerHTML = "The model to delete";
         myModalBody.innerHTML = "[" + loadedModel + "]";
         myModalButton.innerHTML = "Save";
+        myModalButton.style.display = "";
         myModalButton.onclick = performDelete;
         myModal.modal("show");
         //modelMessage.innerHTML = "&nbsp;" + "[" + loadedModel + "]" + "<button style='float: right' onclick='performDelete()'>DELETE</button>";
