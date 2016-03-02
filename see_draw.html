@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>SEE DRAW</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href="css/see_draw.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
@@ -13,6 +15,7 @@
     <script src="js/snap.svg-min.js"></script>
     <script src="js/jquery-1.11.3.min.js"></script>
     <script src="js/jquery.blockUI.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="js/see_draw.js"></script>
     <script src="js/see_draw_path.js"></script>
 </head>
@@ -23,11 +26,15 @@
 <nav></nav>
 <section id="mainArea">
     <div id="component" style="width:150px;float:left">
-        <button onclick="newDraw()">new</button>
-        <button onclick="loadDraw()">load</button>
-        <button onclick="saveDraw()">save</button>
-        <button onclick="deleteDraw()">delete</button>
-        <button onclick="undo()">undo</button>
+        <div class="jumbotron">
+            <i class="fa fa-wrench"></i> <tiles:getAsString name="title"/>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-round btn-danger" id="newCaseBtn" name="newCaseBtn" onclick="newDraw()" data-toggle="tooltip" title="HOO"><i class="fa fa-file-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="openCaseBtn" name="openCaseBtn" onclick="loadDraw()"><i class="fa fa-folder-open-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="saveCaseBtn" name="saveCaseBtn" onclick="saveDraw()"><i class="fa fa-floppy-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="deleteCaseBtn" name="deleteCaseBtn" onclick="deleteDraw()"><i class="fa fa-trash-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="exportCaseBtn" name="exportCaseBtn" onclick="exportDraw()"><i class="fa fa-file-image-o"></i></button>
+        </div>
 
         <!--<input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>-->
         <svg width="130" height="40" style="margin: 10px 10px 10px 10px" onclick="addRect('dash')">
