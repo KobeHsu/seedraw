@@ -12,10 +12,10 @@
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <script src="js/snap.svg-min.js"></script>
     <script src="js/jquery-1.11.3.min.js"></script>
     <script src="js/jquery.blockUI.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/snap.svg-min.js"></script>
     <script src="js/see_draw.js"></script>
     <script src="js/see_draw_path.js"></script>
 </head>
@@ -27,13 +27,19 @@
 <section id="mainArea">
     <div id="component" style="width:150px;float:left">
         <div class="jumbotron">
-            <i class="fa fa-wrench"></i> <tiles:getAsString name="title"/>
+            <i class="fa fa-wrench"></i>
+            <tiles:getAsString name="title"/>
             &nbsp;&nbsp;
-            <button type="button" class="btn btn-round btn-danger" id="newCaseBtn" name="newCaseBtn" onclick="newDraw()" data-toggle="tooltip" title="HOO"><i class="fa fa-file-o"></i></button>
-            <button type="button" class="btn btn-round btn-danger" id="openCaseBtn" name="openCaseBtn" onclick="loadDraw()"><i class="fa fa-folder-open-o"></i></button>
-            <button type="button" class="btn btn-round btn-danger" id="saveCaseBtn" name="saveCaseBtn" onclick="saveDraw()"><i class="fa fa-floppy-o"></i></button>
-            <button type="button" class="btn btn-round btn-danger" id="deleteCaseBtn" name="deleteCaseBtn" onclick="deleteDraw()"><i class="fa fa-trash-o"></i></button>
-            <button type="button" class="btn btn-round btn-danger" id="exportCaseBtn" name="exportCaseBtn" onclick="exportDraw()"><i class="fa fa-file-image-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="newCaseBtn" name="newCaseBtn" onclick="newDraw()"
+                    data-toggle="tooltip" title="HOO"><i class="fa fa-file-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="openCaseBtn" name="openCaseBtn"
+                    onclick="loadDraw()"><i class="fa fa-folder-open-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="saveCaseBtn" name="saveCaseBtn"
+                    onclick="saveDraw()"><i class="fa fa-floppy-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="deleteCaseBtn" name="deleteCaseBtn"
+                    onclick="deleteDraw()"><i class="fa fa-trash-o"></i></button>
+            <button type="button" class="btn btn-round btn-danger" id="exportCaseBtn" name="exportCaseBtn"
+                    onclick="exportDraw()"><i class="fa fa-file-image-o"></i></button>
         </div>
 
         <!--<input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>-->
@@ -523,12 +529,34 @@
 </section>
 
 <footer>
-    <div id="openModal" class="modalDialog">
+    <!--<div id="openModal" class="modalDialog">
         <div>
             <a href="#close" title="Close" class="close">X</a>
             <h3>Model</h3>
             <p id="modelMessage"></p>
             <input type="hidden" id="loadedModel"><input type="hidden" id="uuid">
+        </div>
+    </div>-->
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="myModalHeader">Modal Header</h4>
+                </div>
+                <div class="modal-body" id="myModalBody">
+                    <p>Some text in the modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="myModalButton">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="hidden" id="loadedModel"><input type="hidden" id="uuid">
+                </div>
+            </div>
+
         </div>
     </div>
 </footer>

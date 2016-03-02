@@ -4233,8 +4233,8 @@ function newDraw() {
 
 function loadDraw() {
 
-    var modelMessage = document.getElementById("modelMessage");
-    if (modelMessage) {
+    var myModal = $("#myModal");
+    if (myModal) {
 
         var formData = {"type": gModelType};
         $.blockUI({message: '<h4> 模型清單讀取中, 請稍候</h4>'});
@@ -4262,8 +4262,17 @@ function loadDraw() {
 
                         html += "</ul>";
 
-                        modelMessage.innerHTML = html;
-                        location.href = "#openModal";
+                        var myModalHeader = document.getElementById("myModalHeader");
+                        var myModalBody = document.getElementById("myModalBody");
+                        var myModalButton = document.getElementById("myModalButton");
+
+                        myModalHeader.innerHTML = "Select name to load";
+                        myModalBody.innerHTML = html;
+                        myModalButton.style.display = "none";
+                        myModal.modal("show");
+
+                        //modelMessage.innerHTML = html;
+                        //location.href = "#openModal";
                     } else {
                         alert("no saved model");
                     }
@@ -4296,7 +4305,7 @@ function performLoad(uuid) {
 
     var formData = {"uuid": uuid};
     $.blockUI({message: '<h4> 模型讀取中, 請稍候</h4>'});
-    location.href = "#close";
+    $("#myModal").modal("hide");
 
     $.ajax({
         url: 'ModelIO/doLoad',
@@ -4359,16 +4368,26 @@ function performLoad(uuid) {
 
 function saveDraw() {
 
-    var modelMessage = document.getElementById("modelMessage");
-    if (modelMessage) {
+    var myModal = $("#myModal");
+    if (myModal) {
 
         var loadedModel = document.getElementById("loadedModel").value;
         if (!loadedModel) {
             loadedModel = "";
         }
 
-        modelMessage.innerHTML = "&nbsp;<input type='text' id='modelName' value='" + loadedModel + "'><button style='float: right' onclick='performSave()'>SAVE</button>";
-        location.href = "#openModal";
+        var myModalHeader = document.getElementById("myModalHeader");
+        var myModalBody = document.getElementById("myModalBody");
+        var myModalButton = document.getElementById("myModalButton");
+
+        myModalHeader.innerHTML = "Enter name to save";
+        myModalBody.innerHTML = "<input type='text' id='modelName' value='" + loadedModel + "'>";
+        myModalButton.innerHTML = "Save";
+        myModalButton.onclick = performSave;
+        myModal.modal("show");
+
+        //modelMessage.innerHTML = "&nbsp;<input type='text' id='modelName' value='" + loadedModel + "'><button style='float: right' onclick='performSave()'>SAVE</button>";
+        //location.href = "#openModal";
     }
 //    localStorage.setItem(DIAGRAM_NAME, gSvg.node.innerHTML);
 }
@@ -4400,7 +4419,7 @@ function performSave() {
 
     var formData = {"content": svgHtml, "type": gModelType, "name": modelName};
 
-    location.href = "#close";
+    $("#myModal").modal("hide");
     $.blockUI({message: '<h4> 模型儲存中, 請稍候</h4>'});
 
     $.ajax({
@@ -4428,16 +4447,25 @@ function performSave() {
 
 function deleteDraw() {
 
-    var modelMessage = document.getElementById("modelMessage");
-    if (modelMessage) {
+    var myModal = $("#myModal");
+    if (myModal) {
 
         var loadedModel = document.getElementById("loadedModel").value;
         if (!loadedModel) {
             loadedModel = "";
         }
 
-        modelMessage.innerHTML = "&nbsp;" + "[" + loadedModel + "]" + "<button style='float: right' onclick='performDelete()'>DELETE</button>";
-        location.href = "#openModal";
+        var myModalHeader = document.getElementById("myModalHeader");
+        var myModalBody = document.getElementById("myModalBody");
+        var myModalButton = document.getElementById("myModalButton");
+
+        myModalHeader.innerHTML = "The mpdel to delete";
+        myModalBody.innerHTML = "[" + loadedModel + "]";
+        myModalButton.innerHTML = "Save";
+        myModalButton.onclick = performDelete;
+        myModal.modal("show");
+        //modelMessage.innerHTML = "&nbsp;" + "[" + loadedModel + "]" + "<button style='float: right' onclick='performDelete()'>DELETE</button>";
+        //location.href = "#openModal";
     }
 
 //    localStorage.removeItem(DIAGRAM_NAME);
@@ -4461,7 +4489,7 @@ function performDelete() {
 
     var formData = {"uuid": uuid};
 
-    location.href = "#close";
+    $("#myModal").modal("hide");
     $.blockUI({message: '<h4> 模型刪除中, 請稍候</h4>'});
 
     $.ajax({
