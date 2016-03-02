@@ -31,15 +31,16 @@
             <tiles:getAsString name="title"/>
             &nbsp;&nbsp;
             <button type="button" class="btn btn-round btn-danger" id="newCaseBtn" name="newCaseBtn" onclick="newDraw()"
-                    data-toggle="tooltip" title="HOO"><i class="fa fa-file-o"></i></button>
+                    data-toggle="tooltip" title="New"><i class="fa fa-file-o"></i></button>
             <button type="button" class="btn btn-round btn-danger" id="openCaseBtn" name="openCaseBtn"
-                    onclick="loadDraw()"><i class="fa fa-folder-open-o"></i></button>
+                    onclick="loadDraw()" data-toggle="tooltip" title="Load"><i class="fa fa-folder-open-o"></i></button>
             <button type="button" class="btn btn-round btn-danger" id="saveCaseBtn" name="saveCaseBtn"
-                    onclick="saveDraw()"><i class="fa fa-floppy-o"></i></button>
+                    onclick="saveDraw()" data-toggle="tooltip" title="Save"><i class="fa fa-floppy-o"></i></button>
             <button type="button" class="btn btn-round btn-danger" id="deleteCaseBtn" name="deleteCaseBtn"
-                    onclick="deleteDraw()"><i class="fa fa-trash-o"></i></button>
+                    onclick="deleteDraw()" data-toggle="tooltip" title="Delete"><i class="fa fa-trash-o"></i></button>
             <button type="button" class="btn btn-round btn-danger" id="exportCaseBtn" name="exportCaseBtn"
-                    onclick="exportDraw()"><i class="fa fa-file-image-o"></i></button>
+                    onclick="exportDraw()" data-toggle="tooltip" title="Export"><i class="fa fa-file-image-o"></i>
+            </button>
         </div>
 
         <!--<input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>-->
