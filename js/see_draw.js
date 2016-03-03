@@ -4521,6 +4521,10 @@ function performDelete() {
 
 }
 
+function exportDraw() {
+    saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+}
+
 function backupSvgCurrent(svgEl) {
     localStorage.setItem(DIAGRAM_NAME + "_TMP", svgEl.node.outerHTML);
 }
