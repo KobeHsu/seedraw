@@ -1,6 +1,6 @@
 //var SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 //var XML_NAME_SPACE = "http://www.w3.org/1999/xhtml";
-var __DEBUG_OUTPUT = true
+var __DEBUG_OUTPUT = true;
 
 var CANVAS_WIDTH = 800;
 var CANVAS_HEIGHT = 600;
@@ -339,8 +339,7 @@ function nResizeMouseDown(event) {
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
     var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    var type = getTypeById(grpEl.attr("id"));
-    gDragType = type;
+    gDragType = getTypeById(grpEl.attr("id"));
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
@@ -484,7 +483,7 @@ function sResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var rect = gSvg.select("#" + gCurrent + "rect");
         correctXY(grp, rect, "rect");
@@ -565,7 +564,7 @@ function wResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var rect = gSvg.select("#" + gCurrent + "rect");
         correctXY(grp, rect, "rect");
@@ -644,7 +643,7 @@ function eResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var rect = gSvg.select("#" + gCurrent + "rect");
         correctXY(grp, rect, "rect");
@@ -937,7 +936,7 @@ function nResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1022,7 +1021,7 @@ function sResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1108,7 +1107,7 @@ function wResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1193,7 +1192,7 @@ function eResizeEllipseMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var ellipse = gSvg.select("#" + gCurrent + "ellipse");
         correctXY(grp, ellipse, "ellipse");
@@ -1440,7 +1439,7 @@ function wResizeLineMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var line = gSvg.select("#" + gCurrent + "line");
         correctXY(grp, line, "line");
@@ -1517,7 +1516,7 @@ function eResizeLineMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var line = gSvg.select("#" + gCurrent + "line");
         correctXY(grp, line, "line");
@@ -1780,7 +1779,7 @@ function nResizeBraceMouseMove(event) {
     var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
     var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
 
-    var dx = event.clientX - x;
+    //var dx = event.clientX - x;
     var dy = event.clientY - y;
 
     var brace = gSvg.select("#" + gCurrent + "brace");
@@ -1808,7 +1807,7 @@ function nResizeBraceMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var brace = gSvg.select("#" + gCurrent + "brace");
         correctXY(grp, brace, "brace");
@@ -1865,7 +1864,7 @@ function sResizeBraceMouseMove(event) {
     var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
     var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
 
-    var dx = event.clientX - x;
+    //var dx = event.clientX - x;
     var dy = event.clientY - y;
 
     var brace = gSvg.select("#" + gCurrent + "brace");
@@ -1893,7 +1892,7 @@ function sResizeBraceMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var brace = gSvg.select("#" + gCurrent + "brace");
         correctXY(grp, brace, "brace");
@@ -2205,7 +2204,7 @@ function nResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2309,7 +2308,7 @@ function sResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2413,7 +2412,7 @@ function wResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2517,7 +2516,7 @@ function eResizeBreakMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var breakDown = gSvg.select("#" + gCurrent + "break");
         correctBreakXY(grp, breakDown);
@@ -2816,7 +2815,7 @@ function nResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -2895,7 +2894,7 @@ function sResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -2976,7 +2975,7 @@ function wResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -3055,7 +3054,7 @@ function eResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var image = gSvg.select("#" + gCurrent + "image");
         correctXY(grp, image, "image");
@@ -3367,7 +3366,7 @@ function nResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3471,7 +3470,7 @@ function sResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3575,7 +3574,7 @@ function wResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3679,7 +3678,7 @@ function eResizeCustomMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
+        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
         var custom = gSvg.select("#" + gCurrent + "custom");
         correctCustomXY(grp, custom);
@@ -3906,7 +3905,7 @@ document.addEventListener("DOMContentLoaded", function () {
             clearSelected(gCurrent);
             gCurrent = "";
         }
-    }
+    };
 
     gDrawArea.addEventListener("contextmenu", function (e) {
         e.preventDefault();
@@ -4000,13 +3999,13 @@ function initSelectionFonts() {
 
     if (textEditFontFamily) {
 
-        var opt = document.createElement("option");
-        opt.value = "";
-        opt.innerHTML = "&nbsp;";
-        textEditFontFamily.appendChild(opt);
+        //var opt = document.createElement("option");
+        //opt.value = "";
+        //opt.innerHTML = "&nbsp;";
+        //textEditFontFamily.appendChild(opt);
 
         SUPPORTED_FONTS.forEach(function (fontAry) {
-            opt = document.createElement("option");
+            var opt = document.createElement("option");
             opt.value = fontAry[0];
             opt.innerHTML = "<span style='font-family:" + fontAry[0] + "'>" + fontAry[1] + "</span>";
             textEditFontFamily.appendChild(opt);
@@ -4246,7 +4245,7 @@ function loadDraw() {
             type: 'POST',
             dataType: 'json',
             data: formData,
-            success: function (jsonResult, status) {
+            success: function (jsonResult) {
                 $.unblockUI();
 
                 if (jsonResult.functionStatus == "SUCCESS") {
@@ -4284,7 +4283,7 @@ function loadDraw() {
                 }
 
             },
-            error: function (xhrInstance, status, xhrException) {
+            error: function () {
                 $.unblockUI();
             }
         });
@@ -4314,7 +4313,7 @@ function performLoad(uuid) {
         type: 'POST',
         dataType: 'json',
         data: formData,
-        success: function (jsonResult, status) {
+        success: function (jsonResult) {
             $.unblockUI();
 
             if (jsonResult.functionStatus == "SUCCESS") {
@@ -4334,7 +4333,7 @@ function performLoad(uuid) {
             }
 
         },
-        error: function (xhrInstance, status, xhrException) {
+        error: function () {
             $.unblockUI();
         }
     });
@@ -4431,7 +4430,7 @@ function performSave() {
         type: 'POST',
         dataType: 'json',
         data: formData,
-        success: function (jsonResult, status) {
+        success: function (jsonResult) {
             $.unblockUI();
 
             if (jsonResult.functionStatus == "SUCCESS") {
@@ -4442,7 +4441,7 @@ function performSave() {
             }
 
         },
-        error: function (xhrInstance, status, xhrException) {
+        error: function () {
             $.unblockUI();
         }
     });
@@ -4502,7 +4501,7 @@ function performDelete() {
         type: 'POST',
         dataType: 'json',
         data: formData,
-        success: function (jsonResult, status) {
+        success: function (jsonResult) {
             $.unblockUI();
 
             if (jsonResult.functionStatus == "SUCCESS") {
@@ -4514,7 +4513,7 @@ function performDelete() {
             }
 
         },
-        error: function (xhrInstance, status, xhrException) {
+        error: function () {
             $.unblockUI();
         }
     });
@@ -4525,9 +4524,9 @@ function exportDraw() {
     saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
 }
 
-function backupSvgCurrent(svgEl) {
-    localStorage.setItem(DIAGRAM_NAME + "_TMP", svgEl.node.outerHTML);
-}
+//function backupSvgCurrent(svgEl) {
+//    localStorage.setItem(DIAGRAM_NAME + "_TMP", svgEl.node.outerHTML);
+//}
 
 function undo() {
 
@@ -4636,8 +4635,7 @@ function getElementXYofBBox(bBox, elName) {
 
         var newY = bBoxY + height / 2;
         if (gCurrent) {
-            var grp = gCurrent;
-            var itemsHeight = gSvg.select("#" + grp + "label>div").node.scrollHeight;
+            var itemsHeight = gSvg.select("#" + gCurrent + "label>div").node.scrollHeight;
             newY = newY - itemsHeight / 2;
         }
 
@@ -4849,7 +4847,7 @@ function textEdit(func, value) {
             listType = "ol";
         }
 
-        var list
+        var list;
         var parentDiv;
 
         if ("div" == gEditingItem.tagName.toLowerCase()) {
@@ -4865,8 +4863,6 @@ function textEdit(func, value) {
 
                     list.appendChild(listItem);
 
-                    registerListenerToLabel(gEditingItem);
-
                 });
 
                 parentDiv = gEditingItem.parentNode;
@@ -4875,6 +4871,8 @@ function textEdit(func, value) {
                 } else {
                     parentDiv.appendChild(list);
                 }
+
+                registerListenerToLabel(list);
                 parentDiv.removeChild(gEditingItem);
 
                 gEditingItem = list.querySelectorAll("li")[0];
@@ -4946,23 +4944,23 @@ function textEdit(func, value) {
     event.stopPropagation();
 }
 
-function getCaretCharacterOffsetWithin(element) {
-    var caretOffset = 0;
-    if (typeof window.getSelection != "undefined") {
-        var range = window.getSelection().getRangeAt(0);
-        var preCaretRange = range.cloneRange();
-        preCaretRange.selectNodeContents(element);
-        preCaretRange.setEnd(range.endContainer, range.endOffset);
-        caretOffset = preCaretRange.toString().length;
-    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
-        var textRange = document.selection.createRange();
-        var preCaretTextRange = document.body.createTextRange();
-        preCaretTextRange.moveToElementText(element);
-        preCaretTextRange.setEndPoint("EndToEnd", textRange);
-        caretOffset = preCaretTextRange.text.length;
-    }
-    return caretOffset;
-}
+//function getCaretCharacterOffsetWithin(element) {
+//    var caretOffset = 0;
+//    if (typeof window.getSelection != "undefined") {
+//        var range = window.getSelection().getRangeAt(0);
+//        var preCaretRange = range.cloneRange();
+//        preCaretRange.selectNodeContents(element);
+//        preCaretRange.setEnd(range.endContainer, range.endOffset);
+//        caretOffset = preCaretRange.toString().length;
+//    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+//        var textRange = document.selection.createRange();
+//        var preCaretTextRange = document.body.createTextRange();
+//        preCaretTextRange.moveToElementText(element);
+//        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+//        caretOffset = preCaretTextRange.text.length;
+//    }
+//    return caretOffset;
+//}
 
 function registerListenerToLabel(parentDiv, svgEl) {
 
@@ -4978,7 +4976,7 @@ function registerListenerToLabel(parentDiv, svgEl) {
 
                         listItem.addEventListener("contextmenu", showLabelContextMenu);
                         listItem.addEventListener("keydown", labelItemKeyDown);
-                        listItem.addEventListener("mousedown", function (e) {
+                        listItem.addEventListener("mousedown", function () {
 
                                 var mouseDownEvent = document.createEvent("MouseEvent");
                                 mouseDownEvent.initMouseEvent("mousedown", true, true, window, 0,
@@ -5024,6 +5022,7 @@ function registerListener(id) {
     var svgEl = Snap("#" + id);
     var parentG;
     var label;
+    var parentDiv;
 
     if ("rect" == type) {
 
@@ -5051,7 +5050,7 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-            var parentDiv = label.select("div");
+            parentDiv = label.select("div");
             registerListenerToLabel(parentDiv.node, svgEl);
         }
 
@@ -5081,7 +5080,7 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-            var parentDiv = label.select("div");
+            parentDiv = label.select("div");
             registerListenerToLabel(parentDiv.node, svgEl);
         }
 
@@ -5174,7 +5173,7 @@ function registerListener(id) {
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
-            var parentDiv = label.select("div");
+            parentDiv = label.select("div");
             registerListenerToLabel(parentDiv.node, svgEl);
         }
 
@@ -5192,7 +5191,7 @@ function registerListener(id) {
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
             label.mousedown(labelMouseDown);
-            var parentDiv = label.select("div");
+            parentDiv = label.select("div");
             registerListenerToLabel(parentDiv.node, svgEl);
         }
 
@@ -5575,26 +5574,26 @@ function labelMouseUp() {
 
 //endregion
 
-function addDiamond() {
-
-    var grp = getGroupPrefix(gSerialNo);
-    var breakId = grp + "break";
-
-    var myDiamond = gSvg.path("M20 0 L0 20 L20 40 L40 20 Z");
-    myDiamond.addClass("myDiamond");
-    myDiamond.attr("id", breakId);
-
-    myDiamond.mouseover(connectorMouseOver);
-    myDiamond.mouseout(connectorMouseOut);
-    myDiamond.mousedown(svgElMouseDown);
-    myDiamond.node.addEventListener("contextmenu", breakContextMenu);
-
-    var g = gSvg.g(myDiamond);
-    var grpId = grp + "g";
-    g.attr("id", grpId);
-
-    gSerialNo++;
-}
+//function addDiamond() {
+//
+//    var grp = getGroupPrefix(gSerialNo);
+//    var breakId = grp + "break";
+//
+//    var myDiamond = gSvg.path("M20 0 L0 20 L20 40 L40 20 Z");
+//    myDiamond.addClass("myDiamond");
+//    myDiamond.attr("id", breakId);
+//
+//    myDiamond.mouseover(connectorMouseOver);
+//    myDiamond.mouseout(connectorMouseOut);
+//    myDiamond.mousedown(svgElMouseDown);
+//    myDiamond.node.addEventListener("contextmenu", breakContextMenu);
+//
+//    var g = gSvg.g(myDiamond);
+//    var grpId = grp + "g";
+//    g.attr("id", grpId);
+//
+//    gSerialNo++;
+//}
 
 //function addClippingSquare() {
 //

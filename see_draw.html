@@ -6,8 +6,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
     <link href="css/see_draw.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet">
+    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">-->
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -127,25 +127,56 @@
                 </li>
             </ul>
         </nav>
-        <nav id="context-menu-textedit" class="context-menu" style="width: auto;">
-            <div><select id="textEditFontFamily" onchange="textEdit('family')"></select>
-            </div>
-            <div><select id="textEditFontSize" onchange="textEdit('size')"></select>
-            </div>
-            <!--<div><i class="material-icons">format_color_text</i></div>-->
-            <div id="textEditFontBold" onmousedown="textEdit('weight', 'bold')"><i
-                    class="material-icons">format_bold</i></div>
-            <div id="textEditFontItalic" onmousedown="textEdit('style', 'italic')"><i class="material-icons">format_italic</i>
-            </div>
-            <div id="textEditAlignLeft" onmousedown="textEdit('align', 'left')"><i class="material-icons">format_align_left</i>
-            </div>
-            <div id="textEditAlignCenter" onmousedown="textEdit('align', 'center')"><i class="material-icons">format_align_center</i>
-            </div>
-            <div id="textEditAlignRight" onmousedown="textEdit('align', 'right')"><i class="material-icons">format_align_right</i>
-            </div>
-            <div id="textEditBulleted" onmousedown="textEdit('list', 'bulleted')"><i class="material-icons">format_list_bulleted</i>
-            </div>
-            <div id="textEditNumbered" onmousedown="textEdit('list', 'numbered')"><i class="material-icons">format_list_numbered</i>
+        <!--<nav id="context-menu-textedit" class="context-menu" style="width: auto; display:none">-->
+        <!--<div><select class="input-small" id="textEditFontFamily_" onchange="textEdit('family')"></select>-->
+        <!--</div>-->
+        <!--<div><select class="input-small" id="textEditFontSize_" onchange="textEdit('size')"></select>-->
+        <!--</div>-->
+        <!--&lt;!&ndash;<div><i class="material-icons">format_color_text</i></div>&ndash;&gt;-->
+        <!--<div id="textEditFontBold" onmousedown="textEdit('weight', 'bold')"><i-->
+        <!--class="fa fa-bold fa-border"></i></div>-->
+        <!--<div id="textEditFontItalic" onmousedown="textEdit('style', 'italic')"><i class="fa fa-italic fa-border" ></i>-->
+        <!--</div>-->
+        <!--<div id="textEditAlignLeft" onmousedown="textEdit('align', 'left')"><i class="material-icons">format_align_left</i>-->
+        <!--</div>-->
+        <!--<div id="textEditAlignCenter" onmousedown="textEdit('align', 'center')"><i class="material-icons">format_align_center</i>-->
+        <!--</div>-->
+        <!--<div id="textEditAlignRight" onmousedown="textEdit('align', 'right')"><i class="material-icons">format_align_right</i>-->
+        <!--</div>-->
+        <!--<div id="textEditBulleted" onmousedown="textEdit('list', 'bulleted')"><i class="material-icons">format_list_bulleted</i>-->
+        <!--</div>-->
+        <!--<div id="textEditNumbered" onmousedown="textEdit('list', 'numbered')"><i class="material-icons">format_list_numbered</i>-->
+        <!--</div>-->
+        <!--</nav>-->
+        <nav>
+            <div class="btn-toolbar" id="context-menu-textedit">
+                <div class="btn-group">
+                    <select class="form-control input-sm" id="textEditFontFamily"
+                            onchange="textEdit('family')"></select>
+                </div>
+                <div class="btn-group">
+                    <select class="form-control input-sm" id="textEditFontSize" onchange="textEdit('size')"></select>
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('weight', 'bold')"
+                       id="textEditFontBold"><i class="fa fa-bold"></i></a>
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('style', 'italic')"
+                       id="textEditFontItalic"><i class="fa fa-italic"></i></a>
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('align', 'left')"
+                       id="textEditAlignLeft"><i class="fa fa-align-left"></i></a>
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('align', 'center')"
+                       id="textEditAlignCenter"><i class="fa fa-align-center"></i></a>
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('align', 'right')"
+                       id="textEditAlignRight"><i class="fa fa-align-right"></i></a>
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('list', 'bulleted')"
+                       id="textEditBulleted"><i class="fa fa-list-ul"></i></a>
+                    <a class="btn btn-default" href="#" onmousedown="textEdit('list', 'numbered')"
+                       id="textEditNumbered"><i class="fa fa-list-ol"></i></a>
+                </div>
             </div>
         </nav>
         <svg height="600" version="1.1" width="800" xmlns="http://www.w3.org/2000/svg" id="snapSvg">

@@ -68,7 +68,7 @@ function addConnector(type) {
     gCurrent = grp;
 }
 
-function getElementXYofConn(bBox, elName, targetX, targetY) {
+function getElementXYofConn(bBox, elName) {
 
     var xy = [];
 
@@ -334,7 +334,7 @@ function endPointMouseMove() {
 
 }
 
-function endPointMouseUp(event) {
+function endPointMouseUp() {
 
     log("endPointMouseUp");
 
