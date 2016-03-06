@@ -4522,7 +4522,7 @@ function performDelete() {
 
 function exportDraw() {
     transformHtmlToSvgText();
-    saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+    //saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
 }
 
 function transformHtmlToSvgText() {
@@ -4537,12 +4537,13 @@ function transformHtmlToSvgText() {
             var x = foreignObj.attr("x");
             var y = foreignObj.attr("y");
 
-            var tspans = [];
+            var tSpans = [];
             textItems.forEach(function(textItem){
-                tspans.push(textItem.innerSVG());
+                tSpans.push(textItem.innerSVG());
+                window.getComputedStyle(textItem.node, null).getPropertyValue('font-size');
             });
 
-            gSvg.text(x, y, tspans);
+            gSvg.text(x, y, tSpans);
 
         }
     });
