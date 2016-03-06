@@ -476,6 +476,17 @@ foreignobject > div {
     cursor: move;
 }
 
+text {
+    font: 12px sans-serif;
+    fill: #444;
+    padding: 0 5px 0 5px;
+    padding: 0 5px 0 5px;
+    position: fixed;
+    white-space: nowrap;
+    display: block;
+    cursor: move;
+}
+
 [contenteditable=true]:empty:before {
     content: attr(placeholder);
     color: grey;

@@ -4521,7 +4521,32 @@ function performDelete() {
 }
 
 function exportDraw() {
+    transformHtmlToSvgText();
     saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+}
+
+function transformHtmlToSvgText() {
+
+    gSvg.selectAll("foreignobject > div").forEach(function (parentDiv) {
+
+        var foreignObj = parentDiv.parent();
+
+        var textItems = parentDiv.selectAll("div, li");
+        if (textItems.length > 0 && textItems[0].node.innerHTML != "") {
+
+            var x = foreignObj.attr("x");
+            var y = foreignObj.attr("y");
+
+            var tspans = [];
+            textItems.forEach(function(textItem){
+                tspans.push(textItem.innerSVG());
+            });
+
+            gSvg.text(x, y, tspans);
+
+        }
+    });
+
 }
 
 //function backupSvgCurrent(svgEl) {
