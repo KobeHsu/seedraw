@@ -4525,6 +4525,12 @@ function exportDraw() {
     //saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
 }
 
+function generateElementOfSvg(tagName) {
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+    el.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+    return el;
+}
+
 function transformHtmlToSvgText() {
 
     gSvg.selectAll("foreignobject > div").forEach(function (parentDiv) {
@@ -4534,16 +4540,37 @@ function transformHtmlToSvgText() {
         var textItems = parentDiv.selectAll("div, li");
         if (textItems.length > 0 && textItems[0].node.innerHTML != "") {
 
-            var x = foreignObj.attr("x");
-            var y = foreignObj.attr("y");
+            var x = parseInt(foreignObj.attr("x"), 10);
+            var y = parseInt(foreignObj.attr("y"), 10);
+            var svgText = generateElementOfSvg("text");
+            //svgText.setAttribute("x", x);
+            //svgText.setAttribute("y", y);
+            var tSpanX = x;
+            var tSpanY = y;
 
-            var tSpans = [];
-            textItems.forEach(function(textItem){
-                tSpans.push(textItem.innerSVG());
-                window.getComputedStyle(textItem.node, null).getPropertyValue('font-size');
+            //var tSpans = [];
+            textItems.forEach(function (textItem) {
+
+                var tSpan = generateElementOfSvg("tspan");
+
+                tSpan.setAttribute("x", tSpanX);
+                tSpan.setAttribute("y", tSpanY);
+                tSpan.innerHTML = textItem.innerSVG();
+
+                var textItemEl = textItem.node;
+                var computedStyle = window.getComputedStyle(textItemEl, null);
+
+                console.log(textItem.innerSVG() + ":"+computedStyle.width);
+
+                var fontSize = computedStyle.getPropertyValue('font-size');
+                fontSize = parseInt(fontSize.replace("px", ""), 10);
+                tSpanY += fontSize;
+                //var boundRect = textItemEl.getBoundingClientRect();
+                svgText.appendChild(tSpan);
+
             });
 
-            gSvg.text(x, y, tSpans);
+            gSvg.append(svgText);
 
         }
     });
