@@ -4522,12 +4522,14 @@ function performDelete() {
 
 function exportDraw() {
     transformHtmlToSvgText();
-    //saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+    saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+    gSvg.selectAll("[id^=tmp_text_]").remove();
 }
 
 function generateElementOfSvg(tagName) {
     var el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
     el.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", "http://www.w3.org/1999/xlink");
+    el.setAttribute("id", "tmp_text_" + gSerialNo++);
     return el;
 }
 
@@ -4540,7 +4542,13 @@ function transformHtmlToSvgText() {
         var textItems = parentDiv.selectAll("div, li");
         if (textItems.length > 0 && textItems[0].node.innerHTML != "") {
 
-            var x = parseInt(foreignObj.attr("x"), 10);
+            //var topBound = document.getElementById("drawArea").getBoundingClientRect();
+            //var boundRect = textItems[0].node.getBoundingClientRect();
+            //
+            //var x = boundRect.left - topBound.left;
+            //var y = boundRect.top - topBound.top;
+            var width = parseInt(parentDiv.node.getBoundingClientRect().width, 10);
+            var x = parseInt(foreignObj.attr("x"), 10) + width / 2;
             var y = parseInt(foreignObj.attr("y"), 10);
             var svgText = generateElementOfSvg("text");
             //svgText.setAttribute("x", x);
@@ -4551,20 +4559,23 @@ function transformHtmlToSvgText() {
             //var tSpans = [];
             textItems.forEach(function (textItem) {
 
-                var tSpan = generateElementOfSvg("tspan");
-
-                tSpan.setAttribute("x", tSpanX);
-                tSpan.setAttribute("y", tSpanY);
-                tSpan.innerHTML = textItem.innerSVG();
-
                 var textItemEl = textItem.node;
                 var computedStyle = window.getComputedStyle(textItemEl, null);
 
-                console.log(textItem.innerSVG() + ":"+computedStyle.width);
+                //console.log(textItem.innerSVG() + ":"+computedStyle.width);
 
                 var fontSize = computedStyle.getPropertyValue('font-size');
                 fontSize = parseInt(fontSize.replace("px", ""), 10);
                 tSpanY += fontSize;
+
+                var tSpan = generateElementOfSvg("tspan");
+
+                tSpan.setAttribute("x", tSpanX);
+                tSpan.setAttribute("y", tSpanY);
+                tSpan.setAttribute("text-anchor", "middle");
+                tSpan.innerHTML = textItem.innerSVG();
+
+
                 //var boundRect = textItemEl.getBoundingClientRect();
                 svgText.appendChild(tSpan);
 
