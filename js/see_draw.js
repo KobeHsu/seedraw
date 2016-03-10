@@ -3970,6 +3970,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     gTextEditContextMenu = document.getElementById("context-menu-textedit");
     gTextEditContextMenu.classList.add("context-menu--active");
+    gTextEditContextMenu.style["position"] = "absolute";
     gTextEditContextMenu.style["left"] = TEXT_EDIT_MENU_LEFT + "px";
     gTextEditContextMenu.style["top"] = TEXT_EDIT_MENU_TOP + "px";
 
