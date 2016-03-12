@@ -4523,8 +4523,8 @@ function performDelete() {
 
 function exportDraw() {
     transformHtmlToSvgText();
-    saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
-    gSvg.selectAll("[id^=tmp_text_]").remove();
+    //saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+    //gSvg.selectAll("[id^=tmp_text_]").remove();
 }
 
 function generateElementOfSvg(tagName) {
@@ -4536,55 +4536,73 @@ function generateElementOfSvg(tagName) {
 
 function transformHtmlToSvgText() {
 
+    var xShift = gSvg.node.getBoundingClientRect().left;
+    var yShift = gSvg.node.getBoundingClientRect().top;
+
     gSvg.selectAll("foreignobject > div").forEach(function (parentDiv) {
 
         var foreignObj = parentDiv.parent();
 
-        var textItems = parentDiv.selectAll("div, li");
+        var textItems = parentDiv.selectAll("div, ul, ol");
         if (textItems.length > 0 && textItems[0].node.innerHTML != "") {
 
-            //var topBound = document.getElementById("drawArea").getBoundingClientRect();
-            //var boundRect = textItems[0].node.getBoundingClientRect();
-            //
-            //var x = boundRect.left - topBound.left;
-            //var y = boundRect.top - topBound.top;
-            var width = parseInt(parentDiv.node.getBoundingClientRect().width, 10);
-            var x = parseInt(foreignObj.attr("x"), 10) + width / 2;
-            var y = parseInt(foreignObj.attr("y"), 10);
-            var svgText = generateElementOfSvg("text");
-            //svgText.setAttribute("x", x);
-            //svgText.setAttribute("y", y);
-            var tSpanX = x;
-            var tSpanY = y;
-
-            //var tSpans = [];
             textItems.forEach(function (textItem) {
 
                 var textItemEl = textItem.node;
                 var computedStyle = window.getComputedStyle(textItemEl, null);
 
-                //console.log(textItem.innerSVG() + ":"+computedStyle.width);
+                var textAlign = computedStyle.getPropertyValue('text-align'); // text-anchor: start | middle | end
+                var fontSize = computedStyle.getPropertyValue('font-size'); // font-size
+                var fontStyle = computedStyle.getPropertyValue('font-style'); // font-style
+                var fontFamily = computedStyle.getPropertyValue('font-family'); // font-family
+                var fontWeight = computedStyle.getPropertyValue('font-weight'); // font-weight
 
-                var fontSize = computedStyle.getPropertyValue('font-size');
-                fontSize = parseInt(fontSize.replace("px", ""), 10);
-                tSpanY += fontSize;
+                var svgText = generateElementOfSvg("text");
+                var fontSizeInt = 12;
+                if ("" != fontSize) {
+                    fontSizeInt = parseInt(fontSize.replace("px", ""), 10);
+                }
 
-                var tSpan = generateElementOfSvg("tspan");
+                svgText.setAttribute("font-size", fontSize);
+                svgText.setAttribute("font-style", fontStyle);
+                svgText.setAttribute("font-family", fontFamily);
+                svgText.setAttribute("font-weight", fontWeight);
 
-                tSpan.setAttribute("x", tSpanX);
-                tSpan.setAttribute("y", tSpanY);
-                tSpan.setAttribute("text-anchor", "middle");
-                tSpan.innerHTML = textItem.innerSVG();
+                var bounding = textItemEl.getBoundingClientRect();
 
+                var left = bounding.left - xShift; // x
+                var top = bounding.top - yShift + fontSizeInt; // y
+                var width = bounding.width;
 
-                //var boundRect = textItemEl.getBoundingClientRect();
-                svgText.appendChild(tSpan);
+                if ("left" == textAlign) {
+
+                    svgText.setAttribute("x", left);
+                    svgText.setAttribute("y", top);
+                    svgText.setAttribute("text-anchor", "start");
+
+                } else if ("right" == textAlign) {
+
+                    svgText.setAttribute("x", left + width);
+                    svgText.setAttribute("y", top);
+                    svgText.setAttribute("text-anchor", "end");
+
+                } else {
+
+                    svgText.setAttribute("x", left + width / 2);
+                    svgText.setAttribute("y", top);
+                    svgText.setAttribute("text-anchor", "middle");
+
+                }
+
+                svgText.innerHTML = textItem.innerSVG();
+
+                gSvg.append(svgText);
+
 
             });
 
-            gSvg.append(svgText);
-
         }
+
     });
 
 }
