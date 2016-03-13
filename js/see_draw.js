@@ -4523,8 +4523,8 @@ function performDelete() {
 
 function exportDraw() {
     transformHtmlToSvgText();
-    //saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
-    //gSvg.selectAll("[id^=tmp_text_]").remove();
+    saveSvgAsPng(document.getElementById("snapSvg"), "diagram.png");
+    gSvg.selectAll("[id^=tmp_text_]").remove();
 }
 
 function generateElementOfSvg(tagName) {
@@ -4541,9 +4541,11 @@ function transformHtmlToSvgText() {
 
     gSvg.selectAll("foreignobject > div").forEach(function (parentDiv) {
 
-        var foreignObj = parentDiv.parent();
+        //var foreignObj = parentDiv.parent();
+        var lastListParent = null;
+        var listItemOrder = 1;
 
-        var textItems = parentDiv.selectAll("div, ul, ol");
+        var textItems = parentDiv.selectAll("div,li");
         if (textItems.length > 0 && textItems[0].node.innerHTML != "") {
 
             textItems.forEach(function (textItem) {
@@ -4593,9 +4595,28 @@ function transformHtmlToSvgText() {
                     svgText.setAttribute("text-anchor", "middle");
 
                 }
-                //&#x25CF;
 
-                svgText.innerHTML = textItem.innerSVG();
+                var tagName = textItemEl.tagName;
+
+                if ("div" == tagName.toLowerCase()) {
+                    svgText.innerHTML = textItem.innerSVG();
+                } else {
+
+                    var listParent = textItemEl.parentNode;
+                    if (lastListParent != listParent) {
+                        listItemOrder = 1;
+                        lastListParent = listParent;
+                    }
+
+                    var listStyle = "&#x25CF;";
+                    if ("ol" == listParent.tagName.toLowerCase()) {
+                        listStyle = listItemOrder + ".";
+                        listItemOrder++;
+                    }
+
+                    svgText.innerHTML = listStyle + " " + textItem.innerSVG();
+
+                }
 
                 gSvg.append(svgText);
 
