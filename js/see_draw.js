@@ -4593,6 +4593,7 @@ function transformHtmlToSvgText() {
                     svgText.setAttribute("text-anchor", "middle");
 
                 }
+                //&#x25CF;
 
                 svgText.innerHTML = textItem.innerSVG();
 
