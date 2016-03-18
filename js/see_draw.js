@@ -4087,7 +4087,7 @@ function clearSelected(grp) {
             var labelItems = parentDiv.selectAll("div,li");
             if (labelItems && labelItems.length > 0) {
                 labelItems.forEach(function (item) {
-                    item.node.removeAttribute("placeholder", "label");
+                    item.node.removeAttribute("placeholder");
                 });
             }
 
@@ -4633,9 +4633,9 @@ function transformHtmlToSvgText() {
 //    localStorage.setItem(DIAGRAM_NAME + "_TMP", svgEl.node.outerHTML);
 //}
 
-function undo() {
-
-}
+// function undo() {
+//     console.log("UNDO");
+// }
 
 function log(msg) {
     if (__DEBUG_OUTPUT) {
