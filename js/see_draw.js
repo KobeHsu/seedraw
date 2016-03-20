@@ -427,14 +427,22 @@ function sResizeMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
 
-    var rect = gSvg.select("#" + grp + "rect");
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(rect.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(rect.attr("width"), 10));
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
+
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    eventTarget.data("mousedown-x", event.clientX);
+    eventTarget.data("mousedown-y", event.clientY);
+    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
+    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
+    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
+    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
+    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
+    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
 
     gDrawArea.onmousemove = sResizeMouseMove;
     gDrawArea.onmouseup = sResizeMouseUp;
@@ -449,13 +457,17 @@ function sResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var x = toInteger(eventTarget.data('mousedown-x'), 0);
+    var y = toInteger(eventTarget.data('mousedown-y'), 0);
+    var h = toInteger(eventTarget.data('mousedown-h'), 0);
+    var w = toInteger(eventTarget.data('mousedown-w'), 0);
 
+    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
+    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
+    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
+    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
@@ -468,10 +480,10 @@ function sResizeMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var rect = gSvg.select("#" + gCurrent + "rect");
-    rect.attr("height", newHeight);
+    var svgEl = gSvg.select("#" + gCurrent + gDragType);
+    svgEl.attr("height", newHeight);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("height", newHeight);
@@ -483,18 +495,17 @@ function sResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var rect = gSvg.select("#" + gCurrent + "rect");
-        correctXY(grp, rect, "rect");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 
 function wResizeMouseDown(event) {
