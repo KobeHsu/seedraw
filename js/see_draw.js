@@ -87,6 +87,20 @@ var gModelType = "-1";
 
 "use strict";
 
+function CustomData(x, y, h, w, cx, cy, rx, ry) {
+
+    this.x = toInteger(x, 0);
+    this.y = toInteger(y, 0);
+    this.h = toInteger(h, 0);
+    this.w = toInteger(w, 0);
+
+    this.cx = toInteger(cx, 0);
+    this.cy = toInteger(cy, 0);
+    this.rx = toInteger(rx, 0);
+    this.ry = toInteger(ry, 0);
+
+}
+
 //region Rect
 function getElementXYofRect(bBoxX, bBoxY, elName, rectId) {
 
@@ -343,14 +357,16 @@ function nResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    eventTarget.data("mousedown-x", event.clientX);
-    eventTarget.data("mousedown-y", event.clientY);
-    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
-    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
-    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
-    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
-    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
-    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    eventTarget.data("myData", myData);
+    // eventTarget.data("mousedown-x", event.clientX);
+    // eventTarget.data("mousedown-y", event.clientY);
+    // eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
+    // eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
+    // eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
+    // eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
+    // eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
+    // eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
 
     gDrawArea.onmousemove = nResizeMouseMove;
     gDrawArea.onmouseup = nResizeMouseUp;
@@ -367,20 +383,21 @@ function nResizeMouseMove(event) {
 
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var x = toInteger(eventTarget.data('mousedown-x'), 0);
-    var y = toInteger(eventTarget.data('mousedown-y'), 0);
-    var h = toInteger(eventTarget.data('mousedown-h'), 0);
-    var w = toInteger(eventTarget.data('mousedown-w'), 0);
+    var myData = eventTarget.data("myData");
+    // var x = toInteger(eventTarget.data('mousedown-x'), 0);
+    // var y = toInteger(eventTarget.data('mousedown-y'), 0);
+    // var h = toInteger(eventTarget.data('mousedown-h'), 0);
+    // var w = toInteger(eventTarget.data('mousedown-w'), 0);
+    //
+    // var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
+    // var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
+    // var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
+    // var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
 
-    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
-    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
-    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
-    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
+    var dx = event.clientX - myData.x;
+    var dy = event.clientY - myData.y;
 
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newHeight = h - dy;
+    var newHeight = myData.h - dy;
     if (newHeight < RECT_HEIGHT) {
         return;
     }
@@ -517,14 +534,21 @@ function wResizeMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var rect = gSvg.select("#" + grp + "rect");
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(rect.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(rect.attr("width"), 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    eventTarget.data("mousedown-x", event.clientX);
+    eventTarget.data("mousedown-y", event.clientY);
+    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
+    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
+    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
+    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
+    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
+    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
 
     gDrawArea.onmousemove = wResizeMouseMove;
     gDrawArea.onmouseup = wResizeMouseUp;
@@ -539,13 +563,17 @@ function wResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var x = toInteger(eventTarget.data('mousedown-x'), 0);
+    var y = toInteger(eventTarget.data('mousedown-y'), 0);
+    var h = toInteger(eventTarget.data('mousedown-h'), 0);
+    var w = toInteger(eventTarget.data('mousedown-w'), 0);
 
+    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
+    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
+    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
+    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
@@ -558,11 +586,11 @@ function wResizeMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var rect = gSvg.select("#" + gCurrent + "rect");
-    rect.attr("x", event.clientX - gStartX);
-    rect.attr("width", newWidth);
+    var svgEl = gSvg.select("#" + gCurrent + gDragType);
+    svgEl.attr("x", event.clientX - gStartX);
+    svgEl.attr("width", newWidth);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("x", event.clientX - gStartX);
@@ -575,18 +603,17 @@ function wResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var rect = gSvg.select("#" + gCurrent + "rect");
-        correctXY(grp, rect, "rect");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 
 function eResizeMouseDown(event) {
@@ -598,14 +625,21 @@ function eResizeMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var rect = gSvg.select("#" + grp + "rect");
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(rect.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(rect.attr("width"), 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    eventTarget.data("mousedown-x", event.clientX);
+    eventTarget.data("mousedown-y", event.clientY);
+    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
+    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
+    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
+    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
+    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
+    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
 
     gDrawArea.onmousemove = eResizeMouseMove;
     gDrawArea.onmouseup = eResizeMouseUp;
@@ -620,13 +654,17 @@ function eResizeMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var x = toInteger(eventTarget.data('mousedown-x'), 0);
+    var y = toInteger(eventTarget.data('mousedown-y'), 0);
+    var h = toInteger(eventTarget.data('mousedown-h'), 0);
+    var w = toInteger(eventTarget.data('mousedown-w'), 0);
 
+    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
+    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
+    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
+    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
 
     var dx = event.clientX - x;
     var dy = event.clientY - y;
@@ -639,10 +677,10 @@ function eResizeMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var rect = gSvg.select("#" + gCurrent + "rect");
-    rect.attr("width", newWidth);
+    var svgEl = gSvg.select("#" + gCurrent + gDragType);
+    svgEl.attr("width", newWidth);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("width", newWidth);
@@ -654,20 +692,18 @@ function eResizeMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var rect = gSvg.select("#" + gCurrent + "rect");
-        correctXY(grp, rect, "rect");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
-
 
 //endregion
 
@@ -4661,11 +4697,11 @@ function roundByDigits(num, digits) {
 
 function toInteger(str, def) {
 
-    if (str && !isNaN(str)) {
+    if (str != undefined && !isNaN(str)) {
         return parseInt(str, 10);
     }
 
-    return (def) ? def : null;
+    return (def !== undefined) ? def : null;
 }
 
 function generateSelectedMark(bBox, grp, isPath) {
