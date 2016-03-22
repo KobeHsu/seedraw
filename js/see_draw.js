@@ -403,7 +403,7 @@ function nResizeMouseMove(event) {
     }
 
     var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
+    myMatrix.translate(0, dy);
 
     eventTarget.transform(myMatrix);
 
@@ -3959,10 +3959,6 @@ document.addEventListener("DOMContentLoaded", function () {
         e.stopPropagation();
     });
 
-    var bound = gSvg.node.getBoundingClientRect();
-    gStartX = bound.left;//gSvg.node).position().left;
-    gStartY = bound.top;
-
     var pathArray = window.location.pathname.split('/');
     DIAGRAM_NAME = pathArray[pathArray.length - 1];
     localStorage.removeItem(DIAGRAM_NAME + "_TMP");
@@ -4035,6 +4031,10 @@ document.addEventListener("DOMContentLoaded", function () {
         reloadSvg();
 
     }
+
+    var bound = gSvg.node.getBoundingClientRect();
+    gStartX = bound.left;//gSvg.node).position().left;
+    gStartY = bound.top;
 
     $('[data-toggle="tooltip"]').tooltip({placement: "bottom"});
 
