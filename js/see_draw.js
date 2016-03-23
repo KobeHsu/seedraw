@@ -382,7 +382,6 @@ function nResizeMouseMove(event) {
     }
 
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
     var myData = eventTarget.data("myData");
     // var x = toInteger(eventTarget.data('mousedown-x'), 0);
     // var y = toInteger(eventTarget.data('mousedown-y'), 0);
@@ -394,7 +393,7 @@ function nResizeMouseMove(event) {
     // var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
     // var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
 
-    var dx = event.clientX - myData.x;
+    var dx = 0; // event.clientX - myData.x;
     var dy = event.clientY - myData.y;
 
     var newHeight = myData.h - dy;
@@ -403,7 +402,7 @@ function nResizeMouseMove(event) {
     }
 
     var myMatrix = new Snap.Matrix();
-    myMatrix.translate(0, dy);
+    myMatrix.translate(dx, dy);
 
     eventTarget.transform(myMatrix);
 
@@ -452,14 +451,8 @@ function sResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    eventTarget.data("mousedown-x", event.clientX);
-    eventTarget.data("mousedown-y", event.clientY);
-    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
-    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
-    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
-    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
-    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
-    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = sResizeMouseMove;
     gDrawArea.onmouseup = sResizeMouseUp;
@@ -475,21 +468,12 @@ function sResizeMouseMove(event) {
     }
 
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = toInteger(eventTarget.data('mousedown-x'), 0);
-    var y = toInteger(eventTarget.data('mousedown-y'), 0);
-    var h = toInteger(eventTarget.data('mousedown-h'), 0);
-    var w = toInteger(eventTarget.data('mousedown-w'), 0);
+    var dx = 0; // event.clientX - myData.x;
+    var dy = event.clientY - myData.y;
 
-    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
-    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
-    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
-    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newHeight = h + dy;
+    var newHeight = myData.h + dy;
     if (newHeight < RECT_HEIGHT) {
         return;
     }
@@ -541,14 +525,8 @@ function wResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    eventTarget.data("mousedown-x", event.clientX);
-    eventTarget.data("mousedown-y", event.clientY);
-    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
-    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
-    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
-    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
-    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
-    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = wResizeMouseMove;
     gDrawArea.onmouseup = wResizeMouseUp;
@@ -564,21 +542,12 @@ function wResizeMouseMove(event) {
     }
 
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = toInteger(eventTarget.data('mousedown-x'), 0);
-    var y = toInteger(eventTarget.data('mousedown-y'), 0);
-    var h = toInteger(eventTarget.data('mousedown-h'), 0);
-    var w = toInteger(eventTarget.data('mousedown-w'), 0);
+    var dx = event.clientX - myData.x;
+    var dy = 0; // event.clientY - myData.y;
 
-    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
-    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
-    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
-    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newWidth = w - dx;
+    var newWidth = myData.w - dx;
     if (newWidth < RECT_WIDTH) {
         return;
     }
@@ -632,14 +601,8 @@ function eResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    eventTarget.data("mousedown-x", event.clientX);
-    eventTarget.data("mousedown-y", event.clientY);
-    eventTarget.data("mousedown-h", toInteger(svgEl.attr("height")));
-    eventTarget.data("mousedown-w", toInteger(svgEl.attr("width")));
-    eventTarget.data("mousedown-cx", toInteger(svgEl.attr("cx")));
-    eventTarget.data("mousedown-cy", toInteger(svgEl.attr("cy")));
-    eventTarget.data("mousedown-rx", toInteger(svgEl.attr("rx")));
-    eventTarget.data("mousedown-ry", toInteger(svgEl.attr("ry")));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = eResizeMouseMove;
     gDrawArea.onmouseup = eResizeMouseUp;
@@ -655,21 +618,12 @@ function eResizeMouseMove(event) {
     }
 
     var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = toInteger(eventTarget.data('mousedown-x'), 0);
-    var y = toInteger(eventTarget.data('mousedown-y'), 0);
-    var h = toInteger(eventTarget.data('mousedown-h'), 0);
-    var w = toInteger(eventTarget.data('mousedown-w'), 0);
+    var dx = event.clientX - myData.x;
+    var dy = 0 ; // event.clientY - myData.y;
 
-    var cx = toInteger(eventTarget.data('mousedown-cx'), 0);
-    var cy = toInteger(eventTarget.data('mousedown-cy'), 0);
-    var rx = toInteger(eventTarget.data('mousedown-rx'), 0);
-    var ry = toInteger(eventTarget.data('mousedown-ry'), 0);
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newWidth = w + dx;
+    var newWidth = myData.w + dx;
     if (newWidth < RECT_WIDTH) {
         return;
     }
