@@ -87,17 +87,30 @@ var gModelType = "-1";
 
 "use strict";
 
-function CustomData(x, y, h, w, cx, cy, rx, ry) {
+function CustomData(x, y, svgEl, overwrite) {
 
     this.x = toInteger(x, 0);
     this.y = toInteger(y, 0);
-    this.h = toInteger(h, 0);
-    this.w = toInteger(w, 0);
+    this.h = toInteger(svgEl.attr("height"), 0);
+    this.w = toInteger(svgEl.attr("width"), 0);
 
-    this.cx = toInteger(cx, 0);
-    this.cy = toInteger(cy, 0);
-    this.rx = toInteger(rx, 0);
-    this.ry = toInteger(ry, 0);
+    this.cx = toInteger(svgEl.attr("cx"), 0);
+    this.cy = toInteger(svgEl.attr("cy"), 0);
+    this.rx = toInteger(svgEl.attr("rx"), 0);
+    this.ry = toInteger(svgEl.attr("ry"), 0);
+
+    this.x1 = toInteger(svgEl.attr("x1"), 0);
+    this.y1 = toInteger(svgEl.attr("y2"), 0);
+    this.x2 = toInteger(svgEl.attr("x2"), 0);
+    this.y2 = toInteger(svgEl.attr("y2"), 0);
+
+    if (overwrite!==undefined && typeof(overwrite)=="object") {
+        for(var key in overwrite) {
+
+            this[key] = overwrite[key];
+
+        }
+    }
 
 }
 
@@ -357,7 +370,7 @@ function nResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
     // eventTarget.data("mousedown-x", event.clientX);
     // eventTarget.data("mousedown-y", event.clientY);
@@ -450,7 +463,7 @@ function sResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = sResizeMouseMove;
@@ -524,7 +537,7 @@ function wResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = wResizeMouseMove;
@@ -600,7 +613,7 @@ function eResizeMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = eResizeMouseMove;
@@ -881,7 +894,7 @@ function nResizeEllipseMouseDown(event) {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = nResizeEllipseMouseMove;
@@ -959,7 +972,7 @@ function sResizeEllipseMouseDown() {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = sResizeEllipseMouseMove;
@@ -1035,7 +1048,7 @@ function wResizeEllipseMouseDown() {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = wResizeEllipseMouseMove;
@@ -1112,7 +1125,7 @@ function eResizeEllipseMouseDown() {
 
     var svgEl = gSvg.select("#" + grp + gDragType);
 
-    var myData = new CustomData(event.clientX, event.clientY, svgEl.attr("height"), svgEl.attr("width"), svgEl.attr("cx"), svgEl.attr("cy"), svgEl.attr("rx"), svgEl.attr("ry"));
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
     eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = eResizeEllipseMouseMove;
@@ -1722,6 +1735,7 @@ function nResizeBraceMouseDown(event) {
     svgEl.data("mousedown-x1", parseInt(bBox.x, 10));
     svgEl.data("mousedown-y1", parseInt(bBox.y, 10));
     svgEl.data("mousedown-x2", parseInt(bBox.x, 10));
+    svgEl.data("mousedown-y2", parseInt(bBox.y + bBox.height, 10));
 
     gDrawArea.onmousemove = nResizeBraceMouseMove;
     gDrawArea.onmouseup = nResizeBraceMouseUp;
