@@ -1725,17 +1725,17 @@ function nResizeBraceMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var brace = gSvg.select("#" + grp + "brace");
-    var bBox = brace.getBBox();
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-x1", parseInt(bBox.x, 10));
-    svgEl.data("mousedown-y1", parseInt(bBox.y, 10));
-    svgEl.data("mousedown-x2", parseInt(bBox.x, 10));
-    svgEl.data("mousedown-y2", parseInt(bBox.y + bBox.height, 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+    var bBox = svgEl.getBBox();
+    var ov = {x1: toInteger(bBox.x), y1: toInteger(bBox.y),x2: toInteger(bBox.x), y2: toInteger(bBox.y)+toInteger(bBox.height)};
+
+    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = nResizeBraceMouseMove;
     gDrawArea.onmouseup = nResizeBraceMouseUp;
@@ -1750,35 +1750,29 @@ function nResizeBraceMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var x1 = (parseInt(svgEl.data('mousedown-x1')) || 0);
-    var y1 = (parseInt(svgEl.data('mousedown-y1')) || 0);
-    var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
-    var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
+    //var dx = event.clientX - myData.x;
+    var dy = event.clientY - myData.y;
 
-    //var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var brace = gSvg.select("#" + gCurrent + "brace");
-
-    var dir = brace.attr("dir");
+    var svgEl = gSvg.select("#" + gCurrent + gDragType);
+    var dir = svgEl.attr("dir");
+    //
     var newPath = "";
     if ("left" == dir) {
-        newPath = makeCurlyBrace(x1 + BRACE_WIDTH, y1 + dy, x2 + BRACE_WIDTH, y2, BRACE_WIDTH, BRACE_Q);
+        newPath = makeCurlyBrace(myData.x1 + BRACE_WIDTH, myData.y1 + dy, myData.x2 + BRACE_WIDTH, myData.y2, BRACE_WIDTH, BRACE_Q);
     } else if ("right" == dir) {
-        newPath = makeCurlyBrace(x1, y2, x2, y1 + dy, BRACE_WIDTH, BRACE_Q);
+        newPath = makeCurlyBrace(myData.x1, myData.y2, myData.x2, myData.y1 + dy, BRACE_WIDTH, BRACE_Q);
     } else {
         return;
     }
 
-    brace.attr("d", newPath);
+    svgEl.attr("d", newPath);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("y", event.clientY - gStartY);
-    selected.attr("height", brace.getBBox().height);
+    selected.attr("height", svgEl.getBBox().height);
 
 }
 
@@ -1787,18 +1781,17 @@ function nResizeBraceMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var brace = gSvg.select("#" + gCurrent + "brace");
-        correctXY(grp, brace, "brace");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 
 function sResizeBraceMouseDown(event) {
@@ -1810,17 +1803,17 @@ function sResizeBraceMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var brace = gSvg.select("#" + grp + "brace");
-    var bBox = brace.getBBox();
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-x1", parseInt(bBox.x, 10));
-    svgEl.data("mousedown-y1", parseInt(bBox.y, 10));
-    svgEl.data("mousedown-x2", parseInt(bBox.x, 10));
-    svgEl.data("mousedown-y2", parseInt(bBox.y + bBox.height, 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+    var bBox = svgEl.getBBox();
+    var ov = {x1: toInteger(bBox.x), y1: toInteger(bBox.y),x2: toInteger(bBox.x), y2: toInteger(bBox.y)+toInteger(bBox.height)};
+
+    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = sResizeBraceMouseMove;
     gDrawArea.onmouseup = sResizeBraceMouseUp;
@@ -1835,34 +1828,28 @@ function sResizeBraceMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
-
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var x1 = (parseInt(svgEl.data('mousedown-x1')) || 0);
-    var y1 = (parseInt(svgEl.data('mousedown-y1')) || 0);
-    var x2 = (parseInt(svgEl.data('mousedown-x2')) || 0);
-    var y2 = (parseInt(svgEl.data('mousedown-y2')) || 0);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
     //var dx = event.clientX - x;
-    var dy = event.clientY - y;
+    var dy = event.clientY - myData.y;
 
-    var brace = gSvg.select("#" + gCurrent + "brace");
+    var svgEl = gSvg.select("#" + gCurrent + gDragType);
 
-    var dir = brace.attr("dir");
+    var dir = svgEl.attr("dir");
     var newPath = "";
     if ("left" == dir) {
-        newPath = makeCurlyBrace(x1 + BRACE_WIDTH, y1, x2 + BRACE_WIDTH, y2 + dy, BRACE_WIDTH, BRACE_Q);
+        newPath = makeCurlyBrace(myData.x1 + BRACE_WIDTH, myData.y1, myData.x2 + BRACE_WIDTH, myData.y2 + dy, BRACE_WIDTH, BRACE_Q);
     } else if ("right" == dir) {
-        newPath = makeCurlyBrace(x1, y2 + dy, x2, y1, BRACE_WIDTH, BRACE_Q);
+        newPath = makeCurlyBrace(myData.x1, myData.y2 + dy, myData.x2, myData.y1, BRACE_WIDTH, BRACE_Q);
     } else {
         return;
     }
 
-    brace.attr("d", newPath);
+    svgEl.attr("d", newPath);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("height", brace.getBBox().height);
+    selected.attr("height", svgEl.getBBox().height);
 
 
 }
@@ -1872,18 +1859,17 @@ function sResizeBraceMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var brace = gSvg.select("#" + gCurrent + "brace");
-        correctXY(grp, brace, "brace");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 //endregion
 
