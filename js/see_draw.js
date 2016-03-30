@@ -2734,14 +2734,15 @@ function nResizeImageMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "nResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var image = gSvg.select("#" + grp + "image");
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(image.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(image.attr("width"), 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = nResizeImageMouseMove;
     gDrawArea.onmouseup = nResizeImageMouseUp;
@@ -2756,18 +2757,13 @@ function nResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var dx = 0;//event.clientX - myData.x;
+    var dy = event.clientY - myData.y;
 
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newHeight = h - dy;
+    var newHeight = myData.h - dy;
     if (newHeight < RECT_HEIGHT) {
         return;
     }
@@ -2775,15 +2771,15 @@ function nResizeImageMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var image = gSvg.select("#" + gCurrent + "image");
-    image.attr("y", event.clientY - gStartY);
-    image.attr("height", newHeight);
+    var svgEl = gSvg.select("#" + grp + gDragType);
+    svgEl.attr("y", event.clientY - gStartY);
+    svgEl.attr("height", newHeight);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("y", event.clientY - gStartY);
-    selected.attr("height", image.getBBox().height);
+    selected.attr("height", svgEl.getBBox().height);
 
 }
 
@@ -2792,18 +2788,17 @@ function nResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var image = gSvg.select("#" + gCurrent + "image");
-        correctXY(grp, image, "image");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 
 function sResizeImageMouseDown(event) {
@@ -2815,14 +2810,15 @@ function sResizeImageMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "sResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var image = gSvg.select("#" + grp + "image");
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(image.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(image.attr("width"), 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = sResizeImageMouseMove;
     gDrawArea.onmouseup = sResizeImageMouseUp;
@@ -2837,18 +2833,13 @@ function sResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var dx = 0; //event.clientX -myData.x;
+    var dy = event.clientY - myData.y;
 
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newHeight = h + dy;
+    var newHeight = myData.h + dy;
     if (newHeight < RECT_HEIGHT) {
         return;
     }
@@ -2856,13 +2847,13 @@ function sResizeImageMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var image = gSvg.select("#" + gCurrent + "image");
-    image.attr("height", newHeight);
+    var svgEl = gSvg.select("#" + grp + gDragType);
+    svgEl.attr("height", newHeight);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("height", image.getBBox().height);
+    selected.attr("height", svgEl.getBBox().height);
 
 }
 
@@ -2871,18 +2862,17 @@ function sResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var image = gSvg.select("#" + gCurrent + "image");
-        correctXY(grp, image, "image");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 
 function wResizeImageMouseDown(event) {
@@ -2894,15 +2884,15 @@ function wResizeImageMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "wResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var image = gSvg.select("#" + grp + "image");
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(image.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(image.attr("width"), 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
 
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
+    eventTarget.data("myData", myData);
     gDrawArea.onmousemove = wResizeImageMouseMove;
     gDrawArea.onmouseup = wResizeImageMouseUp;
 }
@@ -2916,18 +2906,13 @@ function wResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var dx = event.clientX - myData.x;
+    var dy = 0;//event.clientY - myData.y;
 
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newWidth = w - dx;
+    var newWidth = myData.w - dx;
     if (newWidth < RECT_WIDTH) {
         return;
     }
@@ -2935,15 +2920,15 @@ function wResizeImageMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var image = gSvg.select("#" + gCurrent + "image");
-    image.attr("x", event.clientX - gStartX);
-    image.attr("width", newWidth);
+    var svgEl = gSvg.select("#" + grp + gDragType);
+    svgEl.attr("x", event.clientX - gStartX);
+    svgEl.attr("width", newWidth);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
     selected.attr("x", event.clientX - gStartX);
-    selected.attr("width", image.getBBox().width);
+    selected.attr("width", svgEl.getBBox().width);
 
 }
 
@@ -2952,18 +2937,17 @@ function wResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var image = gSvg.select("#" + gCurrent + "image");
-        correctXY(grp, image, "image");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 
 function eResizeImageMouseDown(event) {
@@ -2975,14 +2959,15 @@ function eResizeImageMouseDown(event) {
     gCurrent = grp;
 
     gDragAnchor = "eResize";
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
 
-    var image = gSvg.select("#" + grp + "image");
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
 
-    svgEl.data("mousedown-x", event.clientX);
-    svgEl.data("mousedown-y", event.clientY);
-    svgEl.data("mousedown-h", parseInt(image.attr("height"), 10));
-    svgEl.data("mousedown-w", parseInt(image.attr("width"), 10));
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
+    eventTarget.data("myData", myData);
 
     gDrawArea.onmousemove = eResizeImageMouseMove;
     gDrawArea.onmouseup = eResizeImageMouseUp;
@@ -2997,18 +2982,13 @@ function eResizeImageMouseMove(event) {
         return;
     }
 
-    var svgEl = gSvg.select("#" + grp + gDragAnchor);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
 
-    var x = (parseInt(svgEl.data('mousedown-x')) || 0);
-    var y = (parseInt(svgEl.data('mousedown-y')) || 0);
-    var h = (parseInt(svgEl.data('mousedown-h')) || 0);
-    var w = (parseInt(svgEl.data('mousedown-w')) || 0);
+    var dx = event.clientX - myData.x;
+    var dy = 0;//event.clientY - myData.y;
 
-
-    var dx = event.clientX - x;
-    var dy = event.clientY - y;
-
-    var newWidth = w + dx;
+    var newWidth = myData.w + dx;
     if (newWidth < RECT_WIDTH) {
         return;
     }
@@ -3016,13 +2996,13 @@ function eResizeImageMouseMove(event) {
     var myMatrix = new Snap.Matrix();
     myMatrix.translate(dx, dy);
 
-    svgEl.transform(myMatrix);
+    eventTarget.transform(myMatrix);
 
-    var image = gSvg.select("#" + gCurrent + "image");
-    image.attr("width", newWidth);
+    var svgEl = gSvg.select("#" + grp + gDragType);
+    svgEl.attr("width", newWidth);
 
     var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("width", image.getBBox().width);
+    selected.attr("width", svgEl.getBBox().width);
 
 }
 
@@ -3031,18 +3011,17 @@ function eResizeImageMouseUp() {
     if ("" != gCurrent) {
 
         var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
 
-        var image = gSvg.select("#" + gCurrent + "image");
-        correctXY(grp, image, "image");
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
 
     }
 
     gDrawArea.onmousemove = null;
     gDrawArea.onmouseup = null;
 
-    //gCurrent = "";
     gDragAnchor = "";
+    gDragType = "";
 }
 // endregion
 
