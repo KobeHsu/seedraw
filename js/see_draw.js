@@ -35,6 +35,8 @@ var BREAK_HEIGHT = 30;
 var BRACE_WIDTH = 20;
 var BRACE_Q = 0.6;
 
+var IMAGE_WIDTH = 200;
+
 var PATH_BBOX_ADD = 10;
 
 var REMOVE_CONFIRM_MSG = "Are you sure to remove this?";
@@ -86,7 +88,14 @@ var gTextEditContextMenu;
 
 var gModelType = "-1";
 
-var svgElMoveFunc = {"rect": rectMove, "ellipse": ellipseMove, "brace": braceMove, "break": breakMove};
+var svgElMoveFunc = {
+    "rect": rectMove,
+    "ellipse": ellipseMove,
+    "brace": braceMove,
+    "break": breakMove,
+    "image": imageMove,
+    "custom": customMove
+};
 
 "use strict";
 
@@ -382,48 +391,6 @@ function correctRectXY(grp, rect) {
 
 }
 
-function resizeMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = id.split("_")[2];//"nResize";
-    gDragAnchorPos = gDragAnchor.substring(0,1);
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl);
-    eventTarget.data("myData", myData);
-
-    setBreakRatioAry(grp);
-
-    gDrawArea.onmousemove = resizeMouseMove;
-    gDrawArea.onmouseup = resizeMouseUp;
-}
-
-function resizeMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    svgElMoveFunc[gDragType](myData, eventTarget, event);
-
-}
-
 function rectMove(myData, eventTarget, e) {
 
     if ("n" == gDragAnchorPos) {
@@ -516,25 +483,6 @@ function rectMove(myData, eventTarget, e) {
 
     }
 
-}
-
-function resizeMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-    gDragAnchorPos = "";
 }
 
 //endregion
@@ -1427,171 +1375,6 @@ function braceMove(myData, eventTarget, e) {
 
 }
 
-function nResizeBraceMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "nResize";
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var bBox = svgEl.getBBox();
-    var ov = {
-        x1: toInteger(bBox.x),
-        y1: toInteger(bBox.y),
-        x2: toInteger(bBox.x),
-        y2: toInteger(bBox.y) + toInteger(bBox.height)
-    };
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    gDrawArea.onmousemove = nResizeBraceMouseMove;
-    gDrawArea.onmouseup = nResizeBraceMouseUp;
-}
-
-function nResizeBraceMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    //var dx = event.clientX - myData.x;
-    var dy = event.clientY - myData.y;
-
-    var svgEl = gSvg.select("#" + gCurrent + gDragType);
-    var dir = svgEl.attr("dir");
-    //
-    var newPath = "";
-    if ("left" == dir) {
-        newPath = makeCurlyBrace(myData.x1 + BRACE_WIDTH, myData.y1 + dy, myData.x2 + BRACE_WIDTH, myData.y2, BRACE_WIDTH, BRACE_Q);
-    } else if ("right" == dir) {
-        newPath = makeCurlyBrace(myData.x1, myData.y2, myData.x2, myData.y1 + dy, BRACE_WIDTH, BRACE_Q);
-    } else {
-        return;
-    }
-
-    svgEl.attr("d", newPath);
-
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("y", event.clientY - gStartY);
-    selected.attr("height", svgEl.getBBox().height);
-
-}
-
-function nResizeBraceMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
-
-function sResizeBraceMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "sResize";
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var bBox = svgEl.getBBox();
-    var ov = {
-        x1: toInteger(bBox.x),
-        y1: toInteger(bBox.y),
-        x2: toInteger(bBox.x),
-        y2: toInteger(bBox.y) + toInteger(bBox.height)
-    };
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    gDrawArea.onmousemove = sResizeBraceMouseMove;
-    gDrawArea.onmouseup = sResizeBraceMouseUp;
-}
-
-function sResizeBraceMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    //var dx = event.clientX - x;
-    var dy = event.clientY - myData.y;
-
-    var svgEl = gSvg.select("#" + gCurrent + gDragType);
-
-    var dir = svgEl.attr("dir");
-    var newPath = "";
-    if ("left" == dir) {
-        newPath = makeCurlyBrace(myData.x1 + BRACE_WIDTH, myData.y1, myData.x2 + BRACE_WIDTH, myData.y2 + dy, BRACE_WIDTH, BRACE_Q);
-    } else if ("right" == dir) {
-        newPath = makeCurlyBrace(myData.x1, myData.y2 + dy, myData.x2, myData.y1, BRACE_WIDTH, BRACE_Q);
-    } else {
-        return;
-    }
-
-    svgEl.attr("d", newPath);
-
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("height", svgEl.getBBox().height);
-
-
-}
-
-function sResizeBraceMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
 //endregion
 
 //region BreakDown
@@ -1788,22 +1571,6 @@ function correctBreakXY(grp, conn) {
 
 }
 
-function setBreakRatioAry(grp) {
-
-    var breakDown = gSvg.select("#" + grp + "break");
-    if (breakDown) {
-
-        var ratio = breakDown.attr("_ratio");
-        var ratios = ratio.split("|");
-        gRatioAry = [];
-        ratios.forEach(function (r) {
-            gRatioAry.push(r.split(","));
-        });
-
-    }
-
-}
-
 function breakMove(myData, eventTarget, e) {
 
     if ("n" == gDragAnchorPos) {
@@ -1990,423 +1757,6 @@ function breakMove(myData, eventTarget, e) {
 
 }
 
-function nResizeBreakMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "nResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setBreakRatioAry(grp);
-
-    gDrawArea.onmousemove = nResizeBreakMouseMove;
-    gDrawArea.onmouseup = nResizeBreakMouseUp;
-}
-
-function nResizeBreakMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = 0;//event.clientX - myData.x;
-    var dy = event.clientY - myData.y;
-
-    var newHeight = myData.h - dy;
-    if (newHeight < BREAK_HEIGHT) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newY = event.clientY - gStartY;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("y", newY);
-    selected.attr("height", newHeight);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            var lineToX = pathAry[i][1];
-            //var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += lineToX + " ";
-            newPath += newY + (gRatioAry[i][1] * newHeight) + " ";
-        } else {
-            newPath += act;
-        }
-
-    }
-
-    svgEl.attr("d", newPath);
-
-}
-
-function nResizeBreakMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctBreakXY(grp, svgEl);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
-
-function sResizeBreakMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "sResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setBreakRatioAry(grp);
-
-    gDrawArea.onmousemove = sResizeBreakMouseMove;
-    gDrawArea.onmouseup = sResizeBreakMouseUp;
-}
-
-function sResizeBreakMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = 0;//event.clientX - myData.x;
-    var dy = event.clientY - myData.y;
-
-    var newHeight = myData.h + dy;
-    if (newHeight < BREAK_HEIGHT) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newY;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("height", newHeight);
-    newY = selected.getBBox().y;
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            var lineToX = pathAry[i][1];
-            //var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += lineToX + " ";
-            newPath += newY + (gRatioAry[i][1] * newHeight) + " ";
-        } else {
-            newPath += act;
-        }
-
-    }
-
-    svgEl.attr("d", newPath);
-
-}
-
-function sResizeBreakMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-        //var svgEl = gSvg.select("#" + gCurrent + gDragAnchor);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctBreakXY(grp, svgEl);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
-
-function wResizeBreakMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "wResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setBreakRatioAry(grp);
-
-    gDrawArea.onmousemove = wResizeBreakMouseMove;
-    gDrawArea.onmouseup = wResizeBreakMouseUp;
-}
-
-function wResizeBreakMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = event.clientX - myData.x;
-    var dy = 0;//event.clientY - myData.y;
-
-    var newWidth = myData.w - dx;
-    if (newWidth < BREAK_WIDTH) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newX = event.clientX - gStartX;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("x", newX);
-    selected.attr("width", newWidth);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            //var lineToX = pathAry[i][1];
-            var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += newX + (gRatioAry[i][0] * newWidth) + " ";
-            newPath += lineToY + " ";
-        } else {
-            newPath += act;
-        }
-
-    }
-
-    svgEl.attr("d", newPath);
-
-}
-
-function wResizeBreakMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctBreakXY(grp, svgEl);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
-
-function eResizeBreakMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "eResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setBreakRatioAry(grp);
-
-    gDrawArea.onmousemove = eResizeBreakMouseMove;
-    gDrawArea.onmouseup = eResizeBreakMouseUp;
-}
-
-function eResizeBreakMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = event.clientX - myData.x;
-    var dy = 0;//event.clientY - myData.y;
-
-    var newWidth = myData.w + dx;
-    if (newWidth < BREAK_WIDTH) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newX;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("width", newWidth);
-    newX = selected.getBBox().x;
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            //var lineToX = pathAry[i][1];
-            var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += newX + (gRatioAry[i][0] * newWidth) + " ";
-            newPath += lineToY + " ";
-        } else {
-            newPath += act;
-        }
-
-    }
-
-    svgEl.attr("d", newPath);
-
-}
-
-function eResizeBreakMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctBreakXY(grp, svgEl);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
-
 //endregion
 
 //region Image
@@ -2448,6 +1798,14 @@ function addImage() {
         newImage.node.addEventListener("load",
 
             function () {
+
+                var width = toInteger(newImage.attr("width"));
+                var height = toInteger(newImage.attr("height"));
+                var ratio = toInteger(width / IMAGE_WIDTH);
+                var newHeight = toInteger(height / ratio);
+
+                newImage.attr("width", IMAGE_WIDTH);
+                newImage.attr("height", newHeight);
 
                 var bBoxImage = newImage.getBBox();
                 var selected = generateSelectedMark(bBoxImage, grp);
@@ -2501,6 +1859,8 @@ function addImage() {
                 var g = gSvg.g(newImage, nResize, sResize, wResize, eResize, close, selected);
                 var grpId = grp + "g";
                 g.attr("id", grpId);
+
+                correctImageXY(grp, newImage);
 
                 setSelected(grp);
                 gCurrent = grp;
@@ -2626,304 +1986,100 @@ function correctImageXY(grp, image) {
 
 }
 
-function nResizeImageMouseDown(event) {
+function imageMove(myData, eventTarget, e) {
 
-    event.stopPropagation();
+    if ("n" == gDragAnchorPos) {
 
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
+        var dx = 0;//e.clientX - myData.x;
+        var dy = e.clientY - myData.y;
 
-    gDragAnchor = "nResize";
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+        var newHeight = myData.h - dy;
+        if (newHeight < RECT_HEIGHT) {
+            return;
+        }
 
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl);
-    eventTarget.data("myData", myData);
-
-    gDrawArea.onmousemove = nResizeImageMouseMove;
-    gDrawArea.onmouseup = nResizeImageMouseUp;
-}
-
-function nResizeImageMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = 0;//event.clientX - myData.x;
-    var dy = event.clientY - myData.y;
-
-    var newHeight = myData.h - dy;
-    if (newHeight < RECT_HEIGHT) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    svgEl.attr("y", event.clientY - gStartY);
-    svgEl.attr("height", newHeight);
-
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("y", event.clientY - gStartY);
-    selected.attr("height", svgEl.getBBox().height);
-
-}
-
-function nResizeImageMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
+        eventTarget.transform(myMatrix);
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
+        svgEl.attr("y", e.clientY - gStartY);
+        svgEl.attr("height", newHeight);
 
-    }
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("y", e.clientY - gStartY);
+        selected.attr("height", svgEl.getBBox().height);
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
+    } else if ("s" == gDragAnchorPos) {
 
-    gDragAnchor = "";
-    gDragType = "";
-}
+        var dx = 0; //e.clientX -myData.x;
+        var dy = e.clientY - myData.y;
 
-function sResizeImageMouseDown(event) {
+        var newHeight = myData.h + dy;
+        if (newHeight < RECT_HEIGHT) {
+            return;
+        }
 
-    event.stopPropagation();
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "sResize";
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl);
-    eventTarget.data("myData", myData);
-
-    gDrawArea.onmousemove = sResizeImageMouseMove;
-    gDrawArea.onmouseup = sResizeImageMouseUp;
-}
-
-function sResizeImageMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = 0; //event.clientX -myData.x;
-    var dy = event.clientY - myData.y;
-
-    var newHeight = myData.h + dy;
-    if (newHeight < RECT_HEIGHT) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    svgEl.attr("height", newHeight);
-
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("height", svgEl.getBBox().height);
-
-}
-
-function sResizeImageMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
+        eventTarget.transform(myMatrix);
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
+        svgEl.attr("height", newHeight);
 
-    }
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("height", svgEl.getBBox().height);
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
+    } else if ("w" == gDragAnchorPos) {
 
-    gDragAnchor = "";
-    gDragType = "";
-}
+        var dx = e.clientX - myData.x;
+        var dy = 0;//e.clientY - myData.y;
 
-function wResizeImageMouseDown(event) {
+        var newWidth = myData.w - dx;
+        if (newWidth < RECT_WIDTH) {
+            return;
+        }
 
-    event.stopPropagation();
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "wResize";
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl);
-    eventTarget.data("myData", myData);
-    gDrawArea.onmousemove = wResizeImageMouseMove;
-    gDrawArea.onmouseup = wResizeImageMouseUp;
-}
-
-function wResizeImageMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = event.clientX - myData.x;
-    var dy = 0;//event.clientY - myData.y;
-
-    var newWidth = myData.w - dx;
-    if (newWidth < RECT_WIDTH) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    svgEl.attr("x", event.clientX - gStartX);
-    svgEl.attr("width", newWidth);
-
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("x", event.clientX - gStartX);
-    selected.attr("width", svgEl.getBBox().width);
-
-}
-
-function wResizeImageMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
+        eventTarget.transform(myMatrix);
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
+        svgEl.attr("x", e.clientX - gStartX);
+        svgEl.attr("width", newWidth);
 
-    }
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("x", e.clientX - gStartX);
+        selected.attr("width", svgEl.getBBox().width);
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
+    } else if ("e" == gDragAnchorPos) {
 
-    gDragAnchor = "";
-    gDragType = "";
-}
+        var dx = e.clientX - myData.x;
+        var dy = 0;//e.clientY - myData.y;
 
-function eResizeImageMouseDown(event) {
+        var newWidth = myData.w + dx;
+        if (newWidth < RECT_WIDTH) {
+            return;
+        }
 
-    event.stopPropagation();
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "eResize";
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var myData = new CustomData(event.clientX, event.clientY, svgEl);
-    eventTarget.data("myData", myData);
-
-    gDrawArea.onmousemove = eResizeImageMouseMove;
-    gDrawArea.onmouseup = eResizeImageMouseUp;
-}
-
-function eResizeImageMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = event.clientX - myData.x;
-    var dy = 0;//event.clientY - myData.y;
-
-    var newWidth = myData.w + dx;
-    if (newWidth < RECT_WIDTH) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    svgEl.attr("width", newWidth);
-
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("width", svgEl.getBBox().width);
-
-}
-
-function eResizeImageMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
+        eventTarget.transform(myMatrix);
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctXY(grp, svgEl, gDragType);
+        svgEl.attr("width", newWidth);
+
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("width", svgEl.getBBox().width);
 
     }
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
 }
+
 // endregion
 
 //region Custom
@@ -3122,435 +2278,270 @@ function correctCustomXY(grp, conn) {
 
 function setRatioAry(grp) {
 
-    var custom = gSvg.select("#" + grp + "custom");
-    var ratio = custom.attr("_ratio");
-    var ratios = ratio.split("|");
-    gRatioAry = [];
-    ratios.forEach(function (r) {
-        gRatioAry.push(r.split(","));
-    });
+    var svgEl = gSvg.select("#" + grp + "custom,#" + grp + "break");
+    if (svgEl) {
+
+        var ratio = svgEl.attr("_ratio");
+        var ratios = ratio.split("|");
+        gRatioAry = [];
+        ratios.forEach(function (r) {
+            gRatioAry.push(r.split(","));
+        });
+
+    }
 
 }
 
-function nResizeCustomMouseDown(event) {
+function customMove(myData, eventTarget, e) {
 
-    event.stopPropagation();
+    if ("n" == gDragAnchorPos) {
 
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
+        var dx = 0;//e.clientX - myData.x;
+        var dy = e.clientY - myData.y;
 
-    gDragAnchor = "nResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setRatioAry(grp);
-
-    gDrawArea.onmousemove = nResizeCustomMouseMove;
-    gDrawArea.onmouseup = nResizeCustomMouseUp;
-}
-
-function nResizeCustomMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = 0;//event.clientX - myData.x;
-    var dy = event.clientY - myData.y;
-
-    var newHeight = myData.h - dy;
-    if (newHeight < RECT_HEIGHT) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newY = event.clientY - gStartY;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("y", newY);
-    selected.attr("height", newHeight);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            var lineToX = pathAry[i][1];
-            //var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += lineToX + " ";
-            newPath += newY + (gRatioAry[i][1] * newHeight) + " ";
-        } else {
-            newPath += act;
+        var newHeight = myData.h - dy;
+        if (newHeight < RECT_HEIGHT) {
+            return;
         }
 
-    }
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-    svgEl.attr("d", newPath);
+        eventTarget.transform(myMatrix);
 
-}
-
-function nResizeCustomMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
+        var newY = e.clientY - gStartY;
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("y", newY);
+        selected.attr("height", newHeight);
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctCustomXY(grp, svgEl);
+        var pathStr = svgEl.attr("d");
+        var pathAry = Snap.parsePathString(pathStr);
+        var pathLen = pathAry.length;
 
-    }
+        var newPath = "";
+        for (var i = 0; i < pathLen; i++) {
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
+            var act = pathAry[i][0];
 
-    gDragAnchor = "";
-    gDragType = "";
-}
+            if ("Z" != act.toUpperCase()) {
+                var lineToX = pathAry[i][1];
+                //var lineToY = pathAry[i][2];
 
-function sResizeCustomMouseDown(event) {
+                newPath += act + " ";
+                newPath += lineToX + " ";
+                newPath += newY + (gRatioAry[i][1] * newHeight) + " ";
+            } else {
+                newPath += act;
+            }
 
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "sResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setRatioAry(grp);
-
-    gDrawArea.onmousemove = sResizeCustomMouseMove;
-    gDrawArea.onmouseup = sResizeCustomMouseUp;
-}
-
-function sResizeCustomMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = 0;//event.clientX - myData.x;
-    var dy = event.clientY - myData.y;
-
-    var newHeight = myData.h + dy;
-    if (newHeight < RECT_HEIGHT) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newY;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("height", newHeight);
-    newY = selected.getBBox().y;
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            var lineToX = pathAry[i][1];
-            //var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += lineToX + " ";
-            newPath += newY + (gRatioAry[i][1] * newHeight) + " ";
-        } else {
-            newPath += act;
         }
 
-    }
+        svgEl.attr("d", newPath);
 
-    svgEl.attr("d", newPath);
+    } else if ("s" == gDragAnchorPos) {
 
-}
+        var dx = 0;//e.clientX - myData.x;
+        var dy = e.clientY - myData.y;
 
-function sResizeCustomMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
-
-        var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctCustomXY(grp, svgEl);
-
-    }
-
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
-}
-
-function wResizeCustomMouseDown(event) {
-
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "wResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setRatioAry(grp);
-
-    gDrawArea.onmousemove = wResizeCustomMouseMove;
-    gDrawArea.onmouseup = wResizeCustomMouseUp;
-}
-
-function wResizeCustomMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = event.clientX - myData.x;
-    var dy = 0;//event.clientY - myData.y;
-
-    var newWidth = myData.w - dx;
-    if (newWidth < RECT_WIDTH) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newX = event.clientX - gStartX;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("x", newX);
-    selected.attr("width", newWidth);
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            //var lineToX = pathAry[i][1];
-            var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += newX + (gRatioAry[i][0] * newWidth) + " ";
-            newPath += lineToY + " ";
-        } else {
-            newPath += act;
+        var newHeight = myData.h + dy;
+        if (newHeight < RECT_HEIGHT) {
+            return;
         }
 
-    }
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-    svgEl.attr("d", newPath);
+        eventTarget.transform(myMatrix);
 
-}
-
-function wResizeCustomMouseUp() {
-
-    if ("" != gCurrent) {
-
-        var grp = getGroupPrefix(gCurrent);
+        var newY;
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("height", newHeight);
+        newY = selected.getBBox().y;
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctCustomXY(grp, svgEl);
+        var pathStr = svgEl.attr("d");
+        var pathAry = Snap.parsePathString(pathStr);
+        var pathLen = pathAry.length;
 
-    }
+        var newPath = "";
+        for (var i = 0; i < pathLen; i++) {
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
+            var act = pathAry[i][0];
 
-    gDragAnchor = "";
-    gDragType = "";
-}
+            if ("Z" != act.toUpperCase()) {
+                var lineToX = pathAry[i][1];
+                //var lineToY = pathAry[i][2];
 
-function eResizeCustomMouseDown(event) {
+                newPath += act + " ";
+                newPath += lineToX + " ";
+                newPath += newY + (gRatioAry[i][1] * newHeight) + " ";
+            } else {
+                newPath += act;
+            }
 
-    event.stopPropagation();
-
-    var id = this.attr("id");
-    var grp = getGroupPrefix(id);
-    gCurrent = grp;
-
-    gDragAnchor = "eResize";
-
-    var selected = gSvg.select("#" + grp + "selected");
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-
-    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
-    gDragType = getTypeById(grpEl.attr("id"));
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-
-    var ov = {h: toInteger(selected.attr("height")), w: toInteger(selected.attr("width"))};
-    var myData = new CustomData(event.clientX, event.clientY, svgEl, ov);
-    eventTarget.data("myData", myData);
-
-    setRatioAry(grp);
-
-    gDrawArea.onmousemove = eResizeCustomMouseMove;
-    gDrawArea.onmouseup = eResizeCustomMouseUp;
-}
-
-function eResizeCustomMouseMove(event) {
-
-    var grp;
-    if ("" != gCurrent) {
-        grp = gCurrent;
-    } else {
-        return;
-    }
-
-    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
-    var myData = eventTarget.data("myData");
-
-    var dx = event.clientX - myData.x;
-    var dy = 0;//event.clientY - myData.y;
-
-    var newWidth = myData.w + dx;
-    if (newWidth < RECT_WIDTH) {
-        return;
-    }
-
-    var myMatrix = new Snap.Matrix();
-    myMatrix.translate(dx, dy);
-
-    eventTarget.transform(myMatrix);
-
-    var newX;
-    var selected = gSvg.select("#" + gCurrent + "selected");
-    selected.attr("width", newWidth);
-    newX = selected.getBBox().x;
-
-    var svgEl = gSvg.select("#" + grp + gDragType);
-    var pathStr = svgEl.attr("d");
-    var pathAry = Snap.parsePathString(pathStr);
-    var pathLen = pathAry.length;
-
-    var newPath = "";
-    for (var i = 0; i < pathLen; i++) {
-
-        var act = pathAry[i][0];
-
-        if ("Z" != act.toUpperCase()) {
-            //var lineToX = pathAry[i][1];
-            var lineToY = pathAry[i][2];
-
-            newPath += act + " ";
-            newPath += newX + (gRatioAry[i][0] * newWidth) + " ";
-            newPath += lineToY + " ";
-        } else {
-            newPath += act;
         }
 
-    }
+        svgEl.attr("d", newPath);
 
-    svgEl.attr("d", newPath);
+    } else if ("w" == gDragAnchorPos) {
 
-}
+        var dx = e.clientX - myData.x;
+        var dy = 0;//e.clientY - myData.y;
 
-function eResizeCustomMouseUp() {
+        var newWidth = myData.w - dx;
+        if (newWidth < RECT_WIDTH) {
+            return;
+        }
 
-    if ("" != gCurrent) {
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
 
-        var grp = getGroupPrefix(gCurrent);
+        eventTarget.transform(myMatrix);
+
+        var newX = e.clientX - gStartX;
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("x", newX);
+        selected.attr("width", newWidth);
 
         var svgEl = gSvg.select("#" + gCurrent + gDragType);
-        correctCustomXY(grp, svgEl);
+        var pathStr = svgEl.attr("d");
+        var pathAry = Snap.parsePathString(pathStr);
+        var pathLen = pathAry.length;
+
+        var newPath = "";
+        for (var i = 0; i < pathLen; i++) {
+
+            var act = pathAry[i][0];
+
+            if ("Z" != act.toUpperCase()) {
+                //var lineToX = pathAry[i][1];
+                var lineToY = pathAry[i][2];
+
+                newPath += act + " ";
+                newPath += newX + (gRatioAry[i][0] * newWidth) + " ";
+                newPath += lineToY + " ";
+            } else {
+                newPath += act;
+            }
+
+        }
+
+        svgEl.attr("d", newPath);
+
+    } else if ("e" == gDragAnchorPos) {
+
+        var dx = e.clientX - myData.x;
+        var dy = 0;//e.clientY - myData.y;
+
+        var newWidth = myData.w + dx;
+        if (newWidth < RECT_WIDTH) {
+            return;
+        }
+
+        var myMatrix = new Snap.Matrix();
+        myMatrix.translate(dx, dy);
+
+        eventTarget.transform(myMatrix);
+
+        var newX;
+        var selected = gSvg.select("#" + gCurrent + "selected");
+        selected.attr("width", newWidth);
+        newX = selected.getBBox().x;
+
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        var pathStr = svgEl.attr("d");
+        var pathAry = Snap.parsePathString(pathStr);
+        var pathLen = pathAry.length;
+
+        var newPath = "";
+        for (var i = 0; i < pathLen; i++) {
+
+            var act = pathAry[i][0];
+
+            if ("Z" != act.toUpperCase()) {
+                //var lineToX = pathAry[i][1];
+                var lineToY = pathAry[i][2];
+
+                newPath += act + " ";
+                newPath += newX + (gRatioAry[i][0] * newWidth) + " ";
+                newPath += lineToY + " ";
+            } else {
+                newPath += act;
+            }
+
+        }
+
+        svgEl.attr("d", newPath);
 
     }
 
-    gDrawArea.onmousemove = null;
-    gDrawArea.onmouseup = null;
-
-    gDragAnchor = "";
-    gDragType = "";
 }
 
 //endregion
 
 // region Common
+
+function resizeMouseDown(event) {
+
+    event.stopPropagation();
+
+    var id = this.attr("id");
+    var grp = getGroupPrefix(id);
+    gCurrent = grp;
+
+    gDragAnchor = id.split("_")[2];//"nResize";
+    gDragAnchorPos = gDragAnchor.substring(0, 1);
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+
+    var grpEl = gSvg.select("#" + grp + "g").select(":first-child");
+    gDragType = getTypeById(grpEl.attr("id"));
+
+    var svgEl = gSvg.select("#" + grp + gDragType);
+
+    var myData = new CustomData(event.clientX, event.clientY, svgEl);
+    eventTarget.data("myData", myData);
+
+    setRatioAry(grp);
+
+    gDrawArea.onmousemove = resizeMouseMove;
+    gDrawArea.onmouseup = resizeMouseUp;
+}
+
+function resizeMouseMove(event) {
+
+    var grp;
+    if ("" != gCurrent) {
+        grp = gCurrent;
+    } else {
+        return;
+    }
+
+    var eventTarget = gSvg.select("#" + grp + gDragAnchor);
+    var myData = eventTarget.data("myData");
+
+    svgElMoveFunc[gDragType](myData, eventTarget, event);
+
+}
+
+function resizeMouseUp() {
+
+    if ("" != gCurrent) {
+
+        var grp = getGroupPrefix(gCurrent);
+
+        var svgEl = gSvg.select("#" + gCurrent + gDragType);
+        correctXY(grp, svgEl, gDragType);
+
+    }
+
+    gDrawArea.onmousemove = null;
+    gDrawArea.onmouseup = null;
+
+    gDragAnchor = "";
+    gDragType = "";
+    gDragAnchorPos = "";
+}
 
 function correctXY(grp, svgEl, dragType) {
     if ("rect" == dragType) {
@@ -5096,18 +4087,18 @@ function registerListener(id) {
             close.mousedown(closeClick);
         });
 
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeImageMouseDown);
+        parentG.selectAll("[id$='Resize']").forEach(function (nResize) {
+            nResize.mousedown(resizeMouseDown);
         });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeImageMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeImageMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeImageMouseDown);
-        });
+        // parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+        //     sResize.mousedown(sResizeImageMouseDown);
+        // });
+        // parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+        //     wResize.mousedown(wResizeImageMouseDown);
+        // });
+        // parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+        //     eResize.mousedown(eResizeImageMouseDown);
+        // });
 
     } else if ("custom" == type) {
 
@@ -5120,18 +4111,18 @@ function registerListener(id) {
             close.mousedown(closeClick);
         });
 
-        parentG.selectAll("[id$='nResize']").forEach(function (nResize) {
-            nResize.mousedown(nResizeCustomMouseDown);
+        parentG.selectAll("[id$='Resize']").forEach(function (nResize) {
+            nResize.mousedown(resizeMouseDown);
         });
-        parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
-            sResize.mousedown(sResizeCustomMouseDown);
-        });
-        parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
-            wResize.mousedown(wResizeCustomMouseDown);
-        });
-        parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
-            eResize.mousedown(eResizeCustomMouseDown);
-        });
+        // parentG.selectAll("[id$='sResize']").forEach(function (sResize) {
+        //     sResize.mousedown(sResizeCustomMouseDown);
+        // });
+        // parentG.selectAll("[id$='wResize']").forEach(function (wResize) {
+        //     wResize.mousedown(wResizeCustomMouseDown);
+        // });
+        // parentG.selectAll("[id$='eResize']").forEach(function (eResize) {
+        //     eResize.mousedown(eResizeCustomMouseDown);
+        // });
 
         label = parentG.selectAll("[id$='label']")[0];
         if (label) {
