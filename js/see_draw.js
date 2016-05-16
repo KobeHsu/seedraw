@@ -2728,6 +2728,21 @@ function getTypeById(id) {
     return idSplit[2];
 }
 
+function toggleGrid() {
+
+    var snapSvg = document.getElementById("snapSvg");
+
+    if (!snapSvg) {
+        return;
+    }
+
+    if (snapSvg.classList.contains("gridBackground")) {
+        snapSvg.classList.remove("gridBackground");
+    } else {
+        snapSvg.classList.add("gridBackground");
+    }
+
+}
 // document ready
 document.addEventListener("DOMContentLoaded", function () {
 

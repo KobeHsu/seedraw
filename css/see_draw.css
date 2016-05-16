@@ -15,6 +15,11 @@
 /*fill:#0099CC;*/
 /*}*/
 
+.gridBackground{
+    background-size: 20px 20px;
+    background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
+}
+
 input[type="text"] {
     padding: 3px;
     border: solid 1px #fff;
