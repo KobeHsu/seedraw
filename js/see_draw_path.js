@@ -58,7 +58,7 @@ function addConnector(type) {
     g.attr("id", grpId);
     g.attr("type", type);
 
-    reDrawPointByPath(grp, newConn, g, type);
+    reDrawPointByPath(grp, newConn, g);
 
     registerListener(connectorId);
 
@@ -187,28 +187,33 @@ function correctConnectorXY(grp, conn) {
     label.attr("y", labelXY[1]);
     //text.dblclick(textDblClick);
 
-    var arrow = gSvg.select("[id^='" + grp + "arrow']");
+    // handle arrow
+    if ("undirected" !== g.attr("type")) {
 
-    var _pathStr = arrow.attr("d");
-    var _pathAry = Snap.parsePathString(_pathStr);
+        var arrow = gSvg.select("[id^='" + grp + "arrow']");
 
-    _pathAry.forEach(function (p) {
-        p[1] = parseInt(p[1]) + x;
-        p[2] = parseInt(p[2]) + y;
-    });
+        var _pathStr = arrow.attr("d");
+        var _pathAry = Snap.parsePathString(_pathStr);
 
-    var _newPath = "";
-    _pathAry.forEach(function (p) {
-        _newPath += p[0] + " ";
-        if ("Z" != p[0]) {
-            _newPath += p[1] + " ";
-            _newPath += p[2] + " ";
-        }
-    });
+        _pathAry.forEach(function (p) {
+            p[1] = parseInt(p[1]) + x;
+            p[2] = parseInt(p[2]) + y;
+        });
 
-    //element.attr("transform", "");
-    arrow.attr("d", _newPath);
-    arrow.transform(m);
+        var _newPath = "";
+        _pathAry.forEach(function (p) {
+            _newPath += p[0] + " ";
+            if ("Z" != p[0]) {
+                _newPath += p[1] + " ";
+                _newPath += p[2] + " ";
+            }
+        });
+
+        //element.attr("transform", "");
+        arrow.attr("d", _newPath);
+        arrow.transform(m);
+
+    }
 
     gSvg.selectAll("[id^='" + grp + "point'").forEach(function (element) {
         var cx = parseInt(element.attr("cx"), 10);
@@ -426,12 +431,14 @@ function endPointRemove() {
 
 }
 
-function reDrawPointByPath(grp, conn, g, type) {
+function reDrawPointByPath(grp, conn, g) {
 
     if (!g) {
         var gId = grp + "g";
         g = gSvg.select("#" + gId);
     }
+
+    var type = g.attr("type");
 
     gSvg.selectAll("[id^='" + grp + "point']").forEach(function (element) {
         element.remove();
@@ -495,7 +502,7 @@ function reDrawPointByPath(grp, conn, g, type) {
     }
 
     // draw arrow
-    if (lastSubPath.length == 4) {
+    if (lastSubPath.length == 4 && type !== "undirected") {
 
         var arrowId = grp + "arrow";
 
