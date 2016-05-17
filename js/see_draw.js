@@ -87,6 +87,7 @@ var gLabelContextMenu;
 var gTextEditContextMenu;
 
 var gModelType = "-1";
+var gGridEnable = false;
 
 var svgElMoveFunc = {
     "rect": rectMove,
@@ -2738,8 +2739,10 @@ function toggleGrid() {
 
     if (snapSvg.classList.contains("gridBackground")) {
         snapSvg.classList.remove("gridBackground");
+        gGridEnable = false;
     } else {
         snapSvg.classList.add("gridBackground");
+        gGridEnable = true;
     }
 
 }
