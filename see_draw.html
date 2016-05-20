@@ -5,6 +5,7 @@
     <title>SEE DRAW</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="css/bootstrap-colorpicker.min.css" rel="stylesheet">
     <link href="css/see_draw.css" rel="stylesheet"/>
     <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">-->
@@ -15,6 +16,7 @@
     <script src="js/jquery-1.11.3.min.js"></script>
     <script src="js/jquery.blockUI.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-colorpicker.min.js"></script>
     <script src="js/snap.svg-min.js"></script>
     <script src="js/saveSvgAsPng.js"></script><!--https://github.com/exupero/saveSvgAsPng-->
     <script src="js/see_draw.js"></script>
@@ -45,6 +47,7 @@
             <button type="button" class="btn btn-round btn-danger" id="toggleGridBtn" name="toggleGridBtn"
                     onclick="toggleGrid()" data-toggle="tooltip" title="Grid"><i class="fa fa-th"></i>
             </button>
+
         </div>
 
         <!--<input type="file" id="loadSvg" name="loadSvg" onchange="performLoadSvg()" style="display:none"/>-->
@@ -170,6 +173,8 @@
                        id="textEditFontBold"><i class="fa fa-bold"></i></a>
                     <a class="btn btn-default" href="#" onmousedown="textEdit('style', 'italic')"
                        id="textEditFontItalic"><i class="fa fa-italic"></i></a>
+                    <a class="btn btn-default" href="#" id="textEditColor"><input id="colorHex" type="hidden"/><i
+                            class="fa fa-barcode"></i></a>
                 </div>
                 <div class="btn-group">
                     <a class="btn btn-default" href="#" onmousedown="textEdit('align', 'left')"

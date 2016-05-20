@@ -2857,6 +2857,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $('[data-toggle="tooltip"]').tooltip({placement: "bottom"});
 
+    $('#textEditColor').colorpicker({input: $('#colorHex')}).on('changeColor', colorChanged);
+
 });
 
 function initSelectionFonts() {
@@ -4543,6 +4545,15 @@ function labelMouseUp() {
     gDragAnchor = "";
 }
 
+function colorChanged(e) {
+    console.log(gCurrent + ":" + e.color.toHex());
+
+    var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+    if (childNodes && childNodes.length > 0) {
+        childNodes[0].node.style.stroke = e.color.toHex();
+    }
+
+}
 //endregion
 
 //function addDiamond() {
