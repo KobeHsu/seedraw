@@ -122,6 +122,14 @@
                 <li class="context-menu__item">
                     <a href="#" class="context-menu__link" onmousedown="svgElToBack()">To Back</a>
                 </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" id="borderColorPicker">Border Color<input id="borderColorHex"
+                                                                                                     type="hidden"/></a>
+                </li>
+                <li class="context-menu__item">
+                    <a href="#" class="context-menu__link" id="fillColorPicker">Fill Color<input id="borderColorHex"
+                                                                                                     type="hidden"/></a>
+                </li>
             </ul>
         </nav>
         <nav id="context-menu-connector" class="context-menu">
@@ -173,8 +181,8 @@
                        id="textEditFontBold"><i class="fa fa-bold"></i></a>
                     <a class="btn btn-default" href="#" onmousedown="textEdit('style', 'italic')"
                        id="textEditFontItalic"><i class="fa fa-italic"></i></a>
-                    <a class="btn btn-default" href="#" id="textEditColor"><input id="colorHex" type="hidden"/><i
-                            class="fa fa-barcode"></i></a>
+                    <!--                    <a class="btn btn-default" href="#" id="textEditColor"><input id="colorHex" type="hidden"/><i
+                                                class="fa fa-barcode"></i></a>-->
                 </div>
                 <div class="btn-group">
                     <a class="btn btn-default" href="#" onmousedown="textEdit('align', 'left')"

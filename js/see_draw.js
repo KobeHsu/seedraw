@@ -2857,7 +2857,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $('[data-toggle="tooltip"]').tooltip({placement: "bottom"});
 
-    $('#textEditColor').colorpicker({input: $('#colorHex')}).on('changeColor', colorChanged);
+    $('#borderColorPicker').colorpicker({
+        input: $('#borderColorHex'),
+        container: true
+    }).on('showPicker', borderColorShowPicker).on('changeColor', borderColorChanged);
+    $('#fillColorPicker').colorpicker({
+        input: $('#fillColorHex'),
+        container: true
+    }).on('showPicker', fillColorShowPicker).on('changeColor', fillColorChanged);
 
 });
 
@@ -4545,8 +4552,7 @@ function labelMouseUp() {
     gDragAnchor = "";
 }
 
-function colorChanged(e) {
-    console.log(gCurrent + ":" + e.color.toHex());
+function borderColorChanged(e) {
 
     var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
     if (childNodes && childNodes.length > 0) {
@@ -4554,6 +4560,41 @@ function colorChanged(e) {
     }
 
 }
+
+function fillColorChanged(e) {
+
+    var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+    if (childNodes && childNodes.length > 0) {
+        childNodes[0].node.style.fill = e.color.toHex();
+    }
+
+}
+
+function borderColorShowPicker(e) {
+
+    var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+    if (childNodes && childNodes.length > 0) {
+        var color = childNodes[0].node.style.stroke;
+        if ("" != color) {
+            $("#borderColorPicker").colorpicker("setValue", childNodes[0].node.style.stroke);
+        }
+    }
+
+}
+
+
+function fillColorShowPicker(e) {
+
+    var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+    if (childNodes && childNodes.length > 0) {
+        var color = childNodes[0].node.style.fill;
+        if ("" != color) {
+            $("#fillColorPicker").colorpicker("setValue", childNodes[0].node.style.fill);
+        }
+    }
+
+}
+
 //endregion
 
 //function addDiamond() {
