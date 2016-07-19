@@ -2857,16 +2857,116 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $('[data-toggle="tooltip"]').tooltip({placement: "bottom"});
 
-    $('#borderColorPicker').colorpicker({
-        input: $('#borderColorHex'),
-        container: true
-    }).on('showPicker', borderColorShowPicker).on('changeColor', borderColorChanged);
-    $('#fillColorPicker').colorpicker({
-        input: $('#fillColorHex'),
-        container: true
-    }).on('showPicker', fillColorShowPicker).on('changeColor', fillColorChanged);
+    // $('#borderColorPicker').colorpicker({
+    //     input: $('#borderColorHex'),
+    //     container: true
+    // }).on('showPicker', borderColorShowPicker).on('changeColor', borderColorChanged);
+
+    // $('#fillColorPicker').colorpicker({
+    //     input: $('#fillColorHex'),
+    //     container: true
+    // }).on('showPicker', fillColorShowPicker).on('changeColor', fillColorChanged);
+
+    $('#borderColorPicker').click(function(e) {
+
+        e.stopPropagation();
+
+        var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+        if (childNodes && childNodes.length > 0) {
+            var color = childNodes[0].node.style.stroke;
+            if ("" != color) {
+                $("#popupSelect").val(rgb2hex(color));
+            }
+        }
+
+        var popUpDiv = document.getElementById("popUpDiv");
+        popUpDiv.classList.add("context-menu--active");
+        popUpDiv.style["left"] = (e.clientX - gMenuWidth ) + CONTEXT_MENU_SHIFT_X -5 + "px";
+        popUpDiv.style["top"] = (e.clientY - gMenuHeight) + CONTEXT_MENU_SHIFT_Y -5 + "px";
+
+        $('#popUpDiv').on("mouseover", function() {
+            gContextMenu.classList.add("context-menu--active");
+        });
+
+        $('#popUpDiv').on("mouseout", function() {
+            gContextMenu.classList.remove("context-menu--active");
+            document.getElementById("popUpDiv").classList.remove("context-menu--active");
+        });
+
+        $("#popupSelect").change(function(){
+
+            var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+            if (childNodes && childNodes.length > 0) {
+                // childNodes[0].node.style.fill = e.color.toHex();
+                var clsName = childNodes[0].node.className.baseVal;
+                gSvg.selectAll("." + clsName).forEach(function(item) {
+                    item.node.style.stroke = $("#popupSelect").val();
+                });
+            }
+
+            $('#popUpDiv').trigger("mouseout");
+            $('#popUpDiv').unbind("mouseout");
+            $('#popUpDiv').unbind("mouseover");
+            $('#popupSelect').unbind("change");
+
+        });
+    });
+
+    $('#fillColorPicker').click(function(e) {
+
+        e.stopPropagation();
+
+        var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+        if (childNodes && childNodes.length > 0) {
+            var color = childNodes[0].node.style.fill;
+            if ("" != color) {
+                $("#popupSelect").val(rgb2hex(color));
+            }
+        }
+
+        var popUpDiv = document.getElementById("popUpDiv");
+        popUpDiv.classList.add("context-menu--active");
+        popUpDiv.style["left"] = (e.clientX - gMenuWidth ) + CONTEXT_MENU_SHIFT_X -5 + "px";
+        popUpDiv.style["top"] = (e.clientY - gMenuHeight) + CONTEXT_MENU_SHIFT_Y -5 + "px";
+
+        $('#popUpDiv').on("mouseover", function() {
+            gContextMenu.classList.add("context-menu--active");
+        });
+
+        $('#popUpDiv').on("mouseout", function() {
+            gContextMenu.classList.remove("context-menu--active");
+            document.getElementById("popUpDiv").classList.remove("context-menu--active");
+        });
+
+        $("#popupSelect").change(function(){
+
+            var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
+            if (childNodes && childNodes.length > 0) {
+                // childNodes[0].node.style.fill = e.color.toHex();
+                var clsName = childNodes[0].node.className.baseVal;
+                gSvg.selectAll("." + clsName).forEach(function(item) {
+                    item.node.style.fill = $("#popupSelect").val();
+                });
+            }
+
+            $('#popUpDiv').trigger("mouseout");
+            $('#popUpDiv').unbind("mouseout");
+            $('#popUpDiv').unbind("mouseover");
+            $('#popupSelect').unbind("change");
+
+        });
+    });
+
 
 });
+
+function rgb2hex(rgb){
+    rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+    return (rgb && rgb.length === 4) ? "#" +
+    ("0" + parseInt(rgb[1],10).toString(16).toUpperCase()).slice(-2) +
+    ("0" + parseInt(rgb[2],10).toString(16).toUpperCase()).slice(-2) +
+    ("0" + parseInt(rgb[3],10).toString(16).toUpperCase()).slice(-2) : '';
+}
 
 function initSelectionFonts() {
 
