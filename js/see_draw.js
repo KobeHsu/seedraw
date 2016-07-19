@@ -58,7 +58,7 @@ var DIAGRAM_NAME = "";
 var EL_TYPES = ["rect", "connector", "ellipse", "line", "break", "brace", "image", "custom"];
 
 var SUPPORTED_FONTS = [["", ""], ["Microsoft JhengHei", "微軟正黑體"], ["Arial", "Arial"], ["Arial Black", "Arial Black"], ["Comic Sans MS", "Comic Sans MS"], ["Courier New", "Courier New"], ["Helvetica", "Helvetica"], ["Impact", "Impact"], ["serif", "serif"], ["sans-serif", "sans-serif"], ["Tahoma", "Tahoma"], ["Times New Roman", "Times New Roman"], ["Verdana", "Verdana"], ["PMingLiU", "新細明體"], ["DFKai-sb", "標楷體"]];
-var SUPPORTED_FONT_SIZES = [12, 14, 18, 22];
+var SUPPORTED_FONT_SIZES = [["12","小"], ["14","一般"], ["18","大"], ["22","最大"]];
 
 var CONTEXT_MENU_SHIFT_X = -5;
 var CONTEXT_MENU_SHIFT_Y = -5;
@@ -2895,8 +2895,8 @@ function initSelectionFontSizes() {
     if (textEditFontSize) {
         SUPPORTED_FONT_SIZES.forEach(function (sizeAry) {
             var opt = document.createElement("option");
-            opt.value = sizeAry;
-            opt.innerHTML = sizeAry;
+            opt.value = sizeAry[0];
+            opt.innerHTML = sizeAry[1];
             textEditFontSize.appendChild(opt);
         });
     }
@@ -4556,7 +4556,11 @@ function borderColorChanged(e) {
 
     var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
     if (childNodes && childNodes.length > 0) {
-        childNodes[0].node.style.stroke = e.color.toHex();
+        // childNodes[0].node.style.stroke = e.color.toHex();
+        var clsName = childNodes[0].node.className.baseVal;
+        gSvg.selectAll("." + clsName).forEach(function(item) {
+            item.node.style.stroke = e.color.toHex();
+        });
     }
 
 }
@@ -4565,7 +4569,11 @@ function fillColorChanged(e) {
 
     var childNodes = gSvg.select("#" + gCurrent + "g").selectAll("rect,ellipse,path");
     if (childNodes && childNodes.length > 0) {
-        childNodes[0].node.style.fill = e.color.toHex();
+        // childNodes[0].node.style.fill = e.color.toHex();
+        var clsName = childNodes[0].node.className.baseVal;
+        gSvg.selectAll("." + clsName).forEach(function(item) {
+            item.node.style.fill = e.color.toHex();
+        });
     }
 
 }
